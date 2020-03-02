@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Simple test script that plays (some) wav files
 
@@ -9,7 +9,8 @@ import wave
 import getopt
 import alsaaudio
 
-def play(device, f):    
+
+def play(device, f):
 
     print('%d channels, %d sampling rate\n' % (f.getnchannels(),
                                                f.getframerate()))
@@ -33,7 +34,7 @@ def play(device, f):
     periodsize = f.getframerate() // 8
 
     device.setperiodsize(periodsize)
-    
+
     data = f.readframes(periodsize)
     while data:
         # Read data from stdin
@@ -44,6 +45,7 @@ def play(device, f):
 def usage():
     print('usage: playwav.py [-d <device>] <file>', file=sys.stderr)
     sys.exit(2)
+
 
 if __name__ == '__main__':
 
@@ -56,7 +58,7 @@ if __name__ == '__main__':
 
     if not args:
         usage()
-        
+
     f = wave.open(args[0], 'rb')
     device = alsaaudio.PCM(device=device)
 
