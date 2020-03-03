@@ -5,14 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
+      "name": "Python: Module",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "module": "soundwave",
       "args": [
-        "/usr/share/sounds/alsa/Front_Center.wav"
-      ],
-      "console": "integratedTerminal"
+        "data/Front_Center.wav"
+      ]
     }
   ]
 }
