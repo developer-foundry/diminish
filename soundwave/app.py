@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import alsaaudio
 
+
 def play(device, f):
 
     print('%d channels, %d sampling rate\n' % (f.getnchannels(),
@@ -32,8 +33,3 @@ def play(device, f):
         # Read data from stdin
         device.write(data)
         data = f.readframes(periodsize)
-
-
-def usage():
-    print('usage: playwav.py [-d <device>] <file>', file=sys.stderr)
-    sys.exit(2)
