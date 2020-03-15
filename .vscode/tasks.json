@@ -10,7 +10,18 @@
       "group": {
         "kind": "build",
         "isDefault": true
-      }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "record",
+      "type": "shell",
+      "command": "python3 -m soundwave -r 1 data/recording.wav",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
     },
     {
       "label": "test",
