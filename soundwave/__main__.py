@@ -14,7 +14,8 @@ if __name__ == '__main__':
             device = a
 
     if not args:
-        app.usage()
+        print('usage: playwav.py [-d <device>] <file>', file=sys.stderr)
+        sys.exit(2)
 
     f = wave.open(args[0], 'rb')
     device = alsaaudio.PCM(device=device)

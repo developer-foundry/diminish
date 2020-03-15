@@ -32,8 +32,3 @@ def play(device, f):
         # Read data from stdin
         device.write(data)
         data = f.readframes(periodsize)
-
-
-def usage():
-    print('usage: playwav.py [-d <device>] <file>', file=sys.stderr)
-    sys.exit(2)
