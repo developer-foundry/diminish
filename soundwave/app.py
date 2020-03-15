@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import alsaaudio
 
+
 def play(device, f):
 
     print('%d channels, %d sampling rate\n' % (f.getnchannels(),
