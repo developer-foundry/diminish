@@ -25,9 +25,7 @@ if __name__ == '__main__':
         app.play(device, f)
         f.close()
     elif args.mode == 1:
-        f = wave.open(args.file, 'rb')
-        app.acn_file(device, f)
-        f.close()
+        app.acn_file(parser, args.device, args.file)
     else:
         f = open(args.file, 'wb')
         app.record(args.device, f)

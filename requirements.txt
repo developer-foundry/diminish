@@ -1,3 +1,7 @@
 pytest
 pyalsaaudio
 argparse
+sounddevice
+soundfile
+numpy
+matplotlib
