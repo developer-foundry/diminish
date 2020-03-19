@@ -10,7 +10,8 @@
       "request": "launch",
       "module": "soundwave",
       "args": [
-        "data/Front_Center.wav"
+        "-r 1",
+        "-f data/Front_Center.wav"
       ]
     }
   ]

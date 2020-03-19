@@ -4,6 +4,38 @@ import time
 import alsaaudio
 
 
+def acn_file(device, f):
+
+    print('acn file %d channels, %d sampling rate\n' % (f.getnchannels(),
+                                                        f.getframerate()))
+    # Set attributes
+    device.setchannels(f.getnchannels())
+    device.setrate(f.getframerate())
+
+    # 8bit is unsigned in wav files
+    if f.getsampwidth() == 1:
+        device.setformat(alsaaudio.PCM_FORMAT_U8)
+    # Otherwise we assume signed data, little endian
+    elif f.getsampwidth() == 2:
+        device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+    elif f.getsampwidth() == 3:
+        device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
+    elif f.getsampwidth() == 4:
+        device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
+    else:
+        raise ValueError('Unsupported format')
+
+    periodsize = f.getframerate() // 8
+
+    device.setperiodsize(periodsize)
+
+    data = f.readframes(periodsize)
+    while data:
+        # Read data from stdin
+        device.write(data)
+        data = f.readframes(periodsize)
+
+
 def play(device, f):
 
     print('%d channels, %d sampling rate\n' % (f.getnchannels(),
@@ -35,11 +67,13 @@ def play(device, f):
         device.write(data)
         data = f.readframes(periodsize)
 
+
 def record(device, f):
     # Open the device in nonblocking capture mode. The last argument could
     # just as well have been zero for blocking mode. Then we could have
     # left out the sleep call in the bottom of the loop
-    inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK, device=device)
+    inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE,
+                        alsaaudio.PCM_NONBLOCK, device=device)
 
     # Set attributes: Mono, 44100 Hz, 16 bit little endian samples
     inp.setchannels(2)

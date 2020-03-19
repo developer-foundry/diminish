@@ -2,31 +2,33 @@ import getopt
 import wave
 import sys
 import alsaaudio
+import argparse
 
 from soundwave import app
 
 if __name__ == '__main__':
-    devicestr = 'default'
-    mode = 0 # 0 = play, 1 = record
 
-    opts, args = getopt.getopt(sys.argv[1:], 'd:r:')
-    for o, a in opts:
-        if o == '-d':
-            devicestr = a
-        if o == '-r':
-            mode = a
+    parser = argparse.ArgumentParser(description='POC for ACN testing')
+    parser.add_argument('-f', dest='file', action='store', required=True, type=str,
+                        help='defines action taken by application. Default = 0')
+    parser.add_argument('-d', dest='device', action='store', default='default', type=str,
+                        help='defines action taken by application. Default = 0')
+    parser.add_argument('-r', dest='mode', action='store', default=0, type=int,
+                        help='defines action taken by application. Default = 0')
 
-    if not args:
-        print('usage: soundwave [-d <device>] [-r <mode>] <file>', file=sys.stderr)
-        sys.exit(2)
+    args = parser.parse_args()
 
-    device = alsaaudio.PCM(device=devicestr)
+    device = alsaaudio.PCM(device=args.device)
 
-    if mode == 0:
-        f = wave.open(args[0], 'rb')
+    if args.mode == 0:
+        f = wave.open(args.file, 'rb')
         app.play(device, f)
         f.close()
+    elif args.mode == 1:
+        f = wave.open(args.file, 'rb')
+        app.acn_file(device, f)
+        f.close()
     else:
-        f = open(args[0], 'wb')
-        app.record(devicestr, f)
+        f = open(args.file, 'wb')
+        app.record(args.device, f)
         f.close()

@@ -4,9 +4,19 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "default",
+      "label": "play",
       "type": "shell",
-      "command": "python3 -m soundwave data/Front_Center.wav",
+      "command": "python3 -m soundwave -r 0 -f data/Front_Center.wav",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "acnfile",
+      "type": "shell",
+      "command": "python3 -m soundwave -r 1 -f data/Front_Center.wav",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -16,7 +26,7 @@
     {
       "label": "record",
       "type": "shell",
-      "command": "python3 -m soundwave -r 1 data/recording.wav",
+      "command": "python3 -m soundwave -r 2 -f data/recording.wav",
       "group": {
         "kind": "build",
         "isDefault": true
