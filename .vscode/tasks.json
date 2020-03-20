@@ -16,7 +16,7 @@
     {
       "label": "acnfile",
       "type": "shell",
-      "command": "python3 -m soundwave -r 1 -f data/Front_Center.wav",
+      "command": "python3 -m soundwave -r 1 -f data/input.wav",
       "group": {
         "kind": "build",
         "isDefault": true

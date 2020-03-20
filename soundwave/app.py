@@ -1,23 +1,31 @@
 from __future__ import print_function
 import sys
 import time
+
 import alsaaudio
 import sounddevice as sd
 import soundfile as sf
+import matplotlib
+matplotlib.use('Agg')
 
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+import numpy as np
 
 def acn_file(parser, device, f):
-
     try:
         data, fs = sf.read(f, dtype='float32')
         sd.play(data, fs, device=device)
         status = sd.wait()
+        if status:
+            parser.exit('Error during playback: ' + str(status))
+
+        plt.plot(data, '-b')
+        plt.savefig('plots/test.png')
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
-    if status:
-        parser.exit('Error during playback: ' + str(status))
 
 def play(device, f):
 
