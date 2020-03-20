@@ -5,3 +5,4 @@ sounddevice
 soundfile
 numpy
 matplotlib
+padasip
