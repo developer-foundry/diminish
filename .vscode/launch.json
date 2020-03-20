@@ -11,7 +11,7 @@
       "module": "soundwave",
       "args": [
         "-r 1",
-        "-fdata/input.wav"
+        "-f data/funny-voice.wav"
       ]
     },
     {
@@ -21,7 +21,7 @@
       "module": "soundwave",
       "args": [
         "-r 1",
-        "-fdata/Front_Center.wav"
+        "-f data/funny-voice.wav"
       ]
     }
   ]
