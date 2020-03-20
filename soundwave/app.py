@@ -1,15 +1,15 @@
 from __future__ import print_function
 import numpy as np
+import matplotlib # Do not move this
+matplotlib.use('Agg') # Do not move this
+
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 import sys
 import time
 
 import alsaaudio
 import sounddevice as sd
 import soundfile as sf
-import matplotlib
-matplotlib.use('Agg')
 
 
 def acn_file(parser, device, f):
