@@ -5,13 +5,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "acnfile debug",
+      "type": "python",
+      "request": "launch",
+      "module": "soundwave",
+      "args": [
+        "-r 1",
+        "-fdata/input.wav"
+      ]
+    },
+    {
       "name": "Python: Module",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "args": [
         "-r 1",
-        "-f data/Front_Center.wav"
+        "-fdata/Front_Center.wav"
       ]
     }
   ]
