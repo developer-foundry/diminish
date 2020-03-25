@@ -1,9 +1,6 @@
 from __future__ import print_function  # nopep8
 import numpy as np  # nopep8
-import matplotlib  # nopep8
-matplotlib.use('Agg')  # nopep8
 
-import matplotlib.pyplot as plt
 import sys
 import time
 from functools import partial
@@ -12,8 +9,8 @@ import sounddevice as sd
 import soundfile as sf
 
 import soundwave.algorithms.least_mean_squares as lmsalgos
-
 import soundwave.playback.playback as player
+import soundwave.plotting.plot as plot
 
 mu = 0.00001
 
@@ -64,16 +61,10 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
         # combine left and right channels
         outputSignal = np.column_stack((outputLeftSignal, outputRightSignal))
 
-        player.play_signal(parser, outputSignal, inputFs, device)
+        #player.play_signal(parser, outputSignal, inputFs, device)
 
-        plt.plot(inputSignal, '-b')
-        plt.savefig('plots/input.png')
+        plot.plot_simultaneous(inputSignal, targetSignal, outputSignal)
 
-        plt.plot(targetSignal, '-g')
-        plt.savefig('plots/target.png')
-
-        plt.plot(outputSignal, '-r')
-        plt.savefig('plots/output.png')
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
     except Exception as e:
