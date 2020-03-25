@@ -35,7 +35,7 @@ def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSigna
     axs[0].title.set_text('% s Input Signal' % algorithm)
     axs[1].plot(targetSignal, '-g')
     axs[1].title.set_text('% s Target Signal' % algorithm)
-    axs[2].plot(outputSignal, '-y')
+    axs[2].plot(outputSignal, '-k')
     axs[2].title.set_text('% s Output Signal' % algorithm)
     axs[3].plot(errorSignal, '-r')
     axs[3].title.set_text('% s Error Signal' % algorithm)
