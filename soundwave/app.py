@@ -1,5 +1,5 @@
-from __future__ import print_function  # nopep8
-import numpy as np  # nopep8
+from __future__ import print_function
+import numpy as np
 
 import sys
 import time

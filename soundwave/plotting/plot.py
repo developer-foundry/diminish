@@ -1,7 +1,6 @@
-import os
 import matplotlib  # nopep8
 matplotlib.use('Agg')  # nopep8
-
+import os
 import matplotlib.pyplot as plt
 
 
