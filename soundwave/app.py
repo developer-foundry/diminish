@@ -57,11 +57,12 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
 
         # combine left and right channels
         outputSignal = np.column_stack((outputLeftSignal, outputRightSignal))
+        errorSignal = np.column_stack((errorLeftSignal, errorRightSignal))
 
         #player.play_signal(parser, outputSignal, inputFs, device)
 
         plot.plot_vertical(algorithm, inputSignal,
-                           targetSignal, outputSignal)
+                           targetSignal, outputSignal, errorSignal)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')

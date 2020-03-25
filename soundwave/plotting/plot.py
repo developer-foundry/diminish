@@ -25,12 +25,18 @@ def plot_simultaneous(algorithm, inputSignal, targetSignal, outputSignal):
     plt.savefig(algDirectory + 'output.png')
 
 
-def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal):
+def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSignal):
     algDirectory = get_dir(algorithm)
 
-    fig, axs = plt.subplots(3)
-    fig.suptitle('Signals Stacked')
+    fig, axs = plt.subplots(4)
+    fig.set_size_inches(18.5, 10.5)
+    fig.tight_layout(pad=3.0)
     axs[0].plot(inputSignal, '-b')
+    axs[0].title.set_text('Input Signal')
     axs[1].plot(targetSignal, '-g')
-    axs[2].plot(outputSignal, '-r')
+    axs[1].title.set_text('Target Signal')
+    axs[2].plot(outputSignal, '-y')
+    axs[2].title.set_text('Output Signal')
+    axs[3].plot(errorSignal, '-r')
+    axs[3].title.set_text('Error Signal')
     plt.savefig(algDirectory + 'allsignals.png')
