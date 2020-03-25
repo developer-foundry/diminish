@@ -4,9 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "play",
+      "label": "lms",
       "type": "shell",
-      "command": "python3 -m soundwave -r 0 -f data/funny-voice.wav",
+      "command": "python3 -m soundwave -a lms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -14,9 +14,9 @@
       "problemMatcher": []
     },
     {
-      "label": "acnfile",
+      "label": "nlms",
       "type": "shell",
-      "command": "python3 -m soundwave -r 1 -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
+      "command": "python3 -m soundwave -a nlms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -24,9 +24,9 @@
       "problemMatcher": []
     },
     {
-      "label": "record",
+      "label": "nsslms",
       "type": "shell",
-      "command": "python3 -m soundwave -r 2 -f data/recording.wav",
+      "command": "python3 -m soundwave -a nsslms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
       "group": {
         "kind": "build",
         "isDefault": true

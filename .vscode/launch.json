@@ -5,24 +5,36 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug ACN",
+      "name": "Debug LMS",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "args": [
-        "-r 1",
+        "-a lms",
         "-f data/truck-and-construction-noises.wav",
         "-t data/pink-noise.wav"
       ]
     },
     {
-      "name": "Debug Play",
+      "name": "Debug NLMS",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "args": [
-        "-r 1",
-        "-f data/funny-voice.wav"
+        "-a nlms",
+        "-f data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav"
+      ]
+    },
+    {
+      "name": "Debug NSSLMS",
+      "type": "python",
+      "request": "launch",
+      "module": "soundwave",
+      "args": [
+        "-a nsslms",
+        "-f data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav"
       ]
     }
   ]

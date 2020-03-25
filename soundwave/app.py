@@ -6,44 +6,70 @@ matplotlib.use('Agg')  # nopep8
 import matplotlib.pyplot as plt
 import sys
 import time
+from functools import partial
 
-import alsaaudio
 import sounddevice as sd
 import soundfile as sf
 
-import soundwave.algorithms.least_mean_squares as lms
+import soundwave.algorithms.least_mean_squares as lmsalgos
+
+import soundwave.playback.playback as player
+
+mu = 0.00001
 
 
-def acn_file(parser, device, inputSignal, targetSignal):
+def lms(inputSignal, targetSignal, channel, numChannels):
+    return lmsalgos.lms(inputSignal, targetSignal[:, channel], mu, numChannels)
+
+
+def nlms(inputSignal, targetSignal, channel, numChannels):
+    return lmsalgos.nlms(inputSignal, targetSignal[:, channel], mu, numChannels)
+
+
+def nsslms(inputSignal, targetSignal, channel, numChannels):
+    return lmsalgos.nsslms(inputSignal, targetSignal[:, channel], mu, numChannels)
+
+
+def run_algorithm(algorithm, inputSignal, targetSignal, channel, numChannels):
+    switcher = {
+        'lms': partial(lms, inputSignal, targetSignal, channel, numChannels),
+        'nlms': partial(nlms, inputSignal, targetSignal, channel, numChannels),
+        'nsslms': partial(nsslms, inputSignal, targetSignal, channel, numChannels),
+    }
+
+    # Get the function from switcher dictionary
+    func = switcher.get(algorithm)
+    # Execute the function
+    return func()
+
+
+def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
     try:
-        inputData, inputFs = sf.read(inputSignal, dtype='float32')
-        targetData, targetFs = sf.read(targetSignal, dtype='float32')
+        inputSignal, inputFs = sf.read(inputFile, dtype='float32')
+        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
 
         # trucate the input signal for testing purposes as the file is big
-        inputData = inputData[0:300000]
+        inputSignal = inputSignal[0:truncateSize]
 
         # first ensure that the targetData is the same size as the input data.
-        targetData = targetData[0:inputData.shape[0], :]
+        targetSignal = targetSignal[0:inputSignal.shape[0], :]
 
-        # perform lms on left channel, then right right
-        outputLeftSignal, errorLeftSignal = lms.least_mean_squares(
-            inputData, targetData[:, 0], 0.1, 2)
+        # perform algorithm on left channel, then right right
+        outputLeftSignal, errorLeftSignal = run_algorithm(
+            algorithm, inputSignal, targetSignal, 0, 2)
 
-        outputRightSignal, errorRightSignal = lms.least_mean_squares(
-            inputData, targetData[:, 1], 0.1, 2)
+        outputRightSignal, errorRightSignal = run_algorithm(
+            algorithm, inputSignal, targetSignal, 1, 2)
 
         # combine left and right channels
         outputSignal = np.column_stack((outputLeftSignal, outputRightSignal))
 
-        sd.play(outputSignal, inputFs, device=device)
-        status = sd.wait()
-        if status:
-            parser.exit('Error during playback: ' + str(status))
+        player.play_signal(parser, outputSignal, inputFs, device)
 
-        plt.plot(inputData, '-b')
+        plt.plot(inputSignal, '-b')
         plt.savefig('plots/input.png')
 
-        plt.plot(targetData, '-g')
+        plt.plot(targetSignal, '-g')
         plt.savefig('plots/target.png')
 
         plt.plot(outputSignal, '-r')
@@ -52,27 +78,3 @@ def acn_file(parser, device, inputSignal, targetSignal):
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
-
-
-def play(parser, device, f):
-
-    try:
-        data, fs = sf.read(f, dtype='float32')
-        sd.play(data, fs, device=device)
-        status = sd.wait()
-        if status:
-            parser.exit('Error during playback: ' + str(status))
-
-    except KeyboardInterrupt:
-        parser.exit('\nInterrupted by user')
-    except Exception as e:
-        parser.exit(type(e).__name__ + ': ' + str(e))
-
-
-def record(parser, device, f):
-    duration = 5  # seconds
-    frequency = 44100
-    myrecording = sd.rec(int(duration * frequency),
-                         samplerate=frequency, channels=2)
-    sd.wait()
-    sf.write(f, myrecording, frequency)
