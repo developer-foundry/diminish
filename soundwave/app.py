@@ -51,15 +51,14 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
         # first ensure that the targetData is the same size as the input data.
         #targetSignal = targetSignal[0:inputSignal.shape[0], :]
         targetSignal = targetSignal[0:truncateSize]
-        targetSignal = np.asmatrix(targetSignal)
-        targetSignal = targetSignal.T
+        targetSignalX = np.asmatrix(targetSignal)
+        targetSignalX = targetSignalX.T
 
-        inputSignal = np.hstack((inputSignal, targetSignal))
-        print(inputSignal.shape)
+        inputSignal = np.hstack((inputSignal, targetSignalX))
 
         # perform algorithm on left channel, then right right
         outputLeftSignal, errorLeftSignal = run_algorithm(
-            algorithm, inputSignal, targetSignal, 0, 1)
+            algorithm, inputSignal, targetSignal, 0, 2)
 
         #outputRightSignal, errorRightSignal = run_algorithm(
         #    algorithm, inputSignal, targetSignal, 1, 2)
