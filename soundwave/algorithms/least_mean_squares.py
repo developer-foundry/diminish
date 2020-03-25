@@ -4,7 +4,9 @@ import numpy as np
 
 def lms(inputSignal, targetSignal, mu, n):
     f = pa.filters.FilterLMS(n=n, mu=mu, w="random")
+    print("here")
     y, e, w = f.run(targetSignal, inputSignal)
+    print("here2")
     return y, e
 
 
