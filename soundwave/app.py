@@ -63,7 +63,8 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
 
         #player.play_signal(parser, outputSignal, inputFs, device)
 
-        plot.plot_simultaneous(inputSignal, targetSignal, outputSignal)
+        plot.plot_simultaneous(algorithm, inputSignal,
+                               targetSignal, outputSignal)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
