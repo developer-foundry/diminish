@@ -1,8 +1,5 @@
-from __future__ import print_function
 import numpy as np
 
-import sys
-import time
 from functools import partial
 
 import sounddevice as sd
