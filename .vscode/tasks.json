@@ -6,7 +6,7 @@
     {
       "label": "lms",
       "type": "shell",
-      "command": "python3 -m soundwave -a lms -f data/truck-and-construction-noises-mono.wav -t data/pink-noise-mono.wav",
+      "command": "python3 -m soundwave -a lms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
       "group": {
         "kind": "build",
         "isDefault": true

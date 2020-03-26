@@ -9,6 +9,7 @@
       "type": "python",
       "request": "launch",
       "module": "soundwave",
+      "justMyCode": false,
       "args": [
         "-a lms",
         "-f data/truck-and-construction-noises.wav",
@@ -20,6 +21,7 @@
       "type": "python",
       "request": "launch",
       "module": "soundwave",
+      "justMyCode": false,
       "args": [
         "-a nlms",
         "-f data/truck-and-construction-noises.wav",
@@ -31,6 +33,7 @@
       "type": "python",
       "request": "launch",
       "module": "soundwave",
+      "justMyCode": false,
       "args": [
         "-a nsslms",
         "-f data/truck-and-construction-noises.wav",

@@ -13,7 +13,6 @@ mu = 0.00001
 
 
 def lms(inputSignal, targetSignal, channel, numChannels):
-    #return lmsalgos.lms(inputSignal, targetSignal[:, channel], mu, numChannels)
     return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
 
 
@@ -45,32 +44,37 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
 
         # trucate the input signal for testing purposes as the file is big
         inputSignal = inputSignal[0:truncateSize]
-        inputSignal = np.asmatrix(inputSignal)
-        inputSignal = inputSignal.T
-
-        # first ensure that the targetData is the same size as the input data.
-        #targetSignal = targetSignal[0:inputSignal.shape[0], :]
         targetSignal = targetSignal[0:truncateSize]
-        targetSignalX = np.asmatrix(targetSignal)
-        targetSignalX = targetSignalX.T
 
-        inputSignal = np.hstack((inputSignal, targetSignalX))
+        # loop over each channel and perform the algorithm
+        numChannels = len(inputSignal[0])
+        outputSignal = None
+        errorSignal = None
+        for channel in range(numChannels):
+            inputChannel = np.asmatrix(inputSignal[:, channel])
+            inputChannel = inputChannel.T
 
-        # perform algorithm on left channel, then right right
-        outputLeftSignal, errorLeftSignal = run_algorithm(
-            algorithm, inputSignal, targetSignal, 0, 2)
+            targetChannel = np.asmatrix(targetSignal[:, channel])
+            targetChannel = targetChannel.T
 
-        #outputRightSignal, errorRightSignal = run_algorithm(
-        #    algorithm, inputSignal, targetSignal, 1, 2)
+            inputChannel = np.hstack((inputChannel, targetChannel))
+            inputChannel = np.asarray(inputChannel)
 
-        # combine left and right channels
-        #outputSignal = np.column_stack((outputLeftSignal, outputRightSignal))
-        #errorSignal = np.column_stack((errorLeftSignal, errorRightSignal))
+            # perform algorithm on left channel, then right right
+            outputChannel, errorChannel = run_algorithm(
+                algorithm, inputChannel, targetChannel, 0, 2)
 
-        #player.play_signal(parser, outputLeftSignal, inputFs, device)
+            if outputSignal is None:
+                outputSignal = outputChannel
+                errorSignal = errorChannel
+            else:
+                outputSignal = np.stack((outputSignal, outputChannel), axis=1)
+                errorSignal = np.stack((errorSignal, errorChannel), axis=1)
+
+        player.play_signal(parser, outputSignal, inputFs, device)
 
         plot.plot_vertical(algorithm, inputSignal,
-                           targetSignal, outputLeftSignal, errorLeftSignal)
+                           targetSignal, outputSignal, errorSignal)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
