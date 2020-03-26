@@ -71,7 +71,7 @@ def process(parser, device, inputFile, targetFile, truncateSize, algorithm):
                 outputSignal = np.stack((outputSignal, outputChannel), axis=1)
                 errorSignal = np.stack((errorSignal, errorChannel), axis=1)
 
-        player.play_signal(parser, outputSignal, inputFs, device)
+        # player.play_signal(parser, outputSignal, inputFs, device)
 
         plot.plot_vertical(algorithm, inputSignal,
                            targetSignal, outputSignal, errorSignal)

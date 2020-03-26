@@ -16,13 +16,13 @@ def plot_simultaneous(algorithm, inputSignal, targetSignal, outputSignal):
     algDirectory = get_dir(algorithm)
 
     plt.plot(inputSignal, '-b')
-    plt.savefig(algDirectory + 'input.png')
+    plt.savefig(algDirectory + '% s input.png' % algorithm)
 
     plt.plot(targetSignal, '-g')
-    plt.savefig(algDirectory + 'target.png')
+    plt.savefig(algDirectory + '% s target.png' % algorithm)
 
     plt.plot(outputSignal, '-r')
-    plt.savefig(algDirectory + 'output.png')
+    plt.savefig(algDirectory + '% s output.png' % algorithm)
 
 
 def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSignal):
@@ -39,4 +39,4 @@ def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSigna
     axs[2].title.set_text('% s Output Signal' % algorithm)
     axs[3].plot(errorSignal, '-r')
     axs[3].title.set_text('% s Error Signal' % algorithm)
-    plt.savefig(algDirectory + 'allsignals.png')
+    plt.savefig(algDirectory + '% s - allsignals.png' % algorithm)
