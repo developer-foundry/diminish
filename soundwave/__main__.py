@@ -29,5 +29,6 @@ if __name__ == '__main__':
 
     device = alsaaudio.PCM(device=args.device)
 
-    app.process(parser, args.device, args.inputSignal,
-                args.targetSignal, args.size, args.algorithm)
+    # app.process_prerecorded(parser, args.device, args.inputSignal, args.targetSignal, args.size, args.algorithm)
+
+    app.process_live(parser, args.device, args.targetSignal, args.algorithm)
