@@ -3,7 +3,6 @@ import numpy as np
 from functools import partial
 
 import sys
-import queue
 
 import sounddevice as sd
 import soundfile as sf
@@ -14,7 +13,6 @@ import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
 mu = 0.00001
-q = queue.Queue()
 
 
 def lms(inputSignal, targetSignal, channel, numChannels):
@@ -87,23 +85,17 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
         parser.exit(type(e).__name__ + ': ' + str(e))
 
 
-def audio_callback(indata, frames, time, status):
-    """This is called (from a separate thread) for each audio block."""
+def callback(indata, outdata, frames, time, status):
     if status:
-        print(status, file=sys.stderr)
-    # Fancy indexing with mapping creates a (necessary!) copy:
-    q.put(indata)
+        print(status)
+    outdata[:] = indata
 
 
 def process_live(parser, device, targetFile, algorithm):
     try:
-        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
-
-        # begin receive the input signal from the microphone
-        inputStream = mic.record_to_stream(
-            parser, device, 2, 44100, audio_callback)
-
-        with inputStream:
+        with sd.Stream(device=(device, device),
+                       samplerate=44100,
+                       channels=2, callback=callback):
             print('#' * 80)
             print('press Return to quit')
             print('#' * 80)
