@@ -88,7 +88,9 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
 # we need to do the actual processing here for the algorithm.
 # can we use a partial function to inject the information
 # about the algorithm chosen and the targetFile
-def callback(indata, outdata, frames, time, status):
+def live_algorithm(algorithm, targetFile, indata, outdata, frames, time, status):
+    print(algorithm)
+    print(targetFile)
     if status:
         print(status)
     outdata[:] = indata
@@ -96,9 +98,11 @@ def callback(indata, outdata, frames, time, status):
 
 def process_live(parser, device, targetFile, algorithm):
     try:
+        algo_partial = partial(
+            live_algorithm, algorithm, targetFile)
         with sd.Stream(device=(device, device),
                        samplerate=44100,
-                       channels=2, callback=callback):
+                       channels=2, callback=algo_partial):
             print('#' * 80)
             print('press Return to quit')
             print('#' * 80)
