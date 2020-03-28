@@ -85,6 +85,9 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
         parser.exit(type(e).__name__ + ': ' + str(e))
 
 
+# we need to do the actual processing here for the algorithm.
+# can we use a partial function to inject the information
+# about the algorithm chosen and the targetFile
 def callback(indata, outdata, frames, time, status):
     if status:
         print(status)
