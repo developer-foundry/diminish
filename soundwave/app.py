@@ -16,15 +16,15 @@ mu = 0.00001
 
 
 def lms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
+    return lmsalgos.lms(inputSignal, targetSignal[:, 0], mu, numChannels)
 
 
 def nlms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.nlms(inputSignal, targetSignal[:, channel], mu, numChannels)
+    return lmsalgos.nlms(inputSignal, targetSignal[:, 0], mu, numChannels)
 
 
 def nsslms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.nsslms(inputSignal, targetSignal[:, channel], mu, numChannels)
+    return lmsalgos.nsslms(inputSignal, targetSignal[:, 0], mu, numChannels)
 
 
 def run_algorithm(algorithm, inputSignal, targetSignal, channel, numChannels):
@@ -65,7 +65,7 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
 
             # perform algorithm on left channel, then right right
             outputChannel, errorChannel = run_algorithm(
-                algorithm, inputChannel, targetChannel, 0, 2)
+                algorithm, inputChannel, targetChannel, channel, numChannels)
 
             if outputSignal is None:
                 outputSignal = outputChannel
@@ -88,21 +88,45 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
 # we need to do the actual processing here for the algorithm.
 # can we use a partial function to inject the information
 # about the algorithm chosen and the targetFile
-def live_algorithm(algorithm, targetFile, indata, outdata, frames, time, status):
-    print(algorithm)
-    print(targetFile)
+def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames, time, status):
     if status:
         print(status)
-    outdata[:] = indata
+
+    outputSignal = None
+    errorSignal = None
+    for channel in range(numChannels):
+        inputChannel = np.asmatrix(indata[:, channel])
+        inputChannel = inputChannel.T
+
+        targetChannel = np.asmatrix(targetSignal[:, channel])
+        targetChannel = targetChannel.T
+
+        inputChannel = np.hstack((inputChannel, targetChannel))
+        inputChannel = np.asarray(inputChannel)
+
+        # perform algorithm on left channel, then right right
+        outputChannel, errorChannel = run_algorithm(
+            algorithm, inputChannel, targetChannel, 0, numChannels)
+
+        if outputSignal is None:
+            outputSignal = outputChannel
+            errorSignal = errorChannel
+        else:
+            outputSignal = np.stack((outputSignal, outputChannel), axis=1)
+            errorSignal = np.stack((errorSignal, errorChannel), axis=1)
+
+    outdata[:] = outputSignal
 
 
 def process_live(parser, device, targetFile, algorithm):
     try:
+        numChannels = 2
+        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
         algo_partial = partial(
-            live_algorithm, algorithm, targetFile)
+            live_algorithm, algorithm, targetSignal, numChannels)
         with sd.Stream(device=(device, device),
-                       samplerate=44100,
-                       channels=2, callback=algo_partial):
+                       samplerate=targetFs,
+                       channels=numChannels, callback=algo_partial):
             print('#' * 80)
             print('press Return to quit')
             print('#' * 80)
