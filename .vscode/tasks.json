@@ -4,9 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "lms",
+      "label": "lms prerecorded",
       "type": "shell",
-      "command": "python3 -m soundwave -a lms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
+      "command": "python3 -m soundwave -a lms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -14,9 +14,9 @@
       "problemMatcher": []
     },
     {
-      "label": "nlms",
+      "label": "nlms prerecorded",
       "type": "shell",
-      "command": "python3 -m soundwave -a nlms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
+      "command": "python3 -m soundwave -a nlms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -24,9 +24,9 @@
       "problemMatcher": []
     },
     {
-      "label": "nsslms",
+      "label": "nsslms prerecorded",
       "type": "shell",
-      "command": "python3 -m soundwave -a nsslms -f data/truck-and-construction-noises.wav -t data/pink-noise.wav",
+      "command": "python3 -m soundwave -a nsslms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
       "group": {
         "kind": "build",
         "isDefault": true

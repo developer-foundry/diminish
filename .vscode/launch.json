@@ -5,39 +5,42 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug LMS",
+      "name": "Debug LMS Prerecorded",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "justMyCode": false,
       "args": [
         "-a lms",
-        "-f data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav"
+        "-i data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav",
+        "-m prerecorded"
       ]
     },
     {
-      "name": "Debug NLMS",
+      "name": "Debug NLMS Prerecorded",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "justMyCode": false,
       "args": [
         "-a nlms",
-        "-f data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav"
+        "-i data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav",
+        "-m prerecorded"
       ]
     },
     {
-      "name": "Debug NSSLMS",
+      "name": "Debug NSSLMS Prerecorded",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
       "justMyCode": false,
       "args": [
         "-a nsslms",
-        "-f data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav"
+        "-i data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav",
+        "-m prerecorded"
       ]
     }
   ]
