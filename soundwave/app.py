@@ -15,23 +15,23 @@ import soundwave.plotting.plot as plot
 mu = 0.00001
 
 
-def lms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.lms(inputSignal, targetSignal[:, 0], mu, numChannels)
+def lms(inputSignal, targetSignal, numChannels):
+    return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
 
 
-def nlms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.nlms(inputSignal, targetSignal[:, 0], mu, numChannels)
+def nlms(inputSignal, targetSignal, numChannels):
+    return lmsalgos.nlms(inputSignal, targetSignal, mu, numChannels)
 
 
-def nsslms(inputSignal, targetSignal, channel, numChannels):
-    return lmsalgos.nsslms(inputSignal, targetSignal[:, 0], mu, numChannels)
+def nsslms(inputSignal, targetSignal, numChannels):
+    return lmsalgos.nsslms(inputSignal, targetSignal, mu, numChannels)
 
 
-def run_algorithm(algorithm, inputSignal, targetSignal, channel, numChannels):
+def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
-        'lms': partial(lms, inputSignal, targetSignal, channel, numChannels),
-        'nlms': partial(nlms, inputSignal, targetSignal, channel, numChannels),
-        'nsslms': partial(nsslms, inputSignal, targetSignal, channel, numChannels),
+        'lms': partial(lms, inputSignal, targetSignal, numChannels),
+        'nlms': partial(nlms, inputSignal, targetSignal, numChannels),
+        'nsslms': partial(nsslms, inputSignal, targetSignal, numChannels),
     }
 
     # Get the function from switcher dictionary
@@ -54,18 +54,15 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
         outputSignal = None
         errorSignal = None
         for channel in range(numChannels):
-            inputChannel = np.asmatrix(inputSignal[:, channel])
-            inputChannel = inputChannel.T
-
-            targetChannel = np.asmatrix(targetSignal[:, channel])
-            targetChannel = targetChannel.T
-
-            inputChannel = np.hstack((inputChannel, targetChannel))
-            inputChannel = np.asarray(inputChannel)
+            # convert the signals to matrix structure so that
+            # we can have a column based approach
+            targetChannel = targetSignal[:, channel]
+            inputChannel = np.stack((inputSignal[:, channel],
+                                     targetChannel), axis=1)
 
             # perform algorithm on left channel, then right right
             outputChannel, errorChannel = run_algorithm(
-                algorithm, inputChannel, targetChannel, channel, numChannels)
+                algorithm, inputChannel, targetChannel, numChannels)
 
             if outputSignal is None:
                 outputSignal = outputChannel
