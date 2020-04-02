@@ -40,6 +40,30 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     return func()
 
 
+def process_signal(inputSignal, targetSignal, algorithm):
+    # loop over each channel and perform the algorithm
+    numChannels = len(inputSignal[0])
+    outputSignal = None
+    errorSignal = None
+    for channel in range(numChannels):
+        targetChannel = targetSignal[:, channel]
+        inputChannel = np.stack((inputSignal[:, channel],
+                                 targetChannel), axis=1)
+
+        # perform algorithm on left channel, then right right
+        outputChannel, errorChannel = run_algorithm(
+            algorithm, inputChannel, targetChannel, numChannels)
+
+        if outputSignal is None:
+            outputSignal = outputChannel
+            errorSignal = errorChannel
+        else:
+            outputSignal = np.stack((outputSignal, outputChannel), axis=1)
+            errorSignal = np.stack((errorSignal, errorChannel), axis=1)
+
+    return outputSignal, errorSignal
+
+
 def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, algorithm):
     try:
         inputSignal, inputFs = sf.read(inputFile, dtype='float32')
@@ -49,27 +73,8 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
         inputSignal = inputSignal[0:truncateSize]
         targetSignal = targetSignal[0:truncateSize]
 
-        # loop over each channel and perform the algorithm
-        numChannels = len(inputSignal[0])
-        outputSignal = None
-        errorSignal = None
-        for channel in range(numChannels):
-            # convert the signals to matrix structure so that
-            # we can have a column based approach
-            targetChannel = targetSignal[:, channel]
-            inputChannel = np.stack((inputSignal[:, channel],
-                                     targetChannel), axis=1)
-
-            # perform algorithm on left channel, then right right
-            outputChannel, errorChannel = run_algorithm(
-                algorithm, inputChannel, targetChannel, numChannels)
-
-            if outputSignal is None:
-                outputSignal = outputChannel
-                errorSignal = errorChannel
-            else:
-                outputSignal = np.stack((outputSignal, outputChannel), axis=1)
-                errorSignal = np.stack((errorSignal, errorChannel), axis=1)
+        outputSignal, errorSignal = process_signal(
+            inputSignal, targetSignal, algorithm)
 
         # player.play_signal(parser, outputSignal, inputFs, device)
 
@@ -89,28 +94,8 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
     if status:
         print(status)
 
-    outputSignal = None
-    errorSignal = None
-    for channel in range(numChannels):
-        inputChannel = np.asmatrix(indata[:, channel])
-        inputChannel = inputChannel.T
-
-        targetChannel = np.asmatrix(targetSignal[:, channel])
-        targetChannel = targetChannel.T
-
-        inputChannel = np.hstack((inputChannel, targetChannel))
-        inputChannel = np.asarray(inputChannel)
-
-        # perform algorithm on left channel, then right right
-        outputChannel, errorChannel = run_algorithm(
-            algorithm, inputChannel, targetChannel, 0, numChannels)
-
-        if outputSignal is None:
-            outputSignal = outputChannel
-            errorSignal = errorChannel
-        else:
-            outputSignal = np.stack((outputSignal, outputChannel), axis=1)
-            errorSignal = np.stack((errorSignal, errorChannel), axis=1)
+    outputSignal, errorSignal = process_signal(
+        indata, targetSignal, algorithm)
 
     outdata[:] = outputSignal
 
