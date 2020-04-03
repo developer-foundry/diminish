@@ -43,9 +43,6 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
-    print(inputSignal.shape)
-    print(targetSignal.shape)
-
     numChannels = len(inputSignal[0])
     outputSignal = None
     errorSignal = None
