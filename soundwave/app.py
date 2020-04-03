@@ -13,6 +13,7 @@ import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
 mu = 0.00001
+targetLocation = 0
 
 
 def lms(inputSignal, targetSignal, numChannels):
@@ -42,6 +43,9 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
+    print(inputSignal.shape)
+    print(targetSignal.shape)
+
     numChannels = len(inputSignal[0])
     outputSignal = None
     errorSignal = None
@@ -90,13 +94,33 @@ def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, alg
 # we need to do the actual processing here for the algorithm.
 # can we use a partial function to inject the information
 # about the algorithm chosen and the targetFile
+
+
 def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames, time, status):
+    global targetLocation
+
     if status:
         print(status)
 
-    outputSignal, errorSignal = process_signal(
-        indata, targetSignal, algorithm)
+    # keep a running counter of where we are in the target signal
+    # making a global variable for now
+    inputSignal = np.array(indata)
+    targetSignalMaxLength = len(targetSignal)
+    truncateSize = len(inputSignal)
+    targetEnd = (targetLocation + truncateSize)
 
+    # start the target signal file over if we've reached the end
+    if targetSignalMaxLength < targetEnd:
+        targetLocation = 0
+
+    # splice the target signal to line it up with the current input signal
+    targetSignal = targetSignal[targetLocation:targetEnd]
+
+    # process the signal and create pink noise
+    outputSignal, errorSignal = process_signal(
+        inputSignal, targetSignal, algorithm)
+
+    targetLocation += truncateSize
     outdata[:] = outputSignal
 
 

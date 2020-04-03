@@ -18,6 +18,18 @@
       ]
     },
     {
+      "name": "Debug LMS Live",
+      "type": "python",
+      "request": "launch",
+      "module": "soundwave",
+      "justMyCode": false,
+      "args": [
+        "-a lms",
+        "-t data/pink-noise.wav",
+        "-m live"
+      ]
+    },
+    {
       "name": "Debug NLMS Prerecorded",
       "type": "python",
       "request": "launch",
