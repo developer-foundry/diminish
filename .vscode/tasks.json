@@ -34,9 +34,29 @@
       "problemMatcher": []
     },
     {
+      "label": "nlms live",
+      "type": "shell",
+      "command": "python3 -m soundwave -a nlms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m live",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "nsslms prerecorded",
       "type": "shell",
       "command": "python3 -m soundwave -a nsslms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "nsslms live",
+      "type": "shell",
+      "command": "python3 -m soundwave -a nsslms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m live",
       "group": {
         "kind": "build",
         "isDefault": true
