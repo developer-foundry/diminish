@@ -1,7 +1,6 @@
 import getopt
 import wave
 import sys
-import alsaaudio
 import argparse
 
 from soundwave import app
@@ -34,7 +33,7 @@ if __name__ == '__main__':
         args.mode = clean(args.mode)
         args.inputFile = clean(args.inputFile)
         args.targetFile = clean(args.targetFile)
-        device = alsaaudio.PCM(device=args.device)
+        args.device = clean(args.device)
 
         if args.mode == 'prerecorded':
             app.process_prerecorded(args.device, args.inputFile,

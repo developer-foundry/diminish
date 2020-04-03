@@ -42,7 +42,7 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     return func()
 
 
-# @profile(immediate=True)
+@profile(immediate=True)
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
     numChannels = len(inputSignal[0])
@@ -114,7 +114,7 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
         inputSignal, targetSignal, algorithm)
 
     targetLocation += truncateSize
-    outdata[:] = outputSignal
+    outdata[:] = indata
     raise ValueError('A very specific bad thing happened.')
 
 
@@ -126,7 +126,4 @@ def process_live(device, targetFile, algorithm):
     with sd.Stream(device=(device, device),
                    samplerate=targetFs,
                    channels=numChannels, callback=algo_partial):
-        print('#' * 80)
-        print('press Return to quit')
-        print('#' * 80)
         input()
