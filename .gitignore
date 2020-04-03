@@ -136,3 +136,5 @@ dmypy.json
 
 data/recording.wav
 plots/
+
+profiler-results.txt

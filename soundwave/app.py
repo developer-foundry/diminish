@@ -65,27 +65,21 @@ def process_signal(inputSignal, targetSignal, algorithm):
     return outputSignal, errorSignal
 
 
-def process_prerecorded(parser, device, inputFile, targetFile, truncateSize, algorithm):
-    try:
-        inputSignal, inputFs = sf.read(inputFile, dtype='float32')
-        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
+def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
+    inputSignal, inputFs = sf.read(inputFile, dtype='float32')
+    targetSignal, targetFs = sf.read(targetFile, dtype='float32')
 
-        # trucate the input signal for testing purposes as the file is big
-        inputSignal = inputSignal[0:truncateSize]
-        targetSignal = targetSignal[0:truncateSize]
+    # trucate the input signal for testing purposes as the file is big
+    inputSignal = inputSignal[0:truncateSize]
+    targetSignal = targetSignal[0:truncateSize]
 
-        outputSignal, errorSignal = process_signal(
-            inputSignal, targetSignal, algorithm)
+    outputSignal, errorSignal = process_signal(
+        inputSignal, targetSignal, algorithm)
 
-        # player.play_signal(parser, outputSignal, inputFs, device)
+    # player.play_signal(parser, outputSignal, inputFs, device)
 
-        plot.plot_vertical(algorithm, inputSignal,
-                           targetSignal, outputSignal, errorSignal)
-
-    except KeyboardInterrupt:
-        parser.exit('\nInterrupted by user')
-    except Exception as e:
-        parser.exit(type(e).__name__ + ': ' + str(e))
+    plot.plot_vertical(algorithm, inputSignal,
+                       targetSignal, outputSignal, errorSignal)
 
 
 # we need to do the actual processing here for the algorithm.
@@ -121,21 +115,15 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
     outdata[:] = outputSignal
 
 
-def process_live(parser, device, targetFile, algorithm):
-    try:
-        numChannels = 2
-        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
-        algo_partial = partial(
-            live_algorithm, algorithm, targetSignal, numChannels)
-        with sd.Stream(device=(device, device),
-                       samplerate=targetFs,
-                       channels=numChannels, callback=algo_partial):
-            print('#' * 80)
-            print('press Return to quit')
-            print('#' * 80)
-            input()
-
-    except KeyboardInterrupt:
-        parser.exit('\nInterrupted by user')
-    except Exception as e:
-        parser.exit(type(e).__name__ + ': ' + str(e))
+def process_live(device, targetFile, algorithm):
+    numChannels = 2
+    targetSignal, targetFs = sf.read(targetFile, dtype='float32')
+    algo_partial = partial(
+        live_algorithm, algorithm, targetSignal, numChannels)
+    with sd.Stream(device=(device, device),
+                   samplerate=targetFs,
+                   channels=numChannels, callback=algo_partial):
+        print('#' * 80)
+        print('press Return to quit')
+        print('#' * 80)
+        input()
