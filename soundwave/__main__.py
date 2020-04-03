@@ -55,7 +55,7 @@ if __name__ == '__main__':
         s = io.StringIO()
         sortby = SortKey.CUMULATIVE
         ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.dump_stats("profiler-results.txt")
+        ps.print_stats()
         print(s.getvalue())
         parser.exit('\nInterrupted by user')
     except Exception as e:
