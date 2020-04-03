@@ -3,10 +3,6 @@ import wave
 import sys
 import alsaaudio
 import argparse
-import cProfile
-import pstats
-import io
-from pstats import SortKey
 
 from soundwave import app
 
@@ -18,9 +14,6 @@ def clean(inputString):
 
 
 if __name__ == '__main__':
-    pr = cProfile.Profile()
-    pr.enable()
-
     try:
         parser = argparse.ArgumentParser(description='POC for ACN testing')
         parser.add_argument('-i', dest='inputFile', action='store', type=str,
@@ -51,12 +44,6 @@ if __name__ == '__main__':
                              args.targetFile, args.algorithm)
 
     except KeyboardInterrupt:
-        pr.disable()
-        s = io.StringIO()
-        sortby = SortKey.CUMULATIVE
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        print(s.getvalue())
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))

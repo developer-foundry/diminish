@@ -1,6 +1,7 @@
 import numpy as np
 
 from functools import partial
+from profilehooks import profile
 
 import sys
 
@@ -41,6 +42,7 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     return func()
 
 
+# @profile(immediate=True)
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
     numChannels = len(inputSignal[0])
@@ -113,6 +115,7 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
 
     targetLocation += truncateSize
     outdata[:] = outputSignal
+    raise ValueError('A very specific bad thing happened.')
 
 
 def process_live(device, targetFile, algorithm):
