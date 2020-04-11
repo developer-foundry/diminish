@@ -3,8 +3,8 @@ from invoke import task
 @task
 def build(c):
   print("Building")
-  c.run("gcc -c -Wall -Werror -fpic cmult.c")
-  c.run("gcc -shared -o libcmult.so cmult.o")
+  c.run("gcc -c -Wall -Werror -fpic cnumpy.c")
+  c.run("gcc -shared -o libcnumpy.so cnumpy.o")
   print("Completed Build")
 
 @task

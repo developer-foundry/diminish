@@ -86,7 +86,7 @@
     {
       "label": "run c shared binding test",
       "type": "shell",
-      "command": "python3 ctesting.py",
+      "command": "python3 ctesting.py -i data/truck-and-construction-noises.wav",
       "group": {
         "kind": "build",
         "isDefault": true
