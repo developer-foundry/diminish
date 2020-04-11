@@ -64,6 +64,26 @@
       "problemMatcher": []
     },
     {
+      "label": "rls prerecorded",
+      "type": "shell",
+      "command": "python3 -m soundwave -a rls -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "rls live",
+      "type": "shell",
+      "command": "python3 -m soundwave -a rls -t data/pink-noise.wav -m live",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "test",
       "type": "shell",
       "command": "python3 -m pytest tests",

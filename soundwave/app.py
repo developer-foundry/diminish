@@ -28,12 +28,15 @@ def nlms(inputSignal, targetSignal, numChannels):
 def nsslms(inputSignal, targetSignal, numChannels):
     return lmsalgos.nsslms(inputSignal, targetSignal, mu, numChannels)
 
+def rls(inputSignal, targetSignal, numChannels):
+    return lmsalgos.rls(inputSignal, targetSignal, mu, numChannels)
 
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
         'lms': partial(lms, inputSignal, targetSignal, numChannels),
         'nlms': partial(nlms, inputSignal, targetSignal, numChannels),
         'nsslms': partial(nsslms, inputSignal, targetSignal, numChannels),
+        'rls': partial(rls, inputSignal, targetSignal, numChannels)
     }
 
     # Get the function from switcher dictionary
@@ -41,8 +44,7 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     # Execute the function
     return func()
 
-
-@profile(immediate=True)
+#@profile(immediate=True)
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
     numChannels = len(inputSignal[0])
@@ -115,7 +117,7 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
 
     targetLocation += truncateSize
     outdata[:] = indata
-    raise ValueError('A very specific bad thing happened.')
+    #raise ValueError('A very specific bad thing happened.')
 
 
 def process_live(device, targetFile, algorithm):
@@ -124,6 +126,5 @@ def process_live(device, targetFile, algorithm):
     algo_partial = partial(
         live_algorithm, algorithm, targetSignal, numChannels)
     with sd.Stream(device=(device, device),
-                   samplerate=targetFs,
                    channels=numChannels, callback=algo_partial):
         input()

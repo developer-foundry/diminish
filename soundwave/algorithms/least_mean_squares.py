@@ -18,3 +18,8 @@ def nsslms(inputSignal, targetSignal, mu, n):
     f = pa.filters.FilterNSSLMS(n=n, mu=mu, w="random")
     y, e, w = f.run(targetSignal, inputSignal)
     return y, e
+
+def rls(inputSignal, targetSignal, mu, n):
+    f = pa.filters.FilterRLS(n=n, mu=mu, w="random")
+    y, e, w = f.run(targetSignal, inputSignal)
+    return y, e
