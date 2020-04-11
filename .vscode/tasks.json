@@ -84,6 +84,36 @@
       "problemMatcher": []
     },
     {
+      "label": "run c shared binding test",
+      "type": "shell",
+      "command": "python3 ctesting.py",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build c",
+      "type": "shell",
+      "command": "invoke build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "clean c",
+      "type": "shell",
+      "command": "invoke clean",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "test",
       "type": "shell",
       "command": "python3 -m pytest tests",
