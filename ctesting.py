@@ -20,17 +20,16 @@ if __name__ == "__main__":
     # Load the shared library into ctypes
     libname = pathlib.Path().absolute() / "libcnumpy.so"
     c_lib = ctypes.CDLL(libname)
-    print("Loaded shared library")
 
+    sampleSize = 10
     inputSignal, sampleRate = sf.read(args.inputFile, dtype='float32')
-    inputSignal = inputSignal[0:10]
-    print(inputSignal.shape)
+    inputSignal = inputSignal[0:sampleSize]
     c_float_p = ctypes.POINTER(ctypes.c_float)
     data = inputSignal.astype(np.float32)
     data_p = data.ctypes.data_as(c_float_p)
-    c_lib.cnumpy(data_p, 10)
-    for i in range(10):
-      print("Python " + str(i) + " - " + str(inputSignal[i]))
+    c_lib.cnumpy(data_p, sampleSize)
+    for i in range(sampleSize):
+      print("Python Sample %d - [%1.6f, %1.6f]" % (i, inputSignal[i][0], inputSignal[i][1]))
 
   except Exception as e:
     parser.exit(type(e).__name__ + ': ' + str(e))
