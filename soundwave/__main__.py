@@ -21,7 +21,7 @@ if __name__ == '__main__':
                             help='target file to be used for the ACN algorithm')
         parser.add_argument('-d', dest='device', action='store', default='default', type=str,
                             help='override the default sound device')
-        parser.add_argument('-a', dest='algorithm', choices=['lms', 'nlms', 'nsslms', ' lms', ' nlms', ' nsslms', 'rls', ' rls'], action='store', default='lms', required=True, type=str,
+        parser.add_argument('-a', dest='algorithm', choices=['lms', 'nlms', 'nsslms', ' lms', ' nlms', ' nsslms', 'rls', ' rls', 'clms', ' clms'], action='store', default='lms', required=True, type=str,
                             help='the algorithm to use to process signal. The default is lms.')
         parser.add_argument('-s', dest='size', action='store', default=300000, type=int,
                             help='The size of the file you want to truncate to.')

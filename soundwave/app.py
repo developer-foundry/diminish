@@ -20,6 +20,8 @@ targetLocation = 0
 def lms(inputSignal, targetSignal, numChannels):
     return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
 
+def clms(inputSignal, targetSignal, numChannels):
+    return lmsalgos.clms(inputSignal, targetSignal, mu, numChannels)
 
 def nlms(inputSignal, targetSignal, numChannels):
     return lmsalgos.nlms(inputSignal, targetSignal, mu, numChannels)
@@ -36,7 +38,8 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
         'lms': partial(lms, inputSignal, targetSignal, numChannels),
         'nlms': partial(nlms, inputSignal, targetSignal, numChannels),
         'nsslms': partial(nsslms, inputSignal, targetSignal, numChannels),
-        'rls': partial(rls, inputSignal, targetSignal, numChannels)
+        'rls': partial(rls, inputSignal, targetSignal, numChannels),
+        'clms': partial(clms, inputSignal, targetSignal, numChannels)
     }
 
     # Get the function from switcher dictionary

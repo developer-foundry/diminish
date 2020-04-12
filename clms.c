@@ -77,9 +77,10 @@ void print_signal(struct Signal *signal) {
   }
 }
 
-void cnumpy(float *arr, int length) {
+struct Signal * lms(float *arr, int length) {
   struct Signal *signal = newSignal(length);
   unmarshall(signal, arr, length);
   print_signal(signal);
-  delSignal(signal);
+  //delSignal(signal);
+  return signal;
 }

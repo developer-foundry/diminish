@@ -84,9 +84,9 @@
       "problemMatcher": []
     },
     {
-      "label": "run c shared binding test",
+      "label": "fast lms",
       "type": "shell",
-      "command": "python3 ctesting.py -i data/truck-and-construction-noises.wav",
+      "command": "python3 -m soundwave -a clms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
       "group": {
         "kind": "build",
         "isDefault": true
