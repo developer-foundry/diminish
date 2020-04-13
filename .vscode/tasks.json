@@ -94,6 +94,16 @@
       "problemMatcher": []
     },
     {
+      "label": "fast lms live",
+      "type": "shell",
+      "command": "python3 -m soundwave -a clms -t data/pink-noise.wav -m live",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "build c",
       "type": "shell",
       "command": "invoke build",
