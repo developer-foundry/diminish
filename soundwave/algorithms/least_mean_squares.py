@@ -13,8 +13,7 @@ class Signal(ctypes.Structure):
         ]
 
 def clms(inputSignal, targetSignal, mu, n):
-    #length = inputSignal.shape[0]
-    length = 20
+    length = inputSignal.shape[0]
     libname = pathlib.Path().absolute() / "libclms.so"
     c_float_p = ctypes.POINTER(ctypes.c_float)
     c_lib = ctypes.CDLL(libname)
@@ -29,13 +28,9 @@ def clms(inputSignal, targetSignal, mu, n):
     targetSignal_p = targetSignalData.ctypes.data_as(c_float_p)
 
     y = (ctypes.c_float * length)()
-    e = (ctypes.c_float * (length*2))()
+    e = (ctypes.c_float * (length))()
 
     c_lib.lms(targetSignal_p, inputSignal_p, mu, n, y, e, length)
-
-    pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(list(y))
-    pp.pprint(list(e))
 
     return y, e
 

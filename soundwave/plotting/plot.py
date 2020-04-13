@@ -28,7 +28,7 @@ def plot_simultaneous(algorithm, inputSignal, targetSignal, outputSignal):
 def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSignal):
     algDirectory = get_dir(algorithm)
 
-    fig, axs = plt.subplots(5)
+    fig, axs = plt.subplots(4)
     fig.set_size_inches(18.5, 10.5)
     fig.tight_layout(pad=3.0)
     axs[0].plot(inputSignal, '-b')
@@ -39,6 +39,4 @@ def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSigna
     axs[2].title.set_text('% s Output Signal' % algorithm)
     axs[3].plot(errorSignal, '-r')
     axs[3].title.set_text('% s Error Signal' % algorithm)
-    axs[4].plot(errorSignal, '-r')
-    axs[4].title.set_text('% s View Convergence' % algorithm)
     plt.savefig(algDirectory + '% s - allsignals.png' % algorithm)
