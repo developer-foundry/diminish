@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//assumes a stereo signal
+//TODO need to change this to support variable number of columns
+//right now it is hardcoded to support two - the combination of
+//input and target passed in from python
 struct Signal {
   float *channel_one;
   float *channel_two;
@@ -42,7 +44,19 @@ void delSignal (struct Signal *signal) {
   }
 }
 
-void unmarshall(struct Signal *signal, float *arr, int length) {
+void unmarshallTarget(struct Signal *signal, float *arr, int length) {
+  for(int i = 0; i < length; i++) {
+    *(signal->channel_one) = *arr;
+    if (i == 0) {
+      signal->channel_one_start = signal->channel_one;
+    }
+    signal->channel_one++;
+    arr++;
+  }
+  signal->channel_one = signal->channel_one_start;
+}
+
+void unmarshallInput(struct Signal *signal, float *arr, int length) {
   for(int i = 0; i < length*2; i++) {
     if (i % 2 == 0) {
       *(signal->channel_one) = *arr;
@@ -85,13 +99,13 @@ void copy(float *signal, float *target, int length) {
 
 void lms(float *targetSignalIn, float *inputSignalIn, float mu, int n, float *y, float *e, int length) {
   struct Signal *targetSignal = newSignal(length);
-  unmarshall(targetSignal, targetSignalIn, length);
+  unmarshallTarget(targetSignal, targetSignalIn, length);
 
   struct Signal *inputSignal = newSignal(length);
-  unmarshall(inputSignal, inputSignalIn, length);
+  unmarshallInput(inputSignal, inputSignalIn, length);
 
   copy(y, targetSignalIn, length);
-  copy(e, inputSignalIn, length);
+  copy(e, inputSignalIn, length*2);
 
   delSignal(targetSignal);
   delSignal(inputSignal);

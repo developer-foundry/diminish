@@ -2,6 +2,7 @@ import padasip as pa
 import numpy as np
 import ctypes
 import pathlib
+import pprint
 
 class Signal(ctypes.Structure):
     _fields_=[("channel_one",ctypes.POINTER(ctypes.c_float)),
@@ -28,12 +29,13 @@ def clms(inputSignal, targetSignal, mu, n):
     targetSignal_p = targetSignalData.ctypes.data_as(c_float_p)
 
     y = (ctypes.c_float * length)()
-    e = (ctypes.c_float * length)()
+    e = (ctypes.c_float * (length*2))()
 
     c_lib.lms(targetSignal_p, inputSignal_p, mu, n, y, e, length)
 
-    print(list(y))
-    print(list(e))
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(list(y))
+    pp.pprint(list(e))
     return y, e
 
 def lms(inputSignal, targetSignal, mu, n):
