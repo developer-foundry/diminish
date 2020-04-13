@@ -35,7 +35,7 @@ def clms(inputSignal, targetSignal, mu, n):
     return y, e
 
 def lms(inputSignal, targetSignal, mu, n):
-    f = pa.filters.FilterLMS(n=n, mu=mu, w="random")
+    f = pa.filters.FilterLMS(n=n, mu=mu, w="zeros")
     y, e, w = f.run(targetSignal, inputSignal)
     return y, e
 
