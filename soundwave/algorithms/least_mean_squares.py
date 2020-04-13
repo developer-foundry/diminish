@@ -36,6 +36,7 @@ def clms(inputSignal, targetSignal, mu, n):
     pp = pprint.PrettyPrinter(indent=2)
     pp.pprint(list(y))
     pp.pprint(list(e))
+
     return y, e
 
 def lms(inputSignal, targetSignal, mu, n):

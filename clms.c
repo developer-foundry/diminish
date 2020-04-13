@@ -12,6 +12,11 @@ struct Signal {
   int length;
 };
 
+int length = 0;
+int n = 0;
+float mu = 0.0;
+float weights[2]; //TODO refactor to support variable
+
 struct Signal *newSignal (size_t sz) {
   struct Signal *retSignal = malloc (sizeof(struct Signal));
   if (retSignal == NULL) {
@@ -91,21 +96,60 @@ void print_signal(struct Signal *signal) {
   }
 }
 
-void copy(float *signal, float *target, int length) {
+void zeroes(float *signal, int length) {
   for(int i = 0; i < length; i++) {
-    signal[i] = target[i];
+    signal[i] = 0.0;
   }
 }
 
-void lms(float *targetSignalIn, float *inputSignalIn, float mu, int n, float *y, float *e, int length) {
+float dot(float *weights, float *input) {
+  return weights[0] * input[0] + weights[1] * input[1];
+}
+
+float * sub(struct Signal *input, int index) {
+  float * diff = malloc (sizeof(float) * 2);
+  diff[0] = input->channel_one[index];
+  diff[1] = input->channel_two[index];
+  return diff;
+}
+
+float subone(struct Signal *input, int index) {
+  return input->channel_one[index];
+}
+
+float * multi(float mulptilicand, float * input) {
+  float * result = malloc (sizeof(float) * 2);
+  result[0] = input[0] * mulptilicand;
+  result[1] = input[1] * mulptilicand;
+  return result;
+}
+
+void add(float * weights, float * dw) {
+  weights[0] = weights[0] + dw[0];
+  weights[1] = weights[1] + dw[1];
+}
+
+void lms(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam, float *y, float *e, int lengthParam) {
+  length = lengthParam;
+  mu = muParam;
+  n = nParam;
+
   struct Signal *targetSignal = newSignal(length);
-  unmarshallTarget(targetSignal, targetSignalIn, length);
+  unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
 
   struct Signal *inputSignal = newSignal(length);
   unmarshallInput(inputSignal, inputSignalIn, length);
 
-  copy(y, targetSignalIn, length);
-  copy(e, inputSignalIn, length*2);
+  zeroes(y, length);
+  zeroes(e, length);
+  zeroes(weights, 2); //TODO might need to change to random instead
+
+  for (int k = 0; k < length; k++) {
+    y[k] = dot(weights, sub(inputSignal, k));
+    e[k] = subone(targetSignal,k) - y[k];
+    float * dw = multi(mu * e[k], sub(inputSignal,k));
+    add(weights,dw);
+  }
 
   delSignal(targetSignal);
   delSignal(inputSignal);
