@@ -77,10 +77,22 @@ void print_signal(struct Signal *signal) {
   }
 }
 
-struct Signal * lms(float *arr, int length) {
-  struct Signal *signal = newSignal(length);
-  unmarshall(signal, arr, length);
-  print_signal(signal);
-  //delSignal(signal);
-  return signal;
+void copy(float *signal, float *target, int length) {
+  for(int i = 0; i < length; i++) {
+    signal[i] = target[i];
+  }
+}
+
+void lms(float *targetSignalIn, float *inputSignalIn, float mu, int n, float *y, float *e, int length) {
+  struct Signal *targetSignal = newSignal(length);
+  unmarshall(targetSignal, targetSignalIn, length);
+
+  struct Signal *inputSignal = newSignal(length);
+  unmarshall(inputSignal, inputSignalIn, length);
+
+  copy(y, targetSignalIn, length);
+  copy(e, inputSignalIn, length);
+
+  delSignal(targetSignal);
+  delSignal(inputSignal);
 }

@@ -4,7 +4,6 @@ import ctypes
 import pathlib
 
 class Signal(ctypes.Structure):
-    ctypes.c_wchar_p
     _fields_=[("channel_one",ctypes.POINTER(ctypes.c_float)),
               ("channel_two",ctypes.POINTER(ctypes.c_float)),
               ("channel_one_start",ctypes.POINTER(ctypes.c_float)),
@@ -13,21 +12,29 @@ class Signal(ctypes.Structure):
         ]
 
 def clms(inputSignal, targetSignal, mu, n):
-    sampleSize = 10 # just here for debugging right now
+    #length = inputSignal.shape[0]
+    length = 20
     libname = pathlib.Path().absolute() / "libclms.so"
-    c_lib = ctypes.CDLL(libname)
-    c_lib.lms.restype = ctypes.POINTER(Signal)
-
     c_float_p = ctypes.POINTER(ctypes.c_float)
-    data = inputSignal.astype(np.float32)
-    data_p = data.ctypes.data_as(c_float_p)
-    retSignal = c_lib.lms(data_p, sampleSize)
+    c_lib = ctypes.CDLL(libname)
+    c_lib.lms.argtypes = [c_float_p, c_float_p, ctypes.c_float, ctypes.c_int, c_float_p, c_float_p, ctypes.c_int]
 
-    for i in range(sampleSize):
-      print("LMS Output %d - [%1.6f, %1.6f]" % (i,
-                                                retSignal.contents.channel_one[i],
-                                                retSignal.contents.channel_two[i]))
-    return [0], [0]
+    inputSignal = inputSignal[0:length]
+    inputSignalData = inputSignal.astype(np.float32)
+    inputSignal_p = inputSignalData.ctypes.data_as(c_float_p)
+
+    targetSignal = targetSignal[0:length]
+    targetSignalData = targetSignal.astype(np.float32)
+    targetSignal_p = targetSignalData.ctypes.data_as(c_float_p)
+
+    y = (ctypes.c_float * length)()
+    e = (ctypes.c_float * length)()
+
+    c_lib.lms(targetSignal_p, inputSignal_p, mu, n, y, e, length)
+
+    print(list(y))
+    print(list(e))
+    return y, e
 
 def lms(inputSignal, targetSignal, mu, n):
     f = pa.filters.FilterLMS(n=n, mu=mu, w="random")
