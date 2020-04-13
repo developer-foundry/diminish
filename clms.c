@@ -14,6 +14,7 @@ struct Signal {
 
 int length = 0;
 int n = 0;
+float eps = 0.1;
 float mu = 0.0;
 float weights[2]; //TODO refactor to support variable
 
@@ -127,6 +128,45 @@ float * multi(float mulptilicand, float * input) {
 void add(float * weights, float * dw) {
   weights[0] = weights[0] + dw[0];
   weights[1] = weights[1] + dw[1];
+}
+
+/*y = np.zeros(N)
+e = np.zeros(N)
+self.w_history = np.zeros((N, self.n))
+# adaptation loop
+for k in range(N):
+    self.w_history[k,:] = self.w
+    y[k] = np.dot(self.w, x[k])
+    e[k] = d[k] - y[k]
+    R1 = np.dot(np.dot(np.dot(self.R,x[k]),x[k].T),self.R)
+    R2 = self.mu + np.dot(np.dot(x[k],self.R),x[k].T)
+    self.R = 1/self.mu * (self.R - R1/R2)
+    dw = np.dot(self.R, x[k].T) * e[k]
+    self.w += dw*/
+void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam, float *y, float *e, int lengthParam) {
+  length = lengthParam;
+  mu = muParam;
+  n = nParam;
+
+  struct Signal *targetSignal = newSignal(length);
+  unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
+
+  struct Signal *inputSignal = newSignal(length);
+  unmarshallInput(inputSignal, inputSignalIn, length);
+
+  zeroes(y, length);
+  zeroes(e, length);
+  zeroes(weights, 2); //TODO might need to change to random instead
+
+  for (int k = 0; k < length; k++) {
+    y[k] = dot(weights, sub(inputSignal, k));
+    e[k] = subone(targetSignal,k) - y[k];
+    float * dw = multi(mu * e[k], sub(inputSignal,k));
+    add(weights,dw);
+  }
+
+  delSignal(targetSignal);
+  delSignal(inputSignal);
 }
 
 void lms(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam, float *y, float *e, int lengthParam) {

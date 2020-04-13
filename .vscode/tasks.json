@@ -84,7 +84,7 @@
       "problemMatcher": []
     },
     {
-      "label": "fast lms",
+      "label": "clms precorded",
       "type": "shell",
       "command": "python3 -m soundwave -a clms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
       "group": {
@@ -94,9 +94,29 @@
       "problemMatcher": []
     },
     {
-      "label": "fast lms live",
+      "label": "clms live",
       "type": "shell",
       "command": "python3 -m soundwave -a clms -t data/pink-noise.wav -m live",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "crls prerecorded",
+      "type": "shell",
+      "command": "python3 -m soundwave -a crls -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "crls live",
+      "type": "shell",
+      "command": "python3 -m soundwave -a crls -t data/pink-noise.wav -m live",
       "group": {
         "kind": "build",
         "isDefault": true

@@ -33,13 +33,17 @@ def nsslms(inputSignal, targetSignal, numChannels):
 def rls(inputSignal, targetSignal, numChannels):
     return lmsalgos.rls(inputSignal, targetSignal, mu, numChannels)
 
+def crls(inputSignal, targetSignal, numChannels):
+    return lmsalgos.crls(inputSignal, targetSignal, mu, numChannels)
+
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
         'lms': partial(lms, inputSignal, targetSignal, numChannels),
         'nlms': partial(nlms, inputSignal, targetSignal, numChannels),
         'nsslms': partial(nsslms, inputSignal, targetSignal, numChannels),
         'rls': partial(rls, inputSignal, targetSignal, numChannels),
-        'clms': partial(clms, inputSignal, targetSignal, numChannels)
+        'clms': partial(clms, inputSignal, targetSignal, numChannels),
+        'crls': partial(crls, inputSignal, targetSignal, numChannels)
     }
 
     # Get the function from switcher dictionary
