@@ -4,16 +4,16 @@ import os
 import matplotlib.pyplot as plt
 
 
-def get_dir(algorithm):
+def get_dir(algorithm, mode):
     base_dir = os.getcwd()
-    results_dir = os.path.join(base_dir, 'plots/% s/' % (algorithm))
+    results_dir = os.path.join(base_dir, 'plots/% s/% s/' % (algorithm, mode))
     if not os.path.isdir(results_dir):
         os.makedirs(results_dir)
     return results_dir
 
 
-def plot_simultaneous(algorithm, inputSignal, targetSignal, outputSignal):
-    algDirectory = get_dir(algorithm)
+def plot_simultaneous(algorithm, mode, inputSignal, targetSignal, outputSignal):
+    algDirectory = get_dir(algorithm, mode)
 
     plt.plot(inputSignal, '-b')
     plt.savefig(algDirectory + '% s input.png' % algorithm)
@@ -25,8 +25,8 @@ def plot_simultaneous(algorithm, inputSignal, targetSignal, outputSignal):
     plt.savefig(algDirectory + '% s output.png' % algorithm)
 
 
-def plot_vertical(algorithm, inputSignal, targetSignal, outputSignal, errorSignal):
-    algDirectory = get_dir(algorithm)
+def plot_vertical(algorithm, mode, inputSignal, targetSignal, outputSignal, errorSignal):
+    algDirectory = get_dir(algorithm, mode)
 
     fig, axs = plt.subplots(4)
     fig.set_size_inches(18.5, 10.5)

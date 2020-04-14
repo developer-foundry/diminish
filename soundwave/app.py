@@ -15,7 +15,10 @@ import soundwave.plotting.plot as plot
 
 mu = 0.00001
 targetLocation = 0
-
+liveInputSignal = None
+liveTargetSignal = None
+liveOutputSignal = None
+liveErrorSignal = None
 
 def lms(inputSignal, targetSignal, numChannels):
     return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
@@ -89,7 +92,7 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
 
     # player.play_signal(parser, outputSignal, inputFs, device)
 
-    plot.plot_vertical(algorithm, inputSignal,
+    plot.plot_vertical(algorithm, 'prerecorded', inputSignal,
                        targetSignal, outputSignal, errorSignal)
 
 
@@ -100,6 +103,10 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
 
 def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames, time, status):
     global targetLocation
+    global liveInputSignal
+    global liveTargetSignal
+    global liveOutputSignal
+    global liveErrorSignal
 
     if status:
         print(status)
@@ -124,14 +131,34 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
 
     targetLocation += truncateSize
     outdata[:] = indata
+
+    #update global arrays for plotting
+    if(liveInputSignal is None):
+        liveInputSignal = inputSignal
+        liveTargetSignal = targetSignal
+        liveOutputSignal = outputSignal
+        liveErrorSignal = errorSignal
+    else:
+        liveInputSignal = np.concatenate((liveInputSignal, inputSignal), axis=0)
+        liveTargetSignal = np.concatenate((liveTargetSignal, targetSignal), axis=0)
+        liveOutputSignal = np.concatenate((liveOutputSignal, outputSignal), axis=0)
+        liveErrorSignal = np.concatenate((liveErrorSignal, errorSignal), axis=0)
     #raise ValueError('A very specific bad thing happened.')
 
 
-def process_live(device, targetFile, algorithm):
-    numChannels = 2
-    targetSignal, targetFs = sf.read(targetFile, dtype='float32')
-    algo_partial = partial(
-        live_algorithm, algorithm, targetSignal, numChannels)
-    with sd.Stream(device=(device, device),
-                   channels=numChannels, callback=algo_partial):
-        input()
+def process_live(parser, device, targetFile, algorithm):
+    try:
+        numChannels = 2
+        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
+        algo_partial = partial(
+            live_algorithm, algorithm, targetSignal, numChannels)
+        with sd.Stream(device=(device, device),
+                    channels=numChannels, callback=algo_partial):
+            input()
+    except KeyboardInterrupt:
+        #now that we have interrupted the recording, plot the results
+        plot.plot_vertical(algorithm, 'live', liveInputSignal,
+                       liveTargetSignal, liveOutputSignal, liveErrorSignal)
+        parser.exit('\nInterrupted by user')
+    except Exception as e:
+        parser.exit(type(e).__name__ + ': ' + str(e))
