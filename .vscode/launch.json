@@ -41,6 +41,20 @@
       ]
     },
     {
+      "name": "Debug Fast (C) RLS Prerecorded",
+      "type": "python",
+      "request": "launch",
+      "module": "soundwave",
+      "justMyCode": false,
+      "args": [
+        "-a crls",
+        "-i data/truck-and-construction-noises.wav",
+        "-t data/pink-noise.wav",
+        "-m prerecorded",
+        "-s 50"
+      ]
+    },
+    {
       "name": "Debug LMS Live",
       "type": "python",
       "request": "launch",
