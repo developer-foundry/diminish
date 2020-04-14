@@ -55,10 +55,6 @@ def rls(inputSignal, targetSignal, mu, n):
     f = pa.filters.FilterRLS(n=n, mu=mu, w="zeros")
     y, e, w = f.run(targetSignal, inputSignal)
 
-    with open('rls.txt', 'w') as filehandle:
-      for listitem in y:
-        filehandle.write('%s\n' % listitem)
-
     return y, e
 
 def crls(inputSignal, targetSignal, mu, n):
@@ -81,7 +77,4 @@ def crls(inputSignal, targetSignal, mu, n):
 
     c_lib.rls(targetSignal_p, inputSignal_p, mu, n, y, e, length)
 
-    with open('crls.txt', 'w') as filehandle:
-      for listitem in y:
-        filehandle.write('%s\n' % listitem)
     return y, e

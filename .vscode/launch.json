@@ -50,8 +50,7 @@
         "-a crls",
         "-i data/truck-and-construction-noises.wav",
         "-t data/pink-noise.wav",
-        "-m prerecorded",
-        "-s 50"
+        "-m prerecorded"
       ]
     },
     {

@@ -220,68 +220,33 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
 
   zeroes(y, length);
   zeroes(e, length);
-  zeroes(weights, 2); //TODO might need to change to random instead
+  zeroes(weights, 2);
 
-  //TODO
-  //1. Implement R
-  //2. Implement transpose
-  //3. Implement a divide and subtract
-  //self.R = 1/self.eps * np.identity(n)
-  /*y[k] = np.dot(self.w, x[k])
-  e[k] = d[k] - y[k]
-  R1 = np.dot(
-        np.dot(
-          np.dot(self.R,x[k])
-          x[k].T)
-        self.R)
-  R2 = self.mu + np.dot(np.dot(x[k],self.R),x[k].T)
-  self.R = 1/self.mu * (self.R - R1/R2)
-  dw = np.dot(self.R, x[k].T) * e[k]
-  self.w += dw*/
   float * R = malloc (sizeof(float) * 4);
   float r_eps = 1 / eps;
   R[0] = 1*r_eps;
   R[1] = 0;
   R[2] = 0;
   R[3] = 1*r_eps;
-  //printf("mu: " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, mu);
-  //printf("eps: " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, eps);
-  //printf("R: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n" , R[0], R[1], R[2], R[3]);
   for (int k = 0; k < length; k++) {
-    //float * blah = sub(inputSignal, k);
-    //printf("inputSignal[" ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET "]: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", k, blah[0], blah[1]);
     y[k] = dot(weights, sub(inputSignal, k));
-    //printf("y[" ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET "] = " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, k, y[k]);
     e[k] = subone(targetSignal,k) - y[k];
-    //printf("e[" ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET "] = " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, k, e[k]);
 
     float *inputTranspose = transpose(sub(inputSignal, k), 2);
-    //printf("inputTranspose: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", inputTranspose[0], inputTranspose[1]);
     float *dotRInput = dotp(R, sub(inputSignal, k));
-    //printf("dotRInput: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", dotRInput[0], dotRInput[1]);
     float dotRInputTranspose = dotfloat(dotRInput, inputTranspose);
-    //printf("dotRInputTranspose: " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, dotRInputTranspose);
     float *R1 = multifour(dotRInputTranspose, R);
-    //printf("R1: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n" , R1[0], R1[1], R1[2], R1[3]);
 
     float * dotInputR = dotpreverse(sub(inputSignal, k), R);
-    //printf("dotInputR: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", dotInputR[0], dotInputR[1]);
     float dotInputRTranspose = dotfloat(dotInputR, inputTranspose);
-    //printf("dotInputRTranspose: " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, dotInputRTranspose);
     float R2 = mu + dotInputRTranspose;
-    //printf("R2: " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, R2);
 
     float * r1DivideR2 = divide(R1, R2);
-    //printf("R1 Divided by R2: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", r1DivideR2[0], r1DivideR2[1], r1DivideR2[2], r1DivideR2[3]);
     float * rMinusR1DivideR2 = subtract(R, r1DivideR2);
-    //printf("R minus R1/R2: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", rMinusR1DivideR2[0], rMinusR1DivideR2[1], rMinusR1DivideR2[2], rMinusR1DivideR2[3]);
     R = multifour((1 / mu), rMinusR1DivideR2);
-    //printf("R: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n" , R[0], R[1], R[2], R[3]);
 
     float * dw = multi(e[k], dotp(R, inputTranspose));
-    //printf("dw: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", dw[0], dw[1]);
     add(weights,dw);
-    //printf("weights: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", weights[0], weights[1]);
   }
 
   delSignal(targetSignal);
