@@ -54,35 +54,40 @@ def nsslms(inputSignal, targetSignal, mu, n):
 def rls(inputSignal, targetSignal, mu, n):
     f = pa.filters.FilterRLS(n=n, mu=mu, w="zeros")
     y, e, w = f.run(targetSignal, inputSignal)
+
+    with open('rls.txt', 'w') as filehandle:
+      for listitem in y:
+        filehandle.write('%s\n' % listitem)
+
     return y, e
 
 def crls(inputSignal, targetSignal, mu, n):
-    # w = np.zeros(n)
-    # x = inputSignal
-    # N = len(x)
-    # d = targetSignal
-    # x = np.array(x)
-    # d = np.array(d)
-    # y = np.zeros(N)
-    # e = np.zeros(N)
-    # eps = 0.1
-    # R = 1/eps * np.identity(n)
-    # for k in range(N):
-    #     y[k] = np.dot(w, x[k])
-    #     e[k] = d[k] - y[k]
-    #     blah = np.dot(R, x[k])
-    #     blah2 = np.dot(blah, x[k].T)
-    #     blah3 = np.dot(blah2, R)
-    #     R1 = np.dot(np.dot(np.dot(R,x[k]),x[k].T),R)
+    w = np.zeros(n)
+    x = inputSignal
+    N = len(x)
+    d = targetSignal
+    x = np.array(x)
+    d = np.array(d)
+    y = np.zeros(N)
+    e = np.zeros(N)
+    eps = 0.1
+    R = 1/eps * np.identity(n)
+    for k in range(N):
+        y[k] = np.dot(w, x[k])
+        e[k] = d[k] - y[k]
+        blah = np.dot(R, x[k])
+        blah2 = np.dot(blah, x[k].T)
+        blah3 = np.dot(blah2, R)
+        R1 = np.dot(np.dot(np.dot(R,x[k]),x[k].T),R)
 
 
-    #     blah4 = np.dot(x[k],R)
-    #     blah5 = np.dot(np.dot(x[k],R),x[k].T)
-    #     R2 = mu + np.dot(np.dot(x[k],R),x[k].T)
+        blah4 = np.dot(x[k],R)
+        blah5 = np.dot(np.dot(x[k],R),x[k].T)
+        R2 = mu + np.dot(np.dot(x[k],R),x[k].T)
 
-    #     R = 1/mu * (R - R1/R2)
-    #     dw = np.dot(R, x[k].T) * e[k]
-    #     w += dw
+        R = 1/mu * (R - R1/R2)
+        dw = np.dot(R, x[k].T) * e[k]
+        w += dw
 
     length = inputSignal.shape[0]
     libname = pathlib.Path().absolute() / "libclms.so"
@@ -103,4 +108,7 @@ def crls(inputSignal, targetSignal, mu, n):
 
     c_lib.rls(targetSignal_p, inputSignal_p, mu, n, y, e, length)
 
+    with open('crls.txt', 'w') as filehandle:
+      for listitem in y:
+        filehandle.write('%s\n' % listitem)
     return y, e

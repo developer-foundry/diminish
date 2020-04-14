@@ -185,10 +185,10 @@ float * divide(float *matrix, float divisor) {
 //assumes a 2x2 matrix
 float * subtract(float *matrixOne, float *matrixTwo) {
   float * result = malloc (sizeof(float) * 2);
-  result[0] = matrixTwo[0] - matrixOne[0];
-  result[1] = matrixTwo[1] - matrixOne[1];
-  result[2] = matrixTwo[2] - matrixOne[2];
-  result[3] = matrixTwo[3] - matrixOne[3];
+  result[0] = matrixOne[0] - matrixTwo[0];
+  result[1] = matrixOne[1] - matrixTwo[1];
+  result[2] = matrixOne[2] - matrixTwo[2];
+  result[3] = matrixOne[3] - matrixTwo[3];
   return result;
 }
 
@@ -256,7 +256,7 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
     //printf("e[" ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET "] = " ANSI_COLOR_MAGENTA "%f\n" ANSI_COLOR_RESET, k, e[k]);
 
     float *inputTranspose = transpose(sub(inputSignal, k), 2);
-    ////printf("inputTranspose: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", inputTranspose[0], inputTranspose[1]);
+    //printf("inputTranspose: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", inputTranspose[0], inputTranspose[1]);
     float *dotRInput = dotp(R, sub(inputSignal, k));
     //printf("dotRInput: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", dotRInput[0], dotRInput[1]);
     float dotRInputTranspose = dotfloat(dotRInput, inputTranspose);
@@ -276,6 +276,7 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
     float * rMinusR1DivideR2 = subtract(R, r1DivideR2);
     //printf("R minus R1/R2: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", rMinusR1DivideR2[0], rMinusR1DivideR2[1], rMinusR1DivideR2[2], rMinusR1DivideR2[3]);
     R = multifour((1 / mu), rMinusR1DivideR2);
+    //printf("R: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "], [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n" , R[0], R[1], R[2], R[3]);
 
     float * dw = multi(e[k], dotp(R, inputTranspose));
     //printf("dw: [" ANSI_COLOR_MAGENTA "%f, %f" ANSI_COLOR_RESET "]\n", dw[0], dw[1]);
