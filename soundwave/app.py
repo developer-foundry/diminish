@@ -130,7 +130,7 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
         inputSignal, targetSignal, algorithm)
 
     targetLocation += truncateSize
-    outdata[:] = indata
+    outdata[:] = outputSignal
 
     #update global arrays for plotting
     if(liveInputSignal is None):
