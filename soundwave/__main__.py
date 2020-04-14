@@ -39,7 +39,7 @@ if __name__ == '__main__':
             app.process_prerecorded(args.device, args.inputFile,
                                     args.targetFile, args.size, args.algorithm)
         elif args.mode == 'live':
-            app.process_live(args.device,
+            app.process_live(parser, args.device,
                              args.targetFile, args.algorithm)
 
     except KeyboardInterrupt:
