@@ -28,6 +28,16 @@ gcc -shared -o libclms.so clms.o
 
 The algorithms available (-a cli parameter) are `lms`, `nlms`, `nsslms`, `rls`, and `clms` (fast lms using C library)
 
+## Bluetooth POC
+
+Install sudo apt-get install pi-bluetooth on PI
+
+To get the address of your bluetooth server
+
+```
+hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
+```
+
 ## Tests
 
 ```

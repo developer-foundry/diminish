@@ -154,6 +154,16 @@
       "problemMatcher": []
     },
     {
+      "label": "bluetooth client",
+      "type": "shell",
+      "command": "python3 -m bluetoothnetwork -m client -a 5C:80:B6:43:06:9C",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "test",
       "type": "shell",
       "command": "python3 -m pytest tests",
