@@ -4,6 +4,7 @@ from functools import partial
 from profilehooks import profile
 
 import sys
+from pynput import keyboard
 
 import sounddevice as sd
 import soundfile as sf
@@ -19,6 +20,12 @@ liveInputSignal = None
 liveTargetSignal = None
 liveOutputSignal = None
 liveErrorSignal = None
+processing = True
+
+def on_press(key):
+    if key == keyboard.Key.esc:
+        global processing
+        processing = not processing
 
 def lms(inputSignal, targetSignal, numChannels):
     return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
@@ -126,11 +133,15 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
     targetSignal = targetSignal[targetLocation:targetEnd]
 
     # process the signal and create pink noise
-    outputSignal, errorSignal = process_signal(
+    if processing:
+        outputSignal, errorSignal = process_signal(
         inputSignal, targetSignal, algorithm)
+    else:
+        outputSignal = np.add(inputSignal, targetSignal)
+        errorSignal = np.zeros((len(targetSignal), 2))
 
     targetLocation += truncateSize
-    outdata[:] = indata
+    outdata[:] = outputSignal
 
     #update global arrays for plotting
     if(liveInputSignal is None):
@@ -143,11 +154,13 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
         liveTargetSignal = np.concatenate((liveTargetSignal, targetSignal), axis=0)
         liveOutputSignal = np.concatenate((liveOutputSignal, outputSignal), axis=0)
         liveErrorSignal = np.concatenate((liveErrorSignal, errorSignal), axis=0)
-    #raise ValueError('A very specific bad thing happened.')
 
 
 def process_live(parser, device, targetFile, algorithm):
     try:
+        listener = keyboard.Listener(on_press=on_press)
+        listener.start()  # start to listen on a separate thread
+
         numChannels = 2
         targetSignal, targetFs = sf.read(targetFile, dtype='float32')
         algo_partial = partial(

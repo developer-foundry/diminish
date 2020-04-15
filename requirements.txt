@@ -7,3 +7,4 @@ matplotlib
 padasip
 profilehooks
 invoke
+pynput
