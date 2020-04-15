@@ -14,7 +14,7 @@ class Signal(ctypes.Structure):
 
 def clms(inputSignal, targetSignal, mu, n):
     length = inputSignal.shape[0]
-    libname = pathlib.Path().absolute() / "libclms.so"
+    libname = pathlib.Path().absolute() / "filtering.so"
     c_double_p = ctypes.POINTER(ctypes.c_double)
     c_lib = ctypes.CDLL(libname)
     c_lib.lms.argtypes = [c_double_p, c_double_p, ctypes.c_double, ctypes.c_int, c_double_p, c_double_p, ctypes.c_int]
@@ -59,7 +59,7 @@ def rls(inputSignal, targetSignal, mu, n):
 
 def crls(inputSignal, targetSignal, mu, n):
     length = inputSignal.shape[0]
-    libname = pathlib.Path().absolute() / "libclms.so"
+    libname = pathlib.Path().absolute() / "filtering.so"
     c_double_p = ctypes.POINTER(ctypes.c_double)
     c_lib = ctypes.CDLL(libname)
     c_lib.rls.argtypes = [c_double_p, c_double_p, ctypes.c_double, ctypes.c_int, c_double_p, c_double_p, ctypes.c_int]

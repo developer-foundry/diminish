@@ -1,117 +1,65 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "filtering.h"
 
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
-//TODO need to change this to support variable number of columns
-//right now it is hardcoded to support two - the combination of
-//input and target passed in from python
-struct Signal {
-  double *channel_one;
-  double *channel_two;
-  double *channel_one_start;
-  double *channel_two_start;
-  int length;
+struct signal {
+  double* data; /** stores all input data up to number of inputs n */
+  int n; /** the number of inputs to filter */
+  int length; /** the length of each input */
 };
 
-int length = 0;
-int n = 0;
-double eps = 0.1;
-double mu = 0.0;
-double weights[2]; //TODO refactor to support variable
+signal* initialize_signal(size_t n, size_t len) {
+  signal* return_signal = malloc (sizeof(signal));
 
-struct Signal *newSignal (size_t sz) {
-  struct Signal *retSignal = malloc (sizeof(struct Signal));
-  if (retSignal == NULL) {
-    return NULL;
-  }
-  retSignal->channel_one = malloc (sz * sizeof(double*));
-  if (retSignal->channel_one == NULL) {
-    free(retSignal);
+  if (return_signal == NULL) {
     return NULL;
   }
 
-  retSignal->channel_two = malloc (sz * sizeof(double*));
-  if (retSignal->channel_two == NULL) {
-    if (retSignal->channel_one != NULL) free(retSignal->channel_one);
-    free(retSignal);
+  return_signal->data = malloc (len * n * sizeof return_signal->data);
+  if (return_signal->data == NULL) {
+    free(return_signal);
     return NULL;
   }
 
-  retSignal->length = sz;
-  retSignal->channel_one_start = retSignal->channel_one;
-  retSignal->channel_two_start = retSignal->channel_two;
-  return retSignal;
+  return_signal->length = len;
+  return_signal->n = n;
+  return return_signal;
 }
 
-void delSignal (struct Signal *signal) {
+void destroy_signal(signal* signal) {
   if (signal != NULL) {
-    free(signal->channel_one);
-    free(signal->channel_two);
+    free(signal->data);
     free(signal);
   }
 }
 
-void unmarshallTarget(struct Signal *signal, double *arr, int length) {
-  for(int i = 0; i < length; i++) {
-    *(signal->channel_one) = *arr;
-    if (i == 0) {
-      signal->channel_one_start = signal->channel_one;
+void unmarshall(signal* signal, double* data, int n, int len) {
+  for (int i = 0; i < signal->n; i++) {
+    for (int j = 0; j < signal->length; j++) {
+      //printf("setting [%d, %d] to %f\n", i, j, data[j+i*signal->length]);
+      signal->data[j+i*signal->length] = data[j+i*signal->length];
     }
-    signal->channel_one++;
-    arr++;
   }
-  signal->channel_one = signal->channel_one_start;
 }
 
-void unmarshallInput(struct Signal *signal, double *arr, int length) {
-  for(int i = 0; i < length*2; i++) {
-    if (i % 2 == 0) {
-      *(signal->channel_one) = *arr;
-      if (i == 0) {
-        signal->channel_one_start = signal->channel_one;
-      }
-      signal->channel_one++;
+void print_signal(signal* signal) {
+  for (int i = 0; i < signal->n; i++) {
+    printf("sample %d: [", i);
+    for (int j = 0; j < signal->length; j++) {
+      if(j < signal->length - 1)
+        printf("%f,", signal->data[j+i*signal->length]);
+      else
+        printf("%f", signal->data[j+i*signal->length]);
     }
-    else {
-      *(signal->channel_two) = *arr;
-      if (i == 1) {
-        signal->channel_two_start = signal->channel_two;
-      }
-      signal->channel_two++;
-    }
-    arr++;
-  }
-  signal->channel_one = signal->channel_one_start;
-  signal->channel_two = signal->channel_two_start;
-}
-
-void print_signal(struct Signal *signal) {
-  double *channel_one; 
-  double *channel_two;
-  channel_one = signal->channel_one_start;
-  channel_two = signal->channel_two_start;
-
-  for (int i = 0; i < signal->length; i++) {
-    printf("Sample %d: [%f, %f]\n", i, *channel_one, *channel_two);
-    channel_one++;
-    channel_two++;
+    printf("]\n");
   }
 }
 
-//create a zero matrix
-void zeroes(double *signal, int length) {
-  for(int i = 0; i < length; i++) {
-    signal[i] = 0.0;
+void zeros(signal* signal, int n, int len) {
+  for(int i = 0; i < n*len; i++) {
+    signal->data[i] = 0.0;
   }
 }
 
+/*
 //assumes matrixOne is 2x2 and matrixTwo is 1x2
 double *dotp(double *matrixOne, double *matrixTwo) {
   double * result = malloc (sizeof(double) * 4);
@@ -141,7 +89,7 @@ double dot(double *weights, double *input) {
 }
 
 //indexing for Signal struct
-double * sub(struct Signal *input, int index) {
+double * sub(signal *input, int index) {
   double * diff = malloc (sizeof(double) * 2);
   diff[0] = input->channel_one[index];
   diff[1] = input->channel_two[index];
@@ -149,7 +97,7 @@ double * sub(struct Signal *input, int index) {
 }
 
 //indexing for Signal struct
-double subone(struct Signal *input, int index) {
+double subone(signal *input, int index) {
   return input->channel_one[index];
 }
 
@@ -212,10 +160,10 @@ void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
   mu = muParam;
   n = nParam;
 
-  struct Signal *targetSignal = newSignal(length);
+  signal *targetSignal = newSignal(length);
   unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
 
-  struct Signal *inputSignal = newSignal(length);
+  signal *inputSignal = newSignal(length);
   unmarshallInput(inputSignal, inputSignalIn, length);
 
   zeroes(y, length);
@@ -223,7 +171,7 @@ void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
   zeroes(weights, 2);
 
   double * R = malloc (sizeof(double) * 4);
-  double r_eps = 1 / eps;
+  double r_eps = 1 / EPS;
   R[0] = 1*r_eps;
   R[1] = 0;
   R[2] = 0;
@@ -258,10 +206,10 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
   mu = muParam;
   n = nParam;
 
-  struct Signal *targetSignal = newSignal(length);
+  signal *targetSignal = newSignal(length);
   unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
 
-  struct Signal *inputSignal = newSignal(length);
+  signal *inputSignal = newSignal(length);
   unmarshallInput(inputSignal, inputSignalIn, length);
 
   zeroes(y, length);
@@ -277,4 +225,23 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 
   delSignal(targetSignal);
   delSignal(inputSignal);
+}*/
+
+int main() {
+  int n = 2;
+  int len = 5;
+  double* data = malloc (len * n * sizeof(double));
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < len; j++) {
+      data[j+i*len] = (double)(j+i*len);
+    }
+  }
+
+  signal* signal = initialize_signal(n, len);
+  zeros(signal, n, len);
+  print_signal(signal);
+  unmarshall(signal, data, n, len);
+  print_signal(signal);
+  destroy_signal(signal);
+  return 0;
 }
