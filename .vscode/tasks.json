@@ -144,6 +144,16 @@
       "problemMatcher": []
     },
     {
+      "label": "bluetooth server",
+      "type": "shell",
+      "command": "python3 -m bluetoothnetwork",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "test",
       "type": "shell",
       "command": "python3 -m pytest tests",
