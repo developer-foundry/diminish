@@ -13,31 +13,31 @@
 //right now it is hardcoded to support two - the combination of
 //input and target passed in from python
 struct Signal {
-  float *channel_one;
-  float *channel_two;
-  float *channel_one_start;
-  float *channel_two_start;
+  double *channel_one;
+  double *channel_two;
+  double *channel_one_start;
+  double *channel_two_start;
   int length;
 };
 
 int length = 0;
 int n = 0;
-float eps = 0.1;
-float mu = 0.0;
-float weights[2]; //TODO refactor to support variable
+double eps = 0.1;
+double mu = 0.0;
+double weights[2]; //TODO refactor to support variable
 
 struct Signal *newSignal (size_t sz) {
   struct Signal *retSignal = malloc (sizeof(struct Signal));
   if (retSignal == NULL) {
     return NULL;
   }
-  retSignal->channel_one = malloc (sz * sizeof(float*));
+  retSignal->channel_one = malloc (sz * sizeof(double*));
   if (retSignal->channel_one == NULL) {
     free(retSignal);
     return NULL;
   }
 
-  retSignal->channel_two = malloc (sz * sizeof(float*));
+  retSignal->channel_two = malloc (sz * sizeof(double*));
   if (retSignal->channel_two == NULL) {
     if (retSignal->channel_one != NULL) free(retSignal->channel_one);
     free(retSignal);
@@ -58,7 +58,7 @@ void delSignal (struct Signal *signal) {
   }
 }
 
-void unmarshallTarget(struct Signal *signal, float *arr, int length) {
+void unmarshallTarget(struct Signal *signal, double *arr, int length) {
   for(int i = 0; i < length; i++) {
     *(signal->channel_one) = *arr;
     if (i == 0) {
@@ -70,7 +70,7 @@ void unmarshallTarget(struct Signal *signal, float *arr, int length) {
   signal->channel_one = signal->channel_one_start;
 }
 
-void unmarshallInput(struct Signal *signal, float *arr, int length) {
+void unmarshallInput(struct Signal *signal, double *arr, int length) {
   for(int i = 0; i < length*2; i++) {
     if (i % 2 == 0) {
       *(signal->channel_one) = *arr;
@@ -93,8 +93,8 @@ void unmarshallInput(struct Signal *signal, float *arr, int length) {
 }
 
 void print_signal(struct Signal *signal) {
-  float *channel_one; 
-  float *channel_two;
+  double *channel_one; 
+  double *channel_two;
   channel_one = signal->channel_one_start;
   channel_two = signal->channel_two_start;
 
@@ -106,64 +106,64 @@ void print_signal(struct Signal *signal) {
 }
 
 //create a zero matrix
-void zeroes(float *signal, int length) {
+void zeroes(double *signal, int length) {
   for(int i = 0; i < length; i++) {
     signal[i] = 0.0;
   }
 }
 
 //assumes matrixOne is 2x2 and matrixTwo is 1x2
-float *dotp(float *matrixOne, float *matrixTwo) {
-  float * result = malloc (sizeof(float) * 4);
+double *dotp(double *matrixOne, double *matrixTwo) {
+  double * result = malloc (sizeof(double) * 4);
   result[0] = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
   result[1] = matrixOne[2] * matrixTwo[0] + matrixOne[3] * matrixTwo[1];
   return result;
 }
 
 //assumes matrixOne is 1x2 and matrixTwo is 2x2
-float *dotpreverse(float *matrixOne, float *matrixTwo) {
-  float * result = malloc (sizeof(float) * 4);
+double *dotpreverse(double *matrixOne, double *matrixTwo) {
+  double * result = malloc (sizeof(double) * 4);
   result[0] = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
   result[1] = matrixOne[0] * matrixTwo[2] + matrixOne[1] * matrixTwo[3];
   return result;
 }
 
 //assumes matrixOne is 2x1 and matrixTwo is 1x2
-float dotfloat(float *matrixOne, float *matrixTwo) {
-  float result = 0.0;
+double dotdouble(double *matrixOne, double *matrixTwo) {
+  double result = 0.0;
   result = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
   return result;
 }
 
-//explicit for weights - should be generalized to dotfloat
-float dot(float *weights, float *input) {
+//explicit for weights - should be generalized to dotdouble
+double dot(double *weights, double *input) {
   return weights[0] * input[0] + weights[1] * input[1];
 }
 
 //indexing for Signal struct
-float * sub(struct Signal *input, int index) {
-  float * diff = malloc (sizeof(float) * 2);
+double * sub(struct Signal *input, int index) {
+  double * diff = malloc (sizeof(double) * 2);
   diff[0] = input->channel_one[index];
   diff[1] = input->channel_two[index];
   return diff;
 }
 
 //indexing for Signal struct
-float subone(struct Signal *input, int index) {
+double subone(struct Signal *input, int index) {
   return input->channel_one[index];
 }
 
 //multiple a matrix by a scalar
-float * multi(float mulptilicand, float * input) {
-  float * result = malloc (sizeof(float) * 2);
+double * multi(double mulptilicand, double * input) {
+  double * result = malloc (sizeof(double) * 2);
   result[0] = input[0] * mulptilicand;
   result[1] = input[1] * mulptilicand;
   return result;
 }
 
 //multiple a matrix by a scalar
-float * multifour(float mulptilicand, float * input) {
-  float * result = malloc (sizeof(float) * 4);
+double * multifour(double mulptilicand, double * input) {
+  double * result = malloc (sizeof(double) * 4);
   result[0] = input[0] * mulptilicand;
   result[1] = input[1] * mulptilicand;
   result[2] = input[2] * mulptilicand;
@@ -172,8 +172,8 @@ float * multifour(float mulptilicand, float * input) {
 }
 
 //divide a matrix by a scalar
-float * divide(float *matrix, float divisor) {
-  float * result = malloc (sizeof(float) * 2);
+double * divide(double *matrix, double divisor) {
+  double * result = malloc (sizeof(double) * 4);
   result[0] = matrix[0] / divisor;
   result[1] = matrix[1] / divisor;
   result[2] = matrix[2] / divisor;
@@ -183,8 +183,8 @@ float * divide(float *matrix, float divisor) {
 
 //subtract two matricies of equal size
 //assumes a 2x2 matrix
-float * subtract(float *matrixOne, float *matrixTwo) {
-  float * result = malloc (sizeof(float) * 2);
+double * subtract(double *matrixOne, double *matrixTwo) {
+  double * result = malloc (sizeof(double) * 4);
   result[0] = matrixOne[0] - matrixTwo[0];
   result[1] = matrixOne[1] - matrixTwo[1];
   result[2] = matrixOne[2] - matrixTwo[2];
@@ -193,21 +193,21 @@ float * subtract(float *matrixOne, float *matrixTwo) {
 }
 
 //should be refactored to be more generic
-void add(float * weights, float * dw) {
+void add(double * weights, double * dw) {
   weights[0] = weights[0] + dw[0];
   weights[1] = weights[1] + dw[1];
 }
 
 //transpose a generic size matrix
-float * transpose(float * input, int length) {
-  float * result = malloc (sizeof(float) * length);
+double * transpose(double * input, int length) {
+  double * result = malloc (sizeof(double) * length);
   for (int i = 0; i < length; i++)
     for (int j = 0; j < length; j++)
       result[i*j] = input[j*i];
   return result;
 }
 
-void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam, float *y, float *e, int lengthParam) {
+void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nParam, double *y, double *e, int lengthParam) {
   length = lengthParam;
   mu = muParam;
   n = nParam;
@@ -222,8 +222,8 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
   zeroes(e, length);
   zeroes(weights, 2);
 
-  float * R = malloc (sizeof(float) * 4);
-  float r_eps = 1 / eps;
+  double * R = malloc (sizeof(double) * 4);
+  double r_eps = 1 / eps;
   R[0] = 1*r_eps;
   R[1] = 0;
   R[2] = 0;
@@ -232,20 +232,20 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
     y[k] = dot(weights, sub(inputSignal, k));
     e[k] = subone(targetSignal,k) - y[k];
 
-    float *inputTranspose = transpose(sub(inputSignal, k), 2);
-    float *dotRInput = dotp(R, sub(inputSignal, k));
-    float dotRInputTranspose = dotfloat(dotRInput, inputTranspose);
-    float *R1 = multifour(dotRInputTranspose, R);
+    double *inputTranspose = transpose(sub(inputSignal, k), 2);
+    double *dotRInput = dotp(R, sub(inputSignal, k));
+    double dotRInputTranspose = dotdouble(dotRInput, inputTranspose);
+    double *R1 = multifour(dotRInputTranspose, R);
 
-    float * dotInputR = dotpreverse(sub(inputSignal, k), R);
-    float dotInputRTranspose = dotfloat(dotInputR, inputTranspose);
-    float R2 = mu + dotInputRTranspose;
+    double * dotInputR = dotpreverse(sub(inputSignal, k), R);
+    double dotInputRTranspose = dotdouble(dotInputR, inputTranspose);
+    double R2 = mu + dotInputRTranspose;
 
-    float * r1DivideR2 = divide(R1, R2);
-    float * rMinusR1DivideR2 = subtract(R, r1DivideR2);
+    double * r1DivideR2 = divide(R1, R2);
+    double * rMinusR1DivideR2 = subtract(R, r1DivideR2);
     R = multifour((1 / mu), rMinusR1DivideR2);
 
-    float * dw = multi(e[k], dotp(R, inputTranspose));
+    double * dw = multi(e[k], dotp(R, inputTranspose));
     add(weights,dw);
   }
 
@@ -253,7 +253,7 @@ void rls(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
   delSignal(inputSignal);
 }
 
-void lms(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam, float *y, float *e, int lengthParam) {
+void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nParam, double *y, double *e, int lengthParam) {
   length = lengthParam;
   mu = muParam;
   n = nParam;
@@ -271,7 +271,7 @@ void lms(float *targetSignalIn, float *inputSignalIn, float muParam, int nParam,
   for (int k = 0; k < length; k++) {
     y[k] = dot(weights, sub(inputSignal, k));
     e[k] = subone(targetSignal,k) - y[k];
-    float * dw = multi(mu * e[k], sub(inputSignal,k));
+    double * dw = multi(mu * e[k], sub(inputSignal,k));
     add(weights,dw);
   }
 
