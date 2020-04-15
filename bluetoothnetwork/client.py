@@ -3,7 +3,7 @@ import bluetooth
 
 
 def setup(serverAddress):
-    sock = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+    sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     port = 0x1001
     print("Trying to connect to {} on PSM 0x{}...".format(serverAddress, port))
     sock.connect((serverAddress, port))
