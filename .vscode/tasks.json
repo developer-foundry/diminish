@@ -146,7 +146,7 @@
     {
       "label": "bluetooth server",
       "type": "shell",
-      "command": "python3 -m bluetoothnetwork",
+      "command": "python3 -m bluetoothnetwork -m server",
       "group": {
         "kind": "build",
         "isDefault": true
