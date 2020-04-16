@@ -166,25 +166,43 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
 
+def anc_server_listener(client_socket, server_socket, outdata, frames, time, status):
+    client_data = btserver.receive_frame(client_socket)
+    print(client_data)
+    outdata[:] = client_data
+
 def anc_server(device, targetFile, algorithm):
+    global processing
+    nextAction = ''
     server_socket = btserver.configure_server()
     client_socket = btserver.wait_on_client_connection(server_socket)
     client_data = ''
 
-    while(client_data is not None):
-        client_data = btserver.receive_frame(client_socket)
-        print(client_data)
-    
+    algo_partial = partial(anc_server_listener, client_socket, server_socket)
+    with sd.OutputStream(device=(device, device), callback=algo_partial):
+        while nextAction.upper() != 'EXIT':
+            nextAction = input()
+            if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
+                processing = not processing
+
     btserver.close_connection(client_socket, server_socket)
 
+
+def anc_client_listener(client_socket, indata, frames, time, status):
+    result = btclient.send_data(client_socket, indata)
+    print('ACK: ', result)
+
 def anc_client(device):
-    i = 0
+    global processing
+    nextAction = ''
     client_socket = btclient.configure_client()
 
-    while(i < 5):
-        result = btclient.send_data(client_socket, i.to_bytes(2, byteorder='big'))
-        print('ACK: ', result)
-        i += 1
-    
+    algo_partial = partial(anc_client_listener, client_socket)
+    with sd.InputStream(device=(device, device), callback=algo_partial):
+        while nextAction.upper() != 'EXIT':
+            nextAction = input()
+            if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
+                processing = not processing
+
     btclient.close_connection(client_socket)
     
