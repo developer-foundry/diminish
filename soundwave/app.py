@@ -183,7 +183,7 @@ def anc_client(device):
 
     while(i < 5):
         result = btclient.send_data(client_socket, i.to_bytes(2, byteorder='big'))
-        print(result)
+        print('ACK: ', result)
         i += 1
     
     btclient.close_connection(client_socket)
