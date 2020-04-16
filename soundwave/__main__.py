@@ -2,45 +2,34 @@ import getopt
 import wave
 import sys
 import argparse
+import os
 
 from soundwave import app
 
-
-def clean(inputString):
-    if inputString is not None:
-        inputString = inputString.strip()
-    return inputString
-
+from dotenv import load_dotenv
+load_dotenv()
 
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(description='POC for ACN testing')
-        parser.add_argument('-i', dest='inputFile', action='store', type=str,
-                            help='input file to be used for the ACN algorithm')
-        parser.add_argument('-t', dest='targetFile', action='store', type=str, required=True,
-                            help='target file to be used for the ACN algorithm')
-        parser.add_argument('-d', dest='device', action='store', default='default', type=str,
-                            help='override the default sound device')
-        parser.add_argument('-a', dest='algorithm', choices=['lms', 'nlms', 'nsslms', ' lms', ' nlms', ' nsslms', 'rls', ' rls', 'clms', ' clms', 'crls', ' crls'], action='store', default='lms', required=True, type=str,
-                            help='the algorithm to use to process signal. The default is lms.')
-        parser.add_argument('-s', dest='size', action='store', default=300000, type=int,
-                            help='The size of the file you want to truncate to.')
-        parser.add_argument('-m', dest='mode', action='store', choices=['live', 'prerecorded', ' live', ' prerecorded'], default='live', type=str,
-                            help='Whether you want to test a prerecorded file or run algorithm live.')
+        MODE = os.getenv("MODE")
+        ALGORITHM = os.getenv("ALGORITHM")
+        INPUT_FILE = os.getenv("INPUT_FILE")
+        TARGET_FILE = os.getenv("TARGET_FILE")
+        DEVICE = os.getenv("DEVICE")
+        SIZE = os.getenv("SIZE")
 
-        args = parser.parse_args()
-        args.algorithm = clean(args.algorithm)
-        args.mode = clean(args.mode)
-        args.inputFile = clean(args.inputFile)
-        args.targetFile = clean(args.targetFile)
-        args.device = clean(args.device)
+        if(SIZE is None):
+            SIZE = 0
+        else:
+            SIZE = int(SIZE)
 
-        if args.mode == 'prerecorded':
-            app.process_prerecorded(args.device, args.inputFile,
-                                    args.targetFile, args.size, args.algorithm)
-        elif args.mode == 'live':
-            app.process_live(parser, args.device,
-                             args.targetFile, args.algorithm)
+        if MODE == 'prerecorded':
+            app.process_prerecorded(DEVICE, INPUT_FILE,
+                                    TARGET_FILE, SIZE, ALGORITHM)
+        elif MODE == 'live':
+            app.process_live(parser, DEVICE,
+                             TARGET_FILE, ALGORITHM)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')

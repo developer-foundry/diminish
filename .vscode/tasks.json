@@ -4,119 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "lms prerecorded",
+      "label": "run",
       "type": "shell",
-      "command": "python3 -m soundwave -a lms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "lms live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a lms -t data/pink-noise.wav -m live",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "nlms prerecorded",
-      "type": "shell",
-      "command": "python3 -m soundwave -a nlms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "nlms live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a nlms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m live",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "nsslms prerecorded",
-      "type": "shell",
-      "command": "python3 -m soundwave -a nsslms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "nsslms live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a nsslms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m live",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "rls prerecorded",
-      "type": "shell",
-      "command": "python3 -m soundwave -a rls -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "rls live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a rls -t data/pink-noise.wav -m live",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "clms precorded",
-      "type": "shell",
-      "command": "python3 -m soundwave -a clms -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "clms live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a clms -t data/pink-noise.wav -m live",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "crls prerecorded",
-      "type": "shell",
-      "command": "python3 -m soundwave -a crls -i data/truck-and-construction-noises.wav -t data/pink-noise.wav -m prerecorded",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "crls live",
-      "type": "shell",
-      "command": "python3 -m soundwave -a crls -t data/pink-noise.wav -m live",
+      "command": "python3 -m soundwave",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -137,26 +27,6 @@
       "label": "clean c",
       "type": "shell",
       "command": "invoke clean",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "bluetooth server",
-      "type": "shell",
-      "command": "python3 -m bluetoothnetwork -m server",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "bluetooth client",
-      "type": "shell",
-      "command": "python3 -m bluetoothnetwork -m client -a 5C:80:B6:43:06:9C",
       "group": {
         "kind": "build",
         "isDefault": true

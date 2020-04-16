@@ -5,91 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "args": [
-        "-i data/truck-and-construction-noises.wav"
-      ]
-    },
-    {
-      "name": "Debug LMS Prerecorded",
+      "name": "Debug",
       "type": "python",
       "request": "launch",
       "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a lms",
-        "-i data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav",
-        "-m prerecorded"
-      ]
-    },
-    {
-      "name": "Debug Fast (C) LMS Prerecorded",
-      "type": "python",
-      "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a clms",
-        "-i data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav",
-        "-m prerecorded"
-      ]
-    },
-    {
-      "name": "Debug Fast (C) RLS Prerecorded",
-      "type": "python",
-      "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a crls",
-        "-i data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav",
-        "-m prerecorded"
-      ]
-    },
-    {
-      "name": "Debug LMS Live",
-      "type": "python",
-      "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a lms",
-        "-t data/pink-noise.wav",
-        "-m live"
-      ]
-    },
-    {
-      "name": "Debug NLMS Prerecorded",
-      "type": "python",
-      "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a nlms",
-        "-i data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav",
-        "-m prerecorded"
-      ]
-    },
-    {
-      "name": "Debug NSSLMS Prerecorded",
-      "type": "python",
-      "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false,
-      "args": [
-        "-a nsslms",
-        "-i data/truck-and-construction-noises.wav",
-        "-t data/pink-noise.wav",
-        "-m prerecorded"
-      ]
+      "justMyCode": false
     }
   ]
 }
