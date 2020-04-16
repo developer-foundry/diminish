@@ -135,17 +135,19 @@ error_t divide(signal* signal, double divisor) {
   return error;
 }
 
-/*
+error_t transpose(signal* input, signal* transposed) {
+  error_t error = E_SUCCESS;
 
-//transpose a generic size matrix
-double * transpose(double * input, int length) {
-  double * result = malloc (sizeof(double) * length);
-  for (int i = 0; i < length; i++)
-    for (int j = 0; j < length; j++)
-      result[i*j] = input[j*i];
-  return result;
+  for (int i = 0; i < input->length; i++) {
+    for (int j = 0; j < input->n; j++) {
+      transposed->data[i+j*transposed->n] = input->data[j+i*input->n];
+    }
+  }
+
+  return error;
 }
 
+/*
 void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nParam, double *y, double *e, int lengthParam) {
   length = lengthParam;
   mu = muParam;
@@ -220,7 +222,7 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 
 int main() {
   int an = 3;
-  int alen = 3;
+  int alen = 8;
   double* data = malloc (alen * an * sizeof(double));
   for (int i = 0; i < alen; i++) {
     for (int j = 0; j < an; j++) {
@@ -231,7 +233,7 @@ int main() {
   unmarshall(a, data);
   print_signal(a);
 
-  int bn = 3;
+  int bn = 7;
   int blen = 3;
   free(data);
   data = malloc (blen * bn * sizeof(double));
@@ -293,10 +295,21 @@ int main() {
     printf("Error %s\n", error_message(result));
   }
 
+  signal* atransposed = initialize_signal(alen, an);
+  result = transpose(a, atransposed);
+  if(result == E_SUCCESS) {
+    print_signal(atransposed);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
   destroy_signal(a);
   destroy_signal(b);
   destroy_signal(adotb);
   destroy_signal(asubb);
   destroy_signal(aplusb);
+  destroy_signal(atransposed);
   return 0;
 }
