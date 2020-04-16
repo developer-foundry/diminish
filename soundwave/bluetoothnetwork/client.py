@@ -5,6 +5,8 @@ uuid = "87f39d29-7d6d-437d-973b-fba39e49d4ee"
 
 def configure_client():
     addr = None
+
+    print("Searching for ANC service")
     service_matches = bluetooth.find_service(uuid=uuid, address=addr)
 
     if len(service_matches) == 0:

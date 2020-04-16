@@ -25,10 +25,9 @@ def wait_on_client_connection(server_sock):
 def receive_frame(client_sock):
     try:
         data = client_sock.recv(1024)
+        return data
     except OSError:
         pass
-
-    return data
 
 def close_connection(client_sock, server_sock):
     client_sock.close()
