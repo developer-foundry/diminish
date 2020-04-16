@@ -157,11 +157,34 @@ def process_live(parser, device, targetFile, algorithm):
 def process_anc(parser, device, targetFile, algorithm, btmode):
     try:
         if(btmode == 'server'):
-            btserver.configure_server()
+            anc_server(device, targetFile, algorithm)
         elif(btmode == 'client'):
-            btclient.configure_client_connection()
+            anc_client(device)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
+
+def anc_server(device, targetFile, algorithm):
+    server_socket = btserver.configure_server()
+    client_socket = btserver.wait_on_client_connection(server_socket)
+    client_data = ''
+
+    while(client_data is not None):
+        client_data = btserver.receive_frame(client_socket)
+        print(client_data)
+    
+    btserver.close_connection(client_socket, server_socket)
+
+def anc_client(device):
+    i = 0
+    client_socket = btclient.configure_client()
+
+    while(i < 5):
+        result = btclient.send_data(client_socket, i)
+        print(result)
+        i += 1
+    
+    btclient.close_connection(client_socket)
+    
