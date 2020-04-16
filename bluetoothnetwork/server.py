@@ -10,8 +10,8 @@ def setup():
     uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
     bluetooth.advertise_service(server_sock, "SampleServer", service_id=uuid,
-                                service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
-                                profiles=[bluetooth.SERIAL_PORT_PROFILE],
+                                service_classes=[uuid, bluetooth.ADVANCED_AUDIO_CLASS],
+                                profiles=[bluetooth.ADVANCED_AUDIO_PROFILE],
                                 # protocols=[bluetooth.OBEX_UUID]
                                 )
 

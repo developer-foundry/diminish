@@ -28,15 +28,21 @@ gcc -shared -o libclms.so clms.o
 
 The algorithms available (-a cli parameter) are `lms`, `nlms`, `nsslms`, `rls`, and `clms` (fast lms using C library)
 
-## Bluetooth POC
+## Bluetooth 
 
-Install sudo apt-get install pi-bluetooth on PI
+Running bluetooth in compatibility mode,
 
-To get the address of your bluetooth server
+by modifying `/etc/systemd/system/dbus-org.bluez.service,`
 
-```
-hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
-```
+changing
+
+`ExecStart=/usr/lib/bluetooth/bluetoothd`
+
+into
+
+`ExecStart=/usr/lib/bluetooth/bluetoothd -C`
+
+Have to run server as `sudo` to access the appropriate permissions on hardware
 
 ## Tests
 
