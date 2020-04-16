@@ -116,7 +116,7 @@
    **/
   error_t add(signal* a, signal* b, signal* aplusb);
 
-  /** @brief Matrix transposition
+  /** @brief Signal transposition
    *
    * @a input must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
    * @a transposed must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
