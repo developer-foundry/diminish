@@ -87,6 +87,22 @@ error_t dot(signal* a, signal* b, signal* adotb) {
   return error;
 }
 
+error_t subtract(signal* a, signal* b, signal* asubb) {
+  error_t error = E_SUCCESS;
+  if(a->n != b->n || a->length != b->length) {
+    error = E_INVALID_MATRIX_DIMENSIONS;
+    return error;
+  }
+
+  for (int i = 0; i < a->length; i++) {
+    for (int j = 0; j < a->n; j++) {
+      asubb->data[j+i*a->n] = a->data[j+i*a->n] - b->data[j+i*a->n];
+    }
+  }
+
+  return error;
+}
+
 error_t multiply(signal* signal, double multiplier) {
   error_t error = E_SUCCESS;
   for(int i = 0; i < signal->n*signal->length; i++) {
@@ -204,8 +220,8 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 }*/
 
 int main() {
-  int an = 2;
-  int alen = 5;
+  int an = 3;
+  int alen = 3;
   double* data = malloc (alen * an * sizeof(double));
   for (int i = 0; i < alen; i++) {
     for (int j = 0; j < an; j++) {
@@ -216,8 +232,8 @@ int main() {
   unmarshall(a, data);
   print_signal(a);
 
-  int bn = 4;
-  int blen = 2;
+  int bn = 3;
+  int blen = 3;
   free(data);
   data = malloc (blen * bn * sizeof(double));
   for (int i = 0; i < blen; i++) {
@@ -258,8 +274,19 @@ int main() {
     printf("Error %s\n", error_message(result));
   }
 
+  signal* asubb = initialize_signal(an, alen);
+  result = subtract(a, b, asubb);
+  if(result == E_SUCCESS) {
+    print_signal(asubb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
   destroy_signal(a);
   destroy_signal(b);
   destroy_signal(adotb);
+  destroy_signal(asubb);
   return 0;
 }

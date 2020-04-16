@@ -30,7 +30,7 @@
   } errordesc[] = {
     { E_SUCCESS, "No error"},
     { E_INVALID_INPUT, "Invalid input"},
-    { E_INVALID_MATRIX_DIMENSIONS, "The number of columns from matrix a do not equal the number of rows of matrix b"}
+    { E_INVALID_MATRIX_DIMENSIONS, "The number of columns and rows do not align for the matrix operation being performed"}
   };
 
   /** @brief Return a human readable error message for @a error
@@ -97,5 +97,14 @@
    * @return an error ENUM in case an error code is returned
    **/
   error_t divide(signal* signal, double divisor);
+
+  /** @brief Subtraction between two signals
+   *
+   * @a a must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
+   * @a b must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
+   * @a asubb the result of a subtract b - must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
+   * @return an error ENUM in case an error code is returned
+   **/
+  error_t subtract(signal* a, signal* b, signal* asubb);
 
 #endif
