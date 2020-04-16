@@ -4,7 +4,6 @@ from functools import partial
 from profilehooks import profile
 
 import sys
-from pynput import keyboard
 
 import sounddevice as sd
 import soundfile as sf
@@ -24,11 +23,6 @@ liveTargetSignal = None
 liveOutputSignal = None
 liveErrorSignal = None
 processing = True
-
-def on_press(key):
-    if key == keyboard.Key.esc:
-        global processing
-        processing = not processing
 
 def lms(inputSignal, targetSignal, numChannels):
     return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
@@ -160,21 +154,27 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
 
 
 def process_live(parser, device, targetFile, algorithm):
-    try:
-        listener = keyboard.Listener(on_press=on_press)
-        listener.start()  # start to listen on a separate thread
+    global processing
+    nextAction = ''
 
+    try:
         numChannels = 2
         targetSignal, targetFs = sf.read(targetFile, dtype='float32')
         algo_partial = partial(
             live_algorithm, algorithm, targetSignal, numChannels)
         with sd.Stream(device=(device, device),
                     channels=numChannels, callback=algo_partial):
-            input()
-    except KeyboardInterrupt:
-        #now that we have interrupted the recording, plot the results
+            while nextAction.upper() != 'EXIT':
+                nextAction = input()
+                if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
+                    processing = not processing
+                
+        
+        # plot the results on exit
         plot.plot_vertical(algorithm, 'live', liveInputSignal,
                        liveTargetSignal, liveOutputSignal, liveErrorSignal)
+
+    except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
