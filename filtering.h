@@ -147,3 +147,113 @@
   void lms(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length);
 
 #endif
+
+/**
+ * Examples of use
+ */ 
+
+/*int main() {
+  int an = 8;
+  int alen = 8;
+  double* data = malloc (alen * an * sizeof(double));
+  for (int i = 0; i < alen; i++) {
+    for (int j = 0; j < an; j++) {
+      data[j+i*an] = (double)(j+i*an);
+    }
+  }
+  signal* a = initialize_signal(an, alen);
+  unmarshall(a, data);
+  print_signal(a);
+
+  signal* extracted = initialize_signal(an, 1);
+  error_t result = extract(a, 8, extracted);
+  if(result == E_SUCCESS) {
+    print_signal(extracted);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  int bn = 3;
+  int blen = 3;
+  free(data);
+  data = malloc (blen * bn * sizeof(double));
+  for (int i = 0; i < blen; i++) {
+    for (int j = 0; j < bn; j++) {
+      data[j+i*bn] = (double)(j+i*bn);
+    }
+  }
+  signal* b = initialize_signal(bn, blen);
+  unmarshall(b, data);
+  free(data);
+  print_signal(b);
+
+  signal* adotb = initialize_signal(bn, alen);
+  error_t result = dot(a, b, adotb);
+  if(result == E_SUCCESS) {
+    print_signal(adotb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  result = multiply(a, 2);
+  if(result == E_SUCCESS) {
+    print_signal(a);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  result = divide(a, 2);
+  if(result == E_SUCCESS) {
+    print_signal(a);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  signal* asubb = initialize_signal(an, alen);
+  result = subtract(a, b, asubb);
+  if(result == E_SUCCESS) {
+    print_signal(asubb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  signal* aplusb = initialize_signal(an, alen);
+  result = add(a, b, aplusb);
+  if(result == E_SUCCESS) {
+    print_signal(aplusb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  signal* atransposed = initialize_signal(alen, an);
+  result = transpose(a, atransposed);
+  if(result == E_SUCCESS) {
+    print_signal(atransposed);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  destroy_signal(a);
+  destroy_signal(b);
+  destroy_signal(adotb);
+  destroy_signal(asubb);
+  destroy_signal(aplusb);
+  destroy_signal(atransposed);
+  destroy_signal(extracted);
+
+  return 0;
+}*/
