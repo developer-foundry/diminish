@@ -181,7 +181,9 @@ def anc_server(device, targetFile, algorithm):
     client_data = ''
 
     algo_partial = partial(anc_server_listener, client_socket, server_socket)
-    with sd.OutputStream(device=(device, device), callback=algo_partial):
+    with sd.OutputStream(device=(device, device), 
+                         blocksize=128,
+                         callback=algo_partial):
         while nextAction.upper() != 'EXIT':
             nextAction = input()
             if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
@@ -203,7 +205,9 @@ def anc_client(device):
     client_socket = btclient.configure_client()
 
     algo_partial = partial(anc_client_listener, client_socket)
-    with sd.InputStream(device=(device, device), callback=algo_partial):
+    with sd.InputStream(device=(device, device),
+                        blocksize=128,
+                        callback=algo_partial):
         while nextAction.upper() != 'EXIT':
             nextAction = input()
             if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
