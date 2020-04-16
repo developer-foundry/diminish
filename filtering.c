@@ -95,17 +95,15 @@ error_t multiply(signal* signal, double multiplier) {
   return error;
 }
 
-/*
-
-//divide a matrix by a scalar
-double * divide(double *matrix, double divisor) {
-  double * result = malloc (sizeof(double) * 4);
-  result[0] = matrix[0] / divisor;
-  result[1] = matrix[1] / divisor;
-  result[2] = matrix[2] / divisor;
-  result[3] = matrix[3] / divisor;
-  return result;
+error_t divide(signal* signal, double divisor) {
+  error_t error = E_SUCCESS;
+  for(int i = 0; i < signal->n*signal->length; i++) {
+    signal->data[i] = signal->data[i] / divisor;
+  }
+  return error;
 }
+
+/*
 
 //subtract two matricies of equal size
 //assumes a 2x2 matrix
@@ -242,14 +240,23 @@ int main() {
     printf("Error %s\n", error_message(result));
   }
 
-  /*result = multiply(a, 2);
+  result = multiply(a, 2);
   if(result == E_SUCCESS) {
     print_signal(a);
     printf("Success\n");
   }
   else {
     printf("Error %s\n", error_message(result));
-  }*/
+  }
+
+  result = divide(a, 2);
+  if(result == E_SUCCESS) {
+    print_signal(a);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
 
   destroy_signal(a);
   destroy_signal(b);
