@@ -20,7 +20,8 @@
   {
     E_SUCCESS = 0,
     E_INVALID_INPUT = 1,
-    E_INVALID_MATRIX_DIMENSIONS = 2
+    E_INVALID_MATRIX_DIMENSIONS = 2,
+    E_OUT_OF_BOUNDS = 3
   };
 
   typedef enum error_codes error_t;
@@ -30,7 +31,8 @@
   } errordesc[] = {
     { E_SUCCESS, "No error"},
     { E_INVALID_INPUT, "Invalid input"},
-    { E_INVALID_MATRIX_DIMENSIONS, "The number of columns and rows do not align for the matrix operation being performed"}
+    { E_INVALID_MATRIX_DIMENSIONS, "The number of columns and rows do not align for the matrix operation being performed"},
+    { E_OUT_OF_BOUNDS, "The index given is out of the array bounds"}
   };
 
   /** @brief Return a human readable error message for @a error
@@ -60,6 +62,14 @@
    * @a data the signal data to unmarshall into @a signal
    **/
   void unmarshall(signal* signal, double* data);
+
+  /** @brief Extract a single row or sample from the input signal
+   *
+   * @a input must have been initialized with a call to ::initialize_signal
+   * @a k is the index that is to be retrieved
+   * @a result must have been initialized with a call to ::initialize_signal
+   **/
+  error_t extract(signal* input, int k, signal* result);
 
   /** @brief Populate signal with zeros
    *
@@ -123,5 +133,17 @@
    * @return an error ENUM in case an error code is returned
    **/
   error_t transpose(signal* input, signal* transposed);
+
+  /** @brief Least Means Squared adaptive filtering
+   *
+   * @a target_signal_in from python bindings - this is the desired output and is row major ordered
+   * @a input_signal_in from python bindings - this is what the microphone is hearing and is row major ordered
+   * @a mu from python bindings - this is the learning rate or step size
+   * @a n from python bindings - this is the number of columns in the input signal
+   * @a y_out from python bindings - this is an out parameter containing the output signal
+   * @a e_out from python bindings - this is an out parameter containing the error signal
+   * @a length from python bindings - this is the number of samples or rows in the input signal
+   **/
+  void lms(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length);
 
 #endif

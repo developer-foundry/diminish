@@ -43,6 +43,20 @@ void unmarshall(signal* signal, double* data) {
   }
 }
 
+error_t extract(signal* input, int k, signal* result) {
+  error_t error = E_SUCCESS;
+  if(k >= input->length) {
+    error = E_OUT_OF_BOUNDS;
+    return error;
+  }
+
+  for (int i = 0; i < input->n; i++) {
+    result->data[i] = input->data[k*input->n+i];
+  }
+
+  return error;
+}
+
 void print_signal(signal* signal) {
   printf("==================\n");
   for (int i = 0; i < signal->length; i++) {
@@ -192,37 +206,44 @@ void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 
   delSignal(targetSignal);
   delSignal(inputSignal);
-}
-
-void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nParam, double *y, double *e, int lengthParam) {
-  length = lengthParam;
-  mu = muParam;
-  n = nParam;
-
-  signal *targetSignal = newSignal(length);
-  unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
-
-  signal *inputSignal = newSignal(length);
-  unmarshallInput(inputSignal, inputSignalIn, length);
-
-  zeroes(y, length);
-  zeroes(e, length);
-  zeroes(weights, 2); //TODO might need to change to random instead
-
-  for (int k = 0; k < length; k++) {
-    y[k] = dot(weights, sub(inputSignal, k));
-    e[k] = subone(targetSignal,k) - y[k];
-    double * dw = multi(mu * e[k], sub(inputSignal,k));
-    add(weights,dw);
-  }
-
-  delSignal(targetSignal);
-  delSignal(inputSignal);
 }*/
 
-int main() {
-  int an = 3;
-  int alen = 3;
+void lms(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length) {
+  signal* target_signal = initialize_signal(n, length);
+  unmarshall(target_signal, target_signal_in);
+
+  signal* input_signal = initialize_signal(n, length);
+  unmarshall(input_signal, input_signal_in);
+
+  signal* weights = initialize_signal(n, 1);
+  zeros(weights);
+
+  for (int k = 0; k < length; k++) {
+    signal* kth_input = initialize_signal(n, 1);
+    zeros(kth_input);
+    signal* result = initialize_signal(1, 1);
+    zeros(result);
+
+    extract(input_signal, k, kth_input);
+    dot(weights, kth_input, result);
+    y_out[k] = result->data[0];
+    e_out[k] = target_signal->data[k] - y_out[k];
+
+    multiply(kth_input, mu * e_out[k]);
+    add(weights, kth_input, weights);
+
+    destroy_signal(kth_input);
+    destroy_signal(result);
+  }
+
+  destroy_signal(target_signal);
+  destroy_signal(input_signal);
+  destroy_signal(weights);
+}
+
+/*int main() {
+  int an = 8;
+  int alen = 8;
   double* data = malloc (alen * an * sizeof(double));
   for (int i = 0; i < alen; i++) {
     for (int j = 0; j < an; j++) {
@@ -232,6 +253,16 @@ int main() {
   signal* a = initialize_signal(an, alen);
   unmarshall(a, data);
   print_signal(a);
+
+  signal* extracted = initialize_signal(an, 1);
+  error_t result = extract(a, 8, extracted);
+  if(result == E_SUCCESS) {
+    print_signal(extracted);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
 
   int bn = 3;
   int blen = 3;
@@ -311,6 +342,7 @@ int main() {
   destroy_signal(asubb);
   destroy_signal(aplusb);
   destroy_signal(atransposed);
+  destroy_signal(extracted);
 
   return 0;
-}
+}*/
