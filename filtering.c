@@ -36,24 +36,24 @@ void destroy_signal(signal* signal) {
 }
 
 void unmarshall(signal* signal, double* data) {
-  for (int i = 0; i < signal->n; i++) {
-    for (int j = 0; j < signal->length; j++) {
-      signal->data[j+i*signal->length] = data[j+i*signal->length];
+  for (int i = 0; i < signal->length; i++) {
+    for (int j = 0; j < signal->n; j++) {
+      signal->data[j+i*signal->n] = data[j+i*signal->n];
     }
   }
 }
 
 void print_signal(signal* signal) {
   printf("==================\n");
-  for (int i = 0; i < signal->n; i++) {
+  for (int i = 0; i < signal->length; i++) {
     printf("sample "); 
     printf(ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET ": [", i);
-    for (int j = 0; j < signal->length; j++) {
-      if(j < signal->length - 1) {
-        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET ",", signal->data[j+i*signal->length]);
+    for (int j = 0; j < signal->n; j++) {
+      if(j < signal->n - 1) {
+        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET ",", signal->data[j+i*signal->n]);
       }
       else {
-        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET "", signal->data[j+i*signal->length]);
+        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET "", signal->data[j+i*signal->n]);
       }
     }
     printf("]\n");
@@ -80,72 +80,22 @@ error_t dot(signal* a, signal* b, signal* adotb) {
       for(int k = 0; k < a->n; k++) {
         product += a->data[k+i*a->n] * b->data[k*b->n+j];
       }
-      adotb->data[i*a->length+j] = product;
+      adotb->data[i*b->n+j] = product;
     }
   }
 
   return error;
 }
 
+error_t multiply(signal* signal, double multiplier) {
+  error_t error = E_SUCCESS;
+  for(int i = 0; i < signal->n*signal->length; i++) {
+    signal->data[i] = signal->data[i] * multiplier;
+  }
+  return error;
+}
+
 /*
-//assumes matrixOne is 2x2 and matrixTwo is 1x2
-double *dotp(double *matrixOne, double *matrixTwo) {
-  double * result = malloc (sizeof(double) * 4);
-  result[0] = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
-  result[1] = matrixOne[2] * matrixTwo[0] + matrixOne[3] * matrixTwo[1];
-  return result;
-}
-
-//assumes matrixOne is 1x2 and matrixTwo is 2x2
-double *dotpreverse(double *matrixOne, double *matrixTwo) {
-  double * result = malloc (sizeof(double) * 4);
-  result[0] = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
-  result[1] = matrixOne[0] * matrixTwo[2] + matrixOne[1] * matrixTwo[3];
-  return result;
-}
-
-//assumes matrixOne is 2x1 and matrixTwo is 1x2
-double dotdouble(double *matrixOne, double *matrixTwo) {
-  double result = 0.0;
-  result = matrixOne[0] * matrixTwo[0] + matrixOne[1] * matrixTwo[1];
-  return result;
-}
-
-//explicit for weights - should be generalized to dotdouble
-double dot(double *weights, double *input) {
-  return weights[0] * input[0] + weights[1] * input[1];
-}
-
-//indexing for Signal struct
-double * sub(signal *input, int index) {
-  double * diff = malloc (sizeof(double) * 2);
-  diff[0] = input->channel_one[index];
-  diff[1] = input->channel_two[index];
-  return diff;
-}
-
-//indexing for Signal struct
-double subone(signal *input, int index) {
-  return input->channel_one[index];
-}
-
-//multiple a matrix by a scalar
-double * multi(double mulptilicand, double * input) {
-  double * result = malloc (sizeof(double) * 2);
-  result[0] = input[0] * mulptilicand;
-  result[1] = input[1] * mulptilicand;
-  return result;
-}
-
-//multiple a matrix by a scalar
-double * multifour(double mulptilicand, double * input) {
-  double * result = malloc (sizeof(double) * 4);
-  result[0] = input[0] * mulptilicand;
-  result[1] = input[1] * mulptilicand;
-  result[2] = input[2] * mulptilicand;
-  result[3] = input[3] * mulptilicand;
-  return result;
-}
 
 //divide a matrix by a scalar
 double * divide(double *matrix, double divisor) {
@@ -256,25 +206,25 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 }*/
 
 int main() {
-  int an = 3;
-  int alen = 3;
+  int an = 2;
+  int alen = 5;
   double* data = malloc (alen * an * sizeof(double));
-  for (int i = 0; i < an; i++) {
-    for (int j = 0; j < alen; j++) {
-      data[j+i*alen] = (double)(j+i*alen);
+  for (int i = 0; i < alen; i++) {
+    for (int j = 0; j < an; j++) {
+      data[j+i*an] = (double)(j+i*an);
     }
   }
   signal* a = initialize_signal(an, alen);
   unmarshall(a, data);
   print_signal(a);
 
-  int bn = 3;
-  int blen = 3;
+  int bn = 4;
+  int blen = 2;
   free(data);
   data = malloc (blen * bn * sizeof(double));
-  for (int i = 0; i < bn; i++) {
-    for (int j = 0; j < blen; j++) {
-      data[j+i*blen] = (double)(j+i*blen);
+  for (int i = 0; i < blen; i++) {
+    for (int j = 0; j < bn; j++) {
+      data[j+i*bn] = (double)(j+i*bn);
     }
   }
   signal* b = initialize_signal(bn, blen);
@@ -282,7 +232,7 @@ int main() {
   free(data);
   print_signal(b);
 
-  signal* adotb = initialize_signal(alen, bn);
+  signal* adotb = initialize_signal(bn, alen);
   error_t result = dot(a, b, adotb);
   if(result == E_SUCCESS) {
     print_signal(adotb);
@@ -291,6 +241,15 @@ int main() {
   else {
     printf("Error %s\n", error_message(result));
   }
+
+  /*result = multiply(a, 2);
+  if(result == E_SUCCESS) {
+    print_signal(a);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }*/
 
   destroy_signal(a);
   destroy_signal(b);

@@ -82,4 +82,12 @@
    **/
   error_t dot(signal* a, signal* b, signal* adotb);
 
+  /** @brief Scalar multiplication of a signal. This performs in place and does not create a new signal
+   *
+   * @a a must have been initialized with a call to ::initialize_signal and contains data through ::unmarshall
+   * @a multiplier scalar number to multiply against a inplace
+   * @return an error ENUM in case an error code is returned
+   **/
+  error_t multiply(signal* a, double multiplier);
+
 #endif
