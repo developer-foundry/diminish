@@ -182,7 +182,7 @@ def anc_client(device):
     client_socket = btclient.configure_client()
 
     while(i < 5):
-        result = btclient.send_data(client_socket, i)
+        result = btclient.send_data(client_socket, i.to_bytes(2, byteorder='big'))
         print(result)
         i += 1
     
