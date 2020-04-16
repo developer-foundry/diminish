@@ -182,9 +182,6 @@ def process_live(parser, device, targetFile, algorithm):
 
 def process_anc(parser, device, targetFile, algorithm, btmode):
     try:
-        listener = keyboard.Listener(on_press=on_press)
-        listener.start()  # start to listen on a separate thread
-        
         if(btmode == 'server'):
             btserver.configure_server()
         elif(btmode == 'client'):
