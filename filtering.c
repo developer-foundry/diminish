@@ -17,7 +17,7 @@ signal* initialize_signal(size_t n, size_t len) {
     return NULL;
   }
 
-  return_signal->data = malloc (len * n * sizeof return_signal->data);
+  return_signal->data = malloc (len * n * sizeof(double));
   if (return_signal->data == NULL) {
     free(return_signal);
     return NULL;
@@ -222,7 +222,7 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 
 int main() {
   int an = 3;
-  int alen = 8;
+  int alen = 3;
   double* data = malloc (alen * an * sizeof(double));
   for (int i = 0; i < alen; i++) {
     for (int j = 0; j < an; j++) {
@@ -233,7 +233,7 @@ int main() {
   unmarshall(a, data);
   print_signal(a);
 
-  int bn = 7;
+  int bn = 3;
   int blen = 3;
   free(data);
   data = malloc (blen * bn * sizeof(double));
@@ -311,5 +311,6 @@ int main() {
   destroy_signal(asubb);
   destroy_signal(aplusb);
   destroy_signal(atransposed);
+
   return 0;
 }
