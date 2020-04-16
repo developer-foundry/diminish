@@ -46,12 +46,15 @@ void unmarshall(signal* signal, double* data) {
 void print_signal(signal* signal) {
   printf("==================\n");
   for (int i = 0; i < signal->n; i++) {
-    printf("sample %d: [", i);
+    printf("sample "); 
+    printf(ANSI_COLOR_BLUE "%d" ANSI_COLOR_RESET ": [", i);
     for (int j = 0; j < signal->length; j++) {
-      if(j < signal->length - 1)
-        printf("%f,", signal->data[j+i*signal->length]);
-      else
-        printf("%f", signal->data[j+i*signal->length]);
+      if(j < signal->length - 1) {
+        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET ",", signal->data[j+i*signal->length]);
+      }
+      else {
+        printf(ANSI_COLOR_MAGENTA "%f" ANSI_COLOR_RESET "", signal->data[j+i*signal->length]);
+      }
     }
     printf("]\n");
   }
