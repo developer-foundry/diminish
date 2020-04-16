@@ -24,7 +24,7 @@ def wait_on_client_connection(server_sock):
 
 def receive_frame(client_sock):
     try:
-        data = client_sock.recv(1024)
+        data = client_sock.recv(4096)
         return data
     except OSError:
         pass

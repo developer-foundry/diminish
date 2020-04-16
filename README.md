@@ -48,15 +48,21 @@ gcc -shared -o libclms.so clms.o
 
 ## Bluetooth Configuration
 
+### Setup PyBluez
+1.`sudo apt-get install libbluetooth-dev`
+2. `pip3 install -r requirements.txt`
+
+### Configure Hardware
 The bluetooth configuration requires running bluetooth in compatibility mode on the ANC device or the device that is in `server` mode. You can turn this on by performing the following steps on your server device:
 
 1. Edit `/etc/systemd/system/dbus-org.bluez.service`
 2. Change `ExecStart=/usr/lib/bluetooth/bluetoothd` to `ExecStart=/usr/lib/bluetooth/bluetoothd -C`
-3. Run `python3 -m soundwave`
-4. You should get a permission denied error.
-5. Need to perform the following steps:
-    1. `cat /etc/group | grep bluetooth`
-    2. `sudo usermod -G bluetooth -a pi`
+3. Run `sudo systemctl daemon-reload`
+4. `sudo systemctl restart bluetooth`
+5. Run `python3 -m soundwave`
+6. You should get a permission denied error.
+7. Need to perform the following steps:
+    2. `sudo usermod -G bluetooth -a ${username}`
     3. `sudo chgrp bluetooth /var/run/sdp`
     4. Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.path` and add the following contents:
         ```
@@ -90,8 +96,8 @@ The bluetooth configuration requires running bluetooth in compatibility mode on 
         sudo systemctl enable var-run-sdp.service
         sudo systemctl start var-run-sdp.path
         ```
-6. Set the environment variables correctly to run server mode.
-7. Run `python3 -m soundwave`
+8. Set the `BT_MODE=server` in `.env`
+9. Run `python3 -m soundwave`
 
 ## Tests
 

@@ -4,6 +4,7 @@ from functools import partial
 from profilehooks import profile
 
 import sys
+import pickle
 
 import sounddevice as sd
 import soundfile as sf
@@ -168,9 +169,11 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
 
 def anc_server_listener(client_socket, server_socket, outdata, frames, time, status):
     client_data = btserver.receive_frame(client_socket)
-    print('size:', sys.getsizeof(client_data))
-    reference_data = np.frombuffer(client_data)
+    print('size of client_data:', sys.getsizeof(client_data))
+    reference_data = pickle.loads(client_data)
+    print('size of reference_data:', sys.getsizeof(reference_data))
     print('shape:', reference_data.shape)
+    print(reference_data)
     outdata[:] = reference_data
 
 def anc_server(device, targetFile, algorithm):
@@ -183,6 +186,7 @@ def anc_server(device, targetFile, algorithm):
     algo_partial = partial(anc_server_listener, client_socket, server_socket)
     with sd.OutputStream(device=(device, device), 
                          blocksize=128,
+                         channels=2,
                          callback=algo_partial):
         while nextAction.upper() != 'EXIT':
             nextAction = input()
@@ -194,9 +198,9 @@ def anc_server(device, targetFile, algorithm):
 
 def anc_client_listener(client_socket, indata, frames, time, status):
     print('shape: ', indata.shape)
-    reference_data = indata.tobytes()
-    print('size:', sys.getsizeof(reference_data))
-    btclient.send_data(client_socket, indata.tobytes())
+    reference_data = pickle.dumps(indata)
+    print('size of ref_data:', sys.getsizeof(reference_data))
+    btclient.send_data(client_socket, reference_data)
     print('ACK')
 
 def anc_client(device):
@@ -207,6 +211,7 @@ def anc_client(device):
     algo_partial = partial(anc_client_listener, client_socket)
     with sd.InputStream(device=(device, device),
                         blocksize=128,
+                        channels=2,
                         callback=algo_partial):
         while nextAction.upper() != 'EXIT':
             nextAction = input()
