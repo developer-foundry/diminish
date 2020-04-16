@@ -103,6 +103,22 @@ error_t subtract(signal* a, signal* b, signal* asubb) {
   return error;
 }
 
+error_t add(signal* a, signal* b, signal* aplusb) {
+  error_t error = E_SUCCESS;
+  if(a->n != b->n || a->length != b->length) {
+    error = E_INVALID_MATRIX_DIMENSIONS;
+    return error;
+  }
+
+  for (int i = 0; i < a->length; i++) {
+    for (int j = 0; j < a->n; j++) {
+      aplusb->data[j+i*a->n] = a->data[j+i*a->n] + b->data[j+i*a->n];
+    }
+  }
+
+  return error;
+}
+
 error_t multiply(signal* signal, double multiplier) {
   error_t error = E_SUCCESS;
   for(int i = 0; i < signal->n*signal->length; i++) {
@@ -120,23 +136,6 @@ error_t divide(signal* signal, double divisor) {
 }
 
 /*
-
-//subtract two matricies of equal size
-//assumes a 2x2 matrix
-double * subtract(double *matrixOne, double *matrixTwo) {
-  double * result = malloc (sizeof(double) * 4);
-  result[0] = matrixOne[0] - matrixTwo[0];
-  result[1] = matrixOne[1] - matrixTwo[1];
-  result[2] = matrixOne[2] - matrixTwo[2];
-  result[3] = matrixOne[3] - matrixTwo[3];
-  return result;
-}
-
-//should be refactored to be more generic
-void add(double * weights, double * dw) {
-  weights[0] = weights[0] + dw[0];
-  weights[1] = weights[1] + dw[1];
-}
 
 //transpose a generic size matrix
 double * transpose(double * input, int length) {
@@ -284,9 +283,20 @@ int main() {
     printf("Error %s\n", error_message(result));
   }
 
+  signal* aplusb = initialize_signal(an, alen);
+  result = add(a, b, aplusb);
+  if(result == E_SUCCESS) {
+    print_signal(aplusb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
   destroy_signal(a);
   destroy_signal(b);
   destroy_signal(adotb);
   destroy_signal(asubb);
+  destroy_signal(aplusb);
   return 0;
 }
