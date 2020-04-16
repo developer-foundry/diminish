@@ -169,7 +169,7 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
 def anc_server_listener(client_socket, server_socket, outdata, frames, time, status):
     client_data = btserver.receive_frame(client_socket)
     reference_data = np.frombuffer(client_data)
-    print(reference_data)
+    print(reference_data.shape)
     outdata[:] = reference_data
 
 def anc_server(device, targetFile, algorithm):
@@ -190,7 +190,8 @@ def anc_server(device, targetFile, algorithm):
 
 
 def anc_client_listener(client_socket, indata, frames, time, status):
-    result = btclient.send_data(client_socket, indata.tobytes())
+    print(indata.shape)
+    btclient.send_data(client_socket, indata.tobytes())
     print('ACK')
 
 def anc_client(device):

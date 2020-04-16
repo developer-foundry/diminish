@@ -26,7 +26,7 @@ def configure_client():
     return socket
 
 def send_data(socket, data):
-    print('Sending: ', data)
+    print('Sending Data...')
     return socket.send(data)
 
 def close_connection(socket):
