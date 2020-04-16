@@ -24,41 +24,19 @@ liveOutputSignal = None
 liveErrorSignal = None
 processing = True
 
-def lms(inputSignal, targetSignal, numChannels):
-    return lmsalgos.lms(inputSignal, targetSignal, mu, numChannels)
-
-def clms(inputSignal, targetSignal, numChannels):
-    return lmsalgos.clms(inputSignal, targetSignal, mu, numChannels)
-
-def nlms(inputSignal, targetSignal, numChannels):
-    return lmsalgos.nlms(inputSignal, targetSignal, mu, numChannels)
-
-
-def nsslms(inputSignal, targetSignal, numChannels):
-    return lmsalgos.nsslms(inputSignal, targetSignal, mu, numChannels)
-
-def rls(inputSignal, targetSignal, numChannels):
-    return lmsalgos.rls(inputSignal, targetSignal, mu, numChannels)
-
-def crls(inputSignal, targetSignal, numChannels):
-    return lmsalgos.crls(inputSignal, targetSignal, mu, numChannels)
-
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
-        'lms': partial(lms, inputSignal, targetSignal, numChannels),
-        'nlms': partial(nlms, inputSignal, targetSignal, numChannels),
-        'nsslms': partial(nsslms, inputSignal, targetSignal, numChannels),
-        'rls': partial(rls, inputSignal, targetSignal, numChannels),
-        'clms': partial(clms, inputSignal, targetSignal, numChannels),
-        'crls': partial(crls, inputSignal, targetSignal, numChannels)
+        'lms': partial(lmsalgos.lms, inputSignal, targetSignal, mu, numChannels),
+        'nlms': partial(lmsalgos.nlms, inputSignal, targetSignal, mu, numChannels),
+        'nsslms': partial(lmsalgos.nsslms, inputSignal, targetSignal, mu, numChannels),
+        'rls': partial(lmsalgos.rls, inputSignal, targetSignal, mu, numChannels),
+        'clms': partial(lmsalgos.clms, inputSignal, targetSignal, mu, numChannels),
+        'crls': partial(lmsalgos.crls, inputSignal, targetSignal, mu, numChannels)
     }
 
-    # Get the function from switcher dictionary
     func = switcher.get(algorithm)
-    # Execute the function
     return func()
 
-#@profile(immediate=True)
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
     numChannels = len(inputSignal[0])
@@ -100,11 +78,7 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
                        targetSignal, outputSignal, errorSignal)
 
 
-# we need to do the actual processing here for the algorithm.
-# can we use a partial function to inject the information
-# about the algorithm chosen and the targetFile
-
-
+# call back for the sounddevice Stream to perform live processing
 def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames, time, status):
     global targetLocation
     global liveInputSignal
@@ -188,9 +162,6 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
             btclient.configure_client_connection()
 
     except KeyboardInterrupt:
-        #now that we have interrupted the recording, plot the results
-        plot.plot_vertical(algorithm, 'live', liveInputSignal,
-                       liveTargetSignal, liveOutputSignal, liveErrorSignal)
         parser.exit('\nInterrupted by user')
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
