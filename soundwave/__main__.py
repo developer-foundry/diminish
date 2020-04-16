@@ -18,6 +18,7 @@ if __name__ == '__main__':
         TARGET_FILE = os.getenv("TARGET_FILE")
         DEVICE = os.getenv("DEVICE")
         SIZE = os.getenv("SIZE")
+        BT_MODE = os.getenv("BT_MODE")
 
         if(SIZE is None):
             SIZE = 0
@@ -30,6 +31,9 @@ if __name__ == '__main__':
         elif MODE == 'live':
             app.process_live(parser, DEVICE,
                              TARGET_FILE, ALGORITHM)
+        elif MODE == 'anc':
+            app.process_anc(parser, DEVICE,
+                             TARGET_FILE, ALGORITHM, BT_MODE)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')

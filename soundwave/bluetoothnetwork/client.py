@@ -2,7 +2,7 @@ import sys
 import bluetooth
 
 
-def setup(serverAddress):
+def configure_client_connection():
     addr = None
 
     # search for the SampleServer service
@@ -24,6 +24,7 @@ def setup(serverAddress):
     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     sock.connect((host, port))
 
+    """
     print("Connected. Type something...")
     while True:
         data = input()
@@ -32,3 +33,4 @@ def setup(serverAddress):
         sock.send(data)
 
     sock.close()
+    """

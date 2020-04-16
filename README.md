@@ -42,7 +42,47 @@ into
 
 `ExecStart=/usr/lib/bluetooth/bluetoothd -C`
 
-Have to run server as `sudo` to access the appropriate permissions on hardware
+You will get a permission denied error.
+
+Need to perform the following steps:
+
+```
+$ cat /etc/group | grep bluetooth
+bluetooth:x:113:pi
+$ sudo usermod -G bluetooth -a pi
+$ sudo chgrp bluetooth /var/run/sdp
+```
+
+Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.path` and add the following contents:
+
+```
+[Unit]
+Descrption=Monitor /var/run/sdp
+
+[Install]
+WantedBy=bluetooth.service
+
+[Path]
+PathExists=/var/run/sdp
+Unit=var-run-sdp.service
+```
+
+Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.service` and add the following contents:
+
+```
+[Unit]
+Description=Set permission of /var/run/sdp
+
+[Install]
+RequiredBy=var-run-sdp.path
+
+[Service]
+Type=simple
+ExecStart=/bin/chgrp bluetooth /var/run/sdp
+ExecStartPost=/bin/chmod 662 /var/run/sdp
+```
+
+
 
 ## Tests
 

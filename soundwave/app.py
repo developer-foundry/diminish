@@ -14,6 +14,9 @@ import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
+import soundwave.bluetoothnetwork.server as btserver
+import soundwave.bluetoothnetwork.client as btclient
+
 mu = 0.00001
 targetLocation = 0
 liveInputSignal = None
@@ -168,6 +171,25 @@ def process_live(parser, device, targetFile, algorithm):
         with sd.Stream(device=(device, device),
                     channels=numChannels, callback=algo_partial):
             input()
+    except KeyboardInterrupt:
+        #now that we have interrupted the recording, plot the results
+        plot.plot_vertical(algorithm, 'live', liveInputSignal,
+                       liveTargetSignal, liveOutputSignal, liveErrorSignal)
+        parser.exit('\nInterrupted by user')
+    except Exception as e:
+        parser.exit(type(e).__name__ + ': ' + str(e))
+
+
+def process_anc(parser, device, targetFile, algorithm, btmode):
+    try:
+        listener = keyboard.Listener(on_press=on_press)
+        listener.start()  # start to listen on a separate thread
+        
+        if(btmode == 'server'):
+            btserver.configure_server()
+        elif(btmode == 'client'):
+            btclient.configure_client_connection()
+
     except KeyboardInterrupt:
         #now that we have interrupted the recording, plot the results
         plot.plot_vertical(algorithm, 'live', liveInputSignal,
