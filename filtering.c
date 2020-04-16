@@ -2,9 +2,13 @@
 
 struct signal {
   double* data; /** stores all input data up to number of inputs n */
-  int n; /** the number of inputs to filter */
-  int length; /** the length of each input */
+  size_t n; /** the number of inputs to filter. This is also the number of columns in the matrix */
+  size_t length; /** the length of each input. This is also the number of rows in the matrix */
 };
+
+char const*const error_message(error_t error) {
+  return errordesc[error].message;
+}
 
 signal* initialize_signal(size_t n, size_t len) {
   signal* return_signal = malloc (sizeof(signal));
@@ -31,16 +35,16 @@ void destroy_signal(signal* signal) {
   }
 }
 
-void unmarshall(signal* signal, double* data, int n, int len) {
+void unmarshall(signal* signal, double* data) {
   for (int i = 0; i < signal->n; i++) {
     for (int j = 0; j < signal->length; j++) {
-      //printf("setting [%d, %d] to %f\n", i, j, data[j+i*signal->length]);
       signal->data[j+i*signal->length] = data[j+i*signal->length];
     }
   }
 }
 
 void print_signal(signal* signal) {
+  printf("==================\n");
   for (int i = 0; i < signal->n; i++) {
     printf("sample %d: [", i);
     for (int j = 0; j < signal->length; j++) {
@@ -51,12 +55,33 @@ void print_signal(signal* signal) {
     }
     printf("]\n");
   }
+  printf("==================\n");
 }
 
-void zeros(signal* signal, int n, int len) {
-  for(int i = 0; i < n*len; i++) {
+void zeros(signal* signal) {
+  for(int i = 0; i < signal->n*signal->length; i++) {
     signal->data[i] = 0.0;
   }
+}
+
+error_t dot(signal* a, signal* b, signal* adotb) {
+  error_t error = E_SUCCESS;
+  if(a->n != b->length) {
+    error = E_INVALID_MATRIX_DIMENSIONS;
+    return error;
+  }
+
+  for(int i = 0; i < a->length; i++) {
+    for(int j = 0; j < b->n; j++) {
+      double product = 0.F;
+      for(int k = 0; k < a->n; k++) {
+        product += a->data[k+i*a->n] * b->data[k*b->n+j];
+      }
+      adotb->data[i*a->length+j] = product;
+    }
+  }
+
+  return error;
 }
 
 /*
@@ -228,20 +253,44 @@ void lms(double *targetSignalIn, double *inputSignalIn, double muParam, int nPar
 }*/
 
 int main() {
-  int n = 2;
-  int len = 5;
-  double* data = malloc (len * n * sizeof(double));
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < len; j++) {
-      data[j+i*len] = (double)(j+i*len);
+  int an = 3;
+  int alen = 3;
+  double* data = malloc (alen * an * sizeof(double));
+  for (int i = 0; i < an; i++) {
+    for (int j = 0; j < alen; j++) {
+      data[j+i*alen] = (double)(j+i*alen);
     }
   }
+  signal* a = initialize_signal(an, alen);
+  unmarshall(a, data);
+  print_signal(a);
 
-  signal* signal = initialize_signal(n, len);
-  zeros(signal, n, len);
-  print_signal(signal);
-  unmarshall(signal, data, n, len);
-  print_signal(signal);
-  destroy_signal(signal);
+  int bn = 3;
+  int blen = 3;
+  free(data);
+  data = malloc (blen * bn * sizeof(double));
+  for (int i = 0; i < bn; i++) {
+    for (int j = 0; j < blen; j++) {
+      data[j+i*blen] = (double)(j+i*blen);
+    }
+  }
+  signal* b = initialize_signal(bn, blen);
+  unmarshall(b, data);
+  free(data);
+  print_signal(b);
+
+  signal* adotb = initialize_signal(alen, bn);
+  error_t result = dot(a, b, adotb);
+  if(result == E_SUCCESS) {
+    print_signal(adotb);
+    printf("Success\n");
+  }
+  else {
+    printf("Error %s\n", error_message(result));
+  }
+
+  destroy_signal(a);
+  destroy_signal(b);
+  destroy_signal(adotb);
   return 0;
 }
