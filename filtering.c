@@ -76,9 +76,7 @@ void print_signal(signal* signal) {
 }
 
 void zeros(signal* signal) {
-  for(int i = 0; i < signal->n*signal->length; i++) {
-    signal->data[i] = 0.0;
-  }
+  memset(signal->data, 0, sizeof(signal->data));
 }
 
 error_t dot(signal* a, signal* b, signal* adotb) {
@@ -178,27 +176,30 @@ void rls(double *target_signal_in, double *input_signal_in, double mu, int n, do
     R->data[i*(R->n+1)] = r_eps;
   }
 
+  /* Initialize temporary variables to ensure memory is properly allocated and freed */
+  signal* kth_input = initialize_signal(n, 1);
+  signal* result = initialize_signal(1, 1);
+  signal* kth_input_transposed = initialize_signal(kth_input->length, kth_input->n);
+  signal* r_dot_kth_input = initialize_signal(kth_input->n,1);
+  signal* r_dot_kth_input_dot_kth_transposed = initialize_signal(1,1);
+  signal* kth_input_dot_r = initialize_signal(kth_input->n,1);
+  signal* kth_input_dot_r_dot_kth_transposed = initialize_signal(1,1);
+  signal* r_one_minus_divided = initialize_signal(R->n,R->n);
+  signal* R1 = initialize_signal(R->n,R->n);
+  signal* r_one_dot_kth_input_transposed = initialize_signal(1, R->n);
+  signal* dw = initialize_signal(weights->n, weights->length);
+
   for (int k = 0; k < length; k++) {
-    /* Initialize temporary variables to ensure memory is properly allocated and freed */
-    signal* kth_input = initialize_signal(n, 1);
     zeros(kth_input);
-    signal* result = initialize_signal(1, 1);
     zeros(result);
-    signal* kth_input_transposed = initialize_signal(kth_input->length, kth_input->n);
     zeros(kth_input_transposed);
-    signal* r_dot_kth_input = initialize_signal(kth_input->n,1);
     zeros(r_dot_kth_input);
-    signal* r_dot_kth_input_dot_kth_transposed = initialize_signal(1,1);
     zeros(r_dot_kth_input_dot_kth_transposed);
-    signal* kth_input_dot_r = initialize_signal(kth_input->n,1);
     zeros(kth_input_dot_r);
-    signal* kth_input_dot_r_dot_kth_transposed = initialize_signal(1,1);
     zeros(kth_input_dot_r_dot_kth_transposed);
-    signal* r_one_minus_divided = initialize_signal(R->n,R->n);
     zeros(r_one_minus_divided);
 
     /* Initialize R1 with R as it will become the basis of a multiplication */
-    signal* R1 = initialize_signal(R->n,R->n);
     zeros(R1);
     unmarshall(R1, R->data);
 
@@ -226,28 +227,24 @@ void rls(double *target_signal_in, double *input_signal_in, double mu, int n, do
     multiply(R, (1 / mu));
 
     /* Compute next set of weights */
-    signal* r_one_dot_kth_input_transposed = initialize_signal(1, R->n);
-    signal* dw = initialize_signal(weights->n, weights->length);
     zeros(r_one_dot_kth_input_transposed);
     unmarshall(dw, weights->data);
     dot(R, kth_input_transposed, r_one_dot_kth_input_transposed);
     multiply(r_one_dot_kth_input_transposed, e_out[k]);
     add(dw, r_one_dot_kth_input_transposed, weights);
-
-    /* Free memory for next iteration */
-    destroy_signal(dw);
-    destroy_signal(r_one_dot_kth_input_transposed);
-    destroy_signal(kth_input);
-    destroy_signal(result);
-    destroy_signal(kth_input_transposed);
-    destroy_signal(r_dot_kth_input);
-    destroy_signal(r_dot_kth_input_dot_kth_transposed);
-    destroy_signal(kth_input_dot_r);
-    destroy_signal(kth_input_dot_r_dot_kth_transposed);
-    destroy_signal(R1);
-    destroy_signal(r_one_minus_divided);
   }
 
+  destroy_signal(dw);
+  destroy_signal(r_one_dot_kth_input_transposed);
+  destroy_signal(kth_input);
+  destroy_signal(result);
+  destroy_signal(kth_input_transposed);
+  destroy_signal(r_dot_kth_input);
+  destroy_signal(r_dot_kth_input_dot_kth_transposed);
+  destroy_signal(kth_input_dot_r);
+  destroy_signal(kth_input_dot_r_dot_kth_transposed);
+  destroy_signal(R1);
+  destroy_signal(r_one_minus_divided);
   destroy_signal(R);
   destroy_signal(target_signal);
   destroy_signal(input_signal);
@@ -321,9 +318,9 @@ int main() {
   double* e= malloc (length * sizeof(double));
   rls(target, input, 0.00001, 2, y, e, length);
 
-  for(int i = 0; i < length; i++) {
+  /*for(int i = 0; i < length; i++) {
     printf("y[%d]: [%.15f], e[%d]: [%.15f]\n", i, y[i], i, e[i]);
-  }
+  }*/
 
   free(input);
   free(target);
