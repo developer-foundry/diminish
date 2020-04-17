@@ -161,52 +161,94 @@ error_t transpose(signal* input, signal* transposed) {
   return error;
 }
 
-/*
-void rls(double *targetSignalIn, double *inputSignalIn, double muParam, int nParam, double *y, double *e, int lengthParam) {
-  length = lengthParam;
-  mu = muParam;
-  n = nParam;
+void rls(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length) {
+  signal* target_signal = initialize_signal(n, length);
+  unmarshall(target_signal, target_signal_in);
 
-  signal *targetSignal = newSignal(length);
-  unmarshallTarget(targetSignal, targetSignalIn, length); //TODO refactor to not be specific to target or input
+  signal* input_signal = initialize_signal(n, length);
+  unmarshall(input_signal, input_signal_in);
 
-  signal *inputSignal = newSignal(length);
-  unmarshallInput(inputSignal, inputSignalIn, length);
+  signal* weights = initialize_signal(n, 1);
+  zeros(weights);
 
-  zeroes(y, length);
-  zeroes(e, length);
-  zeroes(weights, 2);
-
-  double * R = malloc (sizeof(double) * 4);
+  signal* R = initialize_signal(n, n);
+  zeros(R);
   double r_eps = 1 / EPS;
-  R[0] = 1*r_eps;
-  R[1] = 0;
-  R[2] = 0;
-  R[3] = 1*r_eps;
-  for (int k = 0; k < length; k++) {
-    y[k] = dot(weights, sub(inputSignal, k));
-    e[k] = subone(targetSignal,k) - y[k];
-
-    double *inputTranspose = transpose(sub(inputSignal, k), 2);
-    double *dotRInput = dotp(R, sub(inputSignal, k));
-    double dotRInputTranspose = dotdouble(dotRInput, inputTranspose);
-    double *R1 = multifour(dotRInputTranspose, R);
-
-    double * dotInputR = dotpreverse(sub(inputSignal, k), R);
-    double dotInputRTranspose = dotdouble(dotInputR, inputTranspose);
-    double R2 = mu + dotInputRTranspose;
-
-    double * r1DivideR2 = divide(R1, R2);
-    double * rMinusR1DivideR2 = subtract(R, r1DivideR2);
-    R = multifour((1 / mu), rMinusR1DivideR2);
-
-    double * dw = multi(e[k], dotp(R, inputTranspose));
-    add(weights,dw);
+  for(int i = 0; i < n; i++) {
+    R->data[i*(R->n+1)] = r_eps;
   }
 
-  delSignal(targetSignal);
-  delSignal(inputSignal);
-}*/
+  for (int k = 0; k < length; k++) {
+    /* Initialize temporary variables to ensure memory is properly allocated and freed */
+    signal* kth_input = initialize_signal(n, 1);
+    zeros(kth_input);
+    signal* result = initialize_signal(1, 1);
+    zeros(result);
+    signal* kth_input_transposed = initialize_signal(kth_input->length, kth_input->n);
+    zeros(kth_input_transposed);
+    signal* r_dot_kth_input = initialize_signal(kth_input->n,1);
+    zeros(r_dot_kth_input);
+    signal* r_dot_kth_input_dot_kth_transposed = initialize_signal(1,1);
+    zeros(r_dot_kth_input_dot_kth_transposed);
+    signal* kth_input_dot_r = initialize_signal(kth_input->n,1);
+    zeros(kth_input_dot_r);
+    signal* kth_input_dot_r_dot_kth_transposed = initialize_signal(1,1);
+    zeros(kth_input_dot_r_dot_kth_transposed);
+    signal* r_one_minus_divided = initialize_signal(R->n,R->n);
+    zeros(r_one_minus_divided);
+
+    /* Initialize R1 with R as it will become the basis of a multiplication */
+    signal* R1 = initialize_signal(R->n,R->n);
+    zeros(R1);
+    unmarshall(R1, R->data);
+
+    extract(input_signal, k, kth_input);
+    dot(weights, kth_input, result);
+    y_out[k] = result->data[0];
+    e_out[k] = target_signal->data[k] - y_out[k];
+
+    /* Compute R1 (Matrix NxN) */
+    transpose(kth_input, kth_input_transposed);
+    dot(R, kth_input, r_dot_kth_input);
+    dot(r_dot_kth_input, kth_input_transposed, r_dot_kth_input_dot_kth_transposed);
+    multiply(R1, r_dot_kth_input_dot_kth_transposed->data[0]);
+
+    /* Computer R2 (Scalar) */
+    dot(kth_input, R, kth_input_dot_r);
+    dot(kth_input_dot_r, kth_input_transposed, kth_input_dot_r_dot_kth_transposed);
+    double R2 = mu + kth_input_dot_r_dot_kth_transposed->data[0];
+
+    /* Compute latest iteration of R */
+    divide(R1, R2);
+    subtract(R, R1, r_one_minus_divided);
+    unmarshall(R, r_one_minus_divided->data);
+    multiply(R, (1 / mu));
+
+    /* Compute next set of weights */
+    signal* r_one_dot_kth_input_transposed = initialize_signal(1,R->n);
+    zeros(r_one_dot_kth_input_transposed);
+    dot(R, kth_input_transposed, r_one_dot_kth_input_transposed);
+    multiply(r_one_dot_kth_input_transposed, e_out[k]);
+    add(weights, r_one_dot_kth_input_transposed, weights);
+
+    /* Free memory for next iteration */
+    destroy_signal(r_one_dot_kth_input_transposed);
+    destroy_signal(kth_input);
+    destroy_signal(result);
+    destroy_signal(kth_input_transposed);
+    destroy_signal(r_dot_kth_input);
+    destroy_signal(r_dot_kth_input_dot_kth_transposed);
+    destroy_signal(kth_input_dot_r);
+    destroy_signal(kth_input_dot_r_dot_kth_transposed);
+    destroy_signal(R1);
+    destroy_signal(r_one_minus_divided);
+  }
+
+  destroy_signal(R);
+  destroy_signal(target_signal);
+  destroy_signal(input_signal);
+  destroy_signal(weights);
+}
 
 void lms(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length) {
   signal* target_signal = initialize_signal(n, length);

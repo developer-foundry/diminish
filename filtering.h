@@ -143,8 +143,55 @@
    * @a y_out from python bindings - this is an out parameter containing the output signal
    * @a e_out from python bindings - this is an out parameter containing the error signal
    * @a length from python bindings - this is the number of samples or rows in the input signal
+   * 
+   * Pseudo code version
+   * y - output (Nx1 array)
+   * e - error (Nx1 array)
+   * w - weights (1xN array)
+   * x - input signal (P x N array) - P is number of inputs and N is number of samples
+   * d - target signal (1 x N array) - the desired output
+   * 
+   * y = np.zeros(N)
+   * e = np.zeros(N)
+   * for k in range(N):
+   *   y[k] = np.dot(self.w, x[k])
+   *   e[k] = d[k] - y[k]
+   *   dw = self.mu * e[k] * x[k]
+   *   self.w += dw
+   * return y, e
    **/
   void lms(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length);
+
+  /** @brief Recursive Least Squares adaptive filtering
+   *
+   * @a target_signal_in from python bindings - this is the desired output and is row major ordered
+   * @a input_signal_in from python bindings - this is what the microphone is hearing and is row major ordered
+   * @a mu from python bindings - this is the learning rate or step size
+   * @a n from python bindings - this is the number of columns in the input signal
+   * @a y_out from python bindings - this is an out parameter containing the output signal
+   * @a e_out from python bindings - this is an out parameter containing the error signal
+   * @a length from python bindings - this is the number of samples or rows in the input signal
+   * 
+   * Pseudo code version
+   * y - output (Nx1 array)
+   * e - error (Nx1 array)
+   * w - weights (1xN array)
+   * x - input signal (P x N array) - P is number of inputs and N is number of samples
+   * d - target signal (1 x N array) - the desired output
+   * 
+   * y = np.zeros(N)
+   * e = np.zeros(N)
+   * 
+   * for k in range(N):
+   *   y[k] = np.dot(self.w, x[k])
+   *   e[k] = d[k] - y[k]
+   *   R1 = np.dot(np.dot(np.dot(self.R,x[k]),x[k].T),self.R)
+   *   R2 = self.mu + np.dot(np.dot(x[k],self.R),x[k].T)
+   *   self.R = 1/self.mu * (self.R - R1/R2)
+   *   dw = np.dot(self.R, x[k].T) * e[k]
+   *   self.w += dw
+   **/
+  void rls(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length);
 
 #endif
 
