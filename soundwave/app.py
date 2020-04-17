@@ -5,6 +5,7 @@ from profilehooks import profile
 
 import sys
 import pickle
+import _thread as thread
 
 import sounddevice as sd
 import soundfile as sf
@@ -24,6 +25,8 @@ liveTargetSignal = None
 liveOutputSignal = None
 liveErrorSignal = None
 processing = True
+errorBuffer = np.arange(2).reshape(1,2)
+referenceBuffer = []
 
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
@@ -37,6 +40,7 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
     func = switcher.get(algorithm)
     return func()
+
 
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
@@ -167,33 +171,50 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
     except Exception as e:
         parser.exit(type(e).__name__ + ': ' + str(e))
 
-def anc_server_listener(client_socket, server_socket, outdata, frames, time, status):
-    client_data = btserver.receive_frame(client_socket)
-    print('size of client_data:', sys.getsizeof(client_data))
-    reference_data = pickle.loads(client_data)
-    print('size of reference_data:', sys.getsizeof(reference_data))
-    print('shape:', reference_data.shape)
-    print(reference_data)
-    outdata[:] = reference_data
 
-def anc_server(device, targetFile, algorithm):
-    global processing
-    nextAction = ''
+def anc_error_microphone_listener(indata, frames, time, status):
+    global errorBuffer
+    errorBuffer = np.concatenate((errorBuffer, indata), axis=0)
+
+
+def setup_error_microphone_buffer(device):
+    with sd.InputStream(device=(device, device), 
+                         blocksize=128, #make an env var
+                         channels=2,
+                         callback=anc_error_microphone_listener):
+        input()
+
+
+def setup_reference_microphone_buffer(device):
+    global referenceBuffer
     server_socket = btserver.configure_server()
     client_socket = btserver.wait_on_client_connection(server_socket)
-    client_data = ''
 
-    algo_partial = partial(anc_server_listener, client_socket, server_socket)
-    with sd.OutputStream(device=(device, device), 
-                         blocksize=128,
-                         channels=2,
-                         callback=algo_partial):
-        while nextAction.upper() != 'EXIT':
-            nextAction = input()
-            if(nextAction.upper() == 'PAUSE' or nextAction.upper() == 'RESUME'):
-                processing = not processing
+    # start listening to error microphone now that connection is made
+    thread.start_new_thread( setup_error_microphone_buffer, (device,) )
+
+    while True:
+        packet = client_socket.recv(1024) #make an env var
+        if not packet: break
+        referenceBuffer.append(packet)
 
     btserver.close_connection(client_socket, server_socket)
+
+
+def process_server_buffers():
+    global errorBuffer
+    global referenceBuffer
+    print("error buffer size: ", sys.getsizeof(errorBuffer))
+    print("referenceBuffer buffer size: ", sys.getsizeof(referenceBuffer))
+
+
+def anc_server(device, targetFile, algorithm):
+    # setup thread for the reference microphone
+    thread.start_new_thread( setup_reference_microphone_buffer, (device, ) )
+
+    # setup an infinite loop to process the buffers simultaneously
+    while True:
+        process_server_buffers()
 
 
 def anc_client_listener(client_socket, indata, frames, time, status):
@@ -202,6 +223,7 @@ def anc_client_listener(client_socket, indata, frames, time, status):
     print('size of ref_data:', sys.getsizeof(reference_data))
     btclient.send_data(client_socket, reference_data)
     print('ACK')
+
 
 def anc_client(device):
     global processing
