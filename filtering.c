@@ -261,25 +261,35 @@ void lms(double *target_signal_in, double *input_signal_in, double mu, int n, do
   signal* input_signal = initialize_signal(n, length);
   unmarshall(input_signal, input_signal_in);
 
-  signal* weights = initialize_signal(n, 1);
+  signal* weights = initialize_signal(1, n);
   zeros(weights);
+  /* If you use zero for LMS, it never converges */
+  weights->data[0] = (double)rand()/RAND_MAX*1.5-1.0;
+  weights->data[1] = (double)rand()/RAND_MAX*1.5-1.0;
 
   for (int k = 0; k < length; k++) {
     signal* kth_input = initialize_signal(n, 1);
     zeros(kth_input);
     signal* result = initialize_signal(1, 1);
     zeros(result);
+    signal* dw = initialize_signal(weights->n, weights->length);
+    unmarshall(dw, weights->data);
+    signal* kth_input_transposed = initialize_signal(kth_input->length, kth_input->n);
+    zeros(kth_input_transposed);
 
     extract(input_signal, k, kth_input);
-    dot(weights, kth_input, result);
+    dot(kth_input, weights, result);
     y_out[k] = result->data[0];
     e_out[k] = target_signal->data[k] - y_out[k];
 
-    multiply(kth_input, mu * e_out[k]);
-    add(weights, kth_input, weights);
+    transpose(kth_input, kth_input_transposed);
+    multiply(kth_input_transposed, mu * e_out[k]);
+    add(dw, kth_input_transposed, weights);
 
-    destroy_signal(kth_input);
     destroy_signal(result);
+    destroy_signal(dw);
+    destroy_signal(kth_input_transposed);
+    destroy_signal(kth_input);
   }
 
   destroy_signal(target_signal);
