@@ -168,7 +168,7 @@ void rls(double *target_signal_in, double *input_signal_in, double mu, int n, do
   signal* input_signal = initialize_signal(n, length);
   unmarshall(input_signal, input_signal_in);
 
-  signal* weights = initialize_signal(n, 1);
+  signal* weights = initialize_signal(1, n);
   zeros(weights);
 
   signal* R = initialize_signal(n, n);
@@ -203,15 +203,16 @@ void rls(double *target_signal_in, double *input_signal_in, double mu, int n, do
     unmarshall(R1, R->data);
 
     extract(input_signal, k, kth_input);
-    dot(weights, kth_input, result);
+    dot(kth_input, weights, result);
     y_out[k] = result->data[0];
     e_out[k] = target_signal->data[k] - y_out[k];
 
     /* Compute R1 (Matrix NxN) */
     transpose(kth_input, kth_input_transposed);
-    dot(R, kth_input, r_dot_kth_input);
+    dot(kth_input, R, r_dot_kth_input);
     dot(r_dot_kth_input, kth_input_transposed, r_dot_kth_input_dot_kth_transposed);
     multiply(R1, r_dot_kth_input_dot_kth_transposed->data[0]);
+
 
     /* Computer R2 (Scalar) */
     dot(kth_input, R, kth_input_dot_r);
@@ -225,13 +226,16 @@ void rls(double *target_signal_in, double *input_signal_in, double mu, int n, do
     multiply(R, (1 / mu));
 
     /* Compute next set of weights */
-    signal* r_one_dot_kth_input_transposed = initialize_signal(1,R->n);
+    signal* r_one_dot_kth_input_transposed = initialize_signal(1, R->n);
+    signal* dw = initialize_signal(weights->n, weights->length);
     zeros(r_one_dot_kth_input_transposed);
+    unmarshall(dw, weights->data);
     dot(R, kth_input_transposed, r_one_dot_kth_input_transposed);
     multiply(r_one_dot_kth_input_transposed, e_out[k]);
-    add(weights, r_one_dot_kth_input_transposed, weights);
+    add(dw, r_one_dot_kth_input_transposed, weights);
 
     /* Free memory for next iteration */
+    destroy_signal(dw);
     destroy_signal(r_one_dot_kth_input_transposed);
     destroy_signal(kth_input);
     destroy_signal(result);
