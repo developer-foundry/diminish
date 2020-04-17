@@ -296,3 +296,37 @@ void lms(double *target_signal_in, double *input_signal_in, double mu, int n, do
   destroy_signal(input_signal);
   destroy_signal(weights);
 }
+
+int main() {
+  FILE* input_file = fopen("data/input.csv", "r");
+  FILE* target_file = fopen("data/target.csv", "r");
+  size_t length = 300000;
+  double* input = malloc (length * 2 * sizeof(double));
+  double* target = malloc (length * sizeof(double));
+
+  for (size_t count = 0; count < length*2;) {
+      int got = fscanf(input_file, "%lf %lf", &input[count], &input[count+1]);
+      if (got != 2) break;
+      count +=2;
+  }
+  fclose(input_file);
+
+  for (size_t count = 0; count < length; count++) {
+      int got = fscanf(target_file, "%lf", &target[count]);
+      if (got != 1) break;
+  }
+  fclose(target_file);
+
+  double* y= malloc (length * sizeof(double));
+  double* e= malloc (length * sizeof(double));
+  rls(target, input, 0.00001, 2, y, e, length);
+
+  for(int i = 0; i < length; i++) {
+    printf("y[%d]: [%.15f], e[%d]: [%.15f]\n", i, y[i], i, e[i]);
+  }
+
+  free(input);
+  free(target);
+  free(y);
+  free(e);
+}
