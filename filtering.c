@@ -160,7 +160,7 @@ error_t transpose(signal* input, signal* transposed) {
 }
 
 void rls(double *target_signal_in, double *input_signal_in, double mu, int n, double *y_out, double *e_out, int length) {
-  signal* target_signal = initialize_signal(n, length);
+  signal* target_signal = initialize_signal(1, length);
   unmarshall(target_signal, target_signal_in);
 
   signal* input_signal = initialize_signal(n, length);
