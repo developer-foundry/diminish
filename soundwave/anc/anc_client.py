@@ -13,7 +13,6 @@ class AncClient(threading.Thread):
     def __init__(self, device):
         threading.Thread.__init__(self)
         self.onError = signal('anc_client_errors')
-        self.clientSocket = btclient.configure_client()
         self.device = device
 
     def listener(self, indata, frames, time, status):
@@ -25,6 +24,8 @@ class AncClient(threading.Thread):
 
     def run(self):
         try:
+            self.clientSocket = btclient.configure_client()
+            raise ValueError('this is a test')
             with sd.InputStream(device=(self.device, self.device),
                         blocksize=128,
                         channels=2,
@@ -33,4 +34,5 @@ class AncClient(threading.Thread):
             
             btclient.close_connection(self.clientSocket)
         except Exception as e:
+            print('here') 
             self.onError.send(e)

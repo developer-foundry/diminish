@@ -168,6 +168,7 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
         if(btmode == 'server'):
             # anc_server(device, targetFile, algorithm)
             test = 1
+            #break each of the threads reference/error/output setups into separate classes?
         elif(btmode == 'client'):
             client = AncClient(device)
             client.onError.connect(eprint)
