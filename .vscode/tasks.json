@@ -14,9 +14,19 @@
       "problemMatcher": []
     },
     {
-      "label": "build c",
+      "label": "build c pi",
       "type": "shell",
-      "command": "invoke build",
+      "command": "invoke build-pi-library",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build c pc",
+      "type": "shell",
+      "command": "invoke build-pc-library",
       "group": {
         "kind": "build",
         "isDefault": true
