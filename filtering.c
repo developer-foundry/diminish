@@ -76,7 +76,7 @@ void print_signal(signal* signal) {
 }
 
 void zeros(signal* signal) {
-  memset(signal->data, 0, sizeof(signal->data));
+  memset(signal->data, 0, sizeof(double)*signal->length*signal->n);
 }
 
 error_t dot(signal* a, signal* b, signal* adotb) {
@@ -297,7 +297,7 @@ void lms(double *target_signal_in, double *input_signal_in, double mu, int n, do
 int main() {
   FILE* input_file = fopen("data/input.csv", "r");
   FILE* target_file = fopen("data/target.csv", "r");
-  size_t length = 300000;
+  size_t length = 512;
   double* input = malloc (length * 2 * sizeof(double));
   double* target = malloc (length * sizeof(double));
 
