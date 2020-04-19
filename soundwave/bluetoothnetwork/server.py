@@ -1,4 +1,5 @@
 import bluetooth
+import logging
 
 uuid = '87f39d29-7d6d-437d-973b-fba39e49d4ee'
 
@@ -14,15 +15,15 @@ def configure_server():
                                 profiles=[bluetooth.ADVANCED_AUDIO_PROFILE]
                                 )
 
-    print('Waiting for connection on RFCOMM channel', port)
+    logging.info('Waiting for connection on RFCOMM channel %d' % port)
     return server_sock
 
 def wait_on_client_connection(server_sock):
     client_sock, client_info = server_sock.accept()
-    print('Accepted connection from', client_info)
+    logging.info('Accepted connection from %s' % client_info)
     return client_sock
 
 def close_connection(client_sock, server_sock):
     client_sock.close()
     server_sock.close()
-    print('Disconnected.')
+    logging.info('Bluetooth server from client')

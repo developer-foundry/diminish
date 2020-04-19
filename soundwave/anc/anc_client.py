@@ -1,6 +1,7 @@
 import sys
 import pickle
 import threading
+import logging
 
 import numpy as np
 from blinker import signal
@@ -10,17 +11,16 @@ import sounddevice as sd
 
 
 class AncClient(threading.Thread):
-    def __init__(self, device):
-        threading.Thread.__init__(self)
+    def __init__(self, device, threadName):
+        threading.Thread.__init__(self, name=threadName)
         self.onError = signal('anc_client_errors')
         self.device = device
 
     def listener(self, indata, frames, time, status):
-        print('shape: ', indata.shape)
+        logging.debug('The reference microphone is processing data in the shape: %s' % indata.shape)
         reference_data = pickle.dumps(indata)
-        print('size of ref_data:', sys.getsizeof(reference_data))
         btclient.send_data(self.clientSocket, reference_data)
-        print('ACK')
+        logging.debug('The reference microphone has received an ack from the bluetooth server.')
 
     def run(self):
         try:
@@ -34,5 +34,6 @@ class AncClient(threading.Thread):
             
             btclient.close_connection(self.clientSocket)
         except Exception as e:
-            print('here') 
+            logging.debug('Handling exception in the anc client main thread.')
+            logging.debug(self.onError)
             self.onError.send(e)

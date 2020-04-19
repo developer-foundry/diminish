@@ -1,33 +1,33 @@
 import sys
 import bluetooth
+import logging
 
 uuid = '87f39d29-7d6d-437d-973b-fba39e49d4ee'
 
 def configure_client():
     addr = None
 
-    print('Searching for ANC service')
+    logging.info('Searching for ANC service')
     service_matches = bluetooth.find_service(uuid=uuid, address=addr)
 
     if len(service_matches) == 0:
-        print('Could not find the ANCServer service.')
+        logging.info('Could not find the ANCServer service.')
 
     first_match = service_matches[0]
     port = first_match['port']
     name = first_match['name']
     host = first_match['host']
 
-    print('Connecting to \'{}\' on {}'.format(name, host))
+    logging.info('Connecting to \'{}\' on {}'.format(name, host))
 
     socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     socket.connect((host, port))
-    print('Connected to ANC server')
+    logging.info('Connected to ANC server')
     return socket
 
 def send_data(socket, data):
-    print('Sending Data...')
     return socket.send(data)
 
 def close_connection(socket):
     socket.close()
-    print('Disconnected.')
+    logging.info('Disconnected.')

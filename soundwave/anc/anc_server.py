@@ -1,5 +1,6 @@
 import sys
 import pickle
+import logging
 from functools import partial
 import soundwave.bluetoothnetwork.server as btserver
 import sounddevice as sd
@@ -7,7 +8,7 @@ import sounddevice as sd
 def anc_error_microphone_listener(indata, frames, time, status):
     global errorBuffer
     errorBuffer = np.concatenate((errorBuffer, indata), axis=0)
-    print('errorBuffer', errorBuffer)
+    logging.debug('errorBuffer', errorBuffer)
 
 
 def setup_error_microphone_buffer(device):
@@ -20,7 +21,7 @@ def setup_error_microphone_buffer(device):
 def anc_output_listener(outdata, frames, time, status):
     global outputBuffer
     outputChunk = outputBuffer[slice(128), :] #make env var
-    print('output chunk', outputChunk)
+    logging.debug('output chunk', outputChunk)
     if(np.shape(outputChunk)[0] == 128):
         outdata[:] = outputChunk
         outputBuffer = np.delete(outputBuffer,slice(128), 0)

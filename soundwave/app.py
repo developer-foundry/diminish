@@ -6,11 +6,12 @@ from profilehooks import profile
 import sys
 import pickle
 import _thread as thread
+import logging
 
 import sounddevice as sd
 import soundfile as sf
 
-from soundwave.common.common import eprint
+from soundwave.common.common import log_error
 import soundwave.algorithms.least_mean_squares as lmsalgos
 import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
@@ -91,7 +92,7 @@ def live_algorithm(algorithm, targetSignal, numChannels, indata, outdata, frames
     global liveErrorSignal
 
     if status:
-        print(status)
+        logging.info(status)
 
     # keep a running counter of where we are in the target signal
     # making a global variable for now
@@ -166,8 +167,8 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
             test = 1
             #break each of the threads reference/error/output setups into separate classes?
         elif(btmode == 'client'):
-            client = AncClient(device)
-            client.onError.connect(eprint)
+            client = AncClient(device, 'anc-client-main')
+            client.onError.connect(log_error)
             client.start()
 
             while True:
