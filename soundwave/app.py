@@ -27,10 +27,6 @@ liveOutputSignal = None
 liveErrorSignal = None
 processing = True
 
-errorBuffer = np.arange(2).reshape(1,2)
-outputBuffer = np.arange(2).reshape(1,2)
-referenceBuffer = []
-
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
         'lms': partial(lmsalgos.lms, inputSignal, targetSignal, mu, numChannels),
