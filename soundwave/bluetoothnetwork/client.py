@@ -11,7 +11,8 @@ def configure_client():
     service_matches = bluetooth.find_service(uuid=uuid, address=addr)
 
     if len(service_matches) == 0:
-        logging.info('Could not find the ANCServer service.')
+        logging.info('Could not find the ANC service.')
+        return
 
     first_match = service_matches[0]
     port = first_match['port']

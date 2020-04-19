@@ -25,7 +25,10 @@ class AncClient(threading.Thread):
     def run(self):
         try:
             self.clientSocket = btclient.configure_client()
-            raise ValueError('this is a test')
+
+            if(self.clientSocket is None):
+                raise Exception('The anc client could not establish connection to anc server.')
+
             with sd.InputStream(device=(self.device, self.device),
                         blocksize=128,
                         channels=2,
@@ -34,6 +37,5 @@ class AncClient(threading.Thread):
             
             btclient.close_connection(self.clientSocket)
         except Exception as e:
-            logging.debug('Handling exception in the anc client main thread.')
-            logging.debug(self.onError)
+            logging.error('Handling exception in the anc client main thread.')
             self.onError.send(e)
