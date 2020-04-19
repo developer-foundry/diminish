@@ -18,7 +18,7 @@ import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
 from soundwave.anc.ancReference import AncReference
-from soundwave.anc.ancError import AncError
+from soundwave.anc.ancOrchestrator import AncOrchestrator
 
 
 mu = 0.00001
@@ -160,22 +160,20 @@ def process_live(parser, device, targetFile, algorithm):
         parser.exit(type(e).__name__ + ': ' + str(e))
 
 
-
 def process_anc(parser, device, targetFile, algorithm, btmode):
     try:
         if(btmode == 'server'):
             # anc_server(device, targetFile, algorithm)
-            server = AncError(device, 'anc-error-main')
+            server = AncOrchestrator(device, 'anc-orchestrator-main')
             server.onError.connect(log_error)
             server.start()
 
             while True:
-                server.join(0.1)
+                server.join(0.1) #probably too high
                 if server.isAlive():
                     continue
                 else:
                     break
-            #break each of the threads reference/error/output setups into separate classes?
         elif(btmode == 'client'):
             client = AncReference(device, 'anc-reference-main')
             client.onError.connect(log_error)
