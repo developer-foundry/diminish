@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
-                    format='%(levelname)s (%(threadName)-9s) %(message)s',)
+                    format='%(levelname)s {%(filename)s:%(lineno)d} (%(threadName)-9s) %(message)s',)
 
 def log_error(errorMsg):
     logging.error(errorMsg)

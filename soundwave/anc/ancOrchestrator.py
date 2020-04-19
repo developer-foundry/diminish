@@ -33,6 +33,7 @@ class AncOrchestrator(threading.Thread):
                     break
                 
                 self.referenceBuffer.append(packet)
+                logging.debug(f'Receiving data from the anc client. Size is : {sys.getsizeof(packet)}')
 
                 # refactor?
                 self.ancError.join(0.1)

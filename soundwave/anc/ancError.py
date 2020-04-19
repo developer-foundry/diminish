@@ -15,7 +15,7 @@ class AncError(threading.Thread):
         self.errorBuffer = np.arange(2).reshape(1,2)
 
     def listener(self, indata, frames, time, status):
-        logging.debug('The error microphone is processing data in the shape: %d %d' % (indata.shape[0], indata.shape[1]))
+        logging.debug(f'The error microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
         self.errorBuffer = np.concatenate((self.errorBuffer, indata), axis=0) #concatenate seems to be slow at a certain size
 
     def run(self):

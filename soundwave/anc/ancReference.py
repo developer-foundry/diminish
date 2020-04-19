@@ -17,7 +17,7 @@ class AncReference(threading.Thread):
         self.device = device
 
     def listener(self, indata, frames, time, status):
-        logging.debug('The reference microphone is processing data in the shape: %s' % indata.shape)
+        logging.debug(f'The reference microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
         reference_data = pickle.dumps(indata)
         btclient.send_data(self.clientSocket, reference_data)
         logging.debug('The reference microphone has received an ack from the bluetooth server.')

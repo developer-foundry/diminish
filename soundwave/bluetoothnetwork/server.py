@@ -15,12 +15,12 @@ def configure_server():
                                 profiles=[bluetooth.ADVANCED_AUDIO_PROFILE]
                                 )
 
-    logging.info('Waiting for connection on RFCOMM channel %d' % port)
+    logging.info(f'Waiting for connection on RFCOMM channel {port}')
     return server_sock
 
 def wait_on_client_connection(server_sock):
     client_sock, client_info = server_sock.accept()
-    logging.info('Accepted connection from %s' % client_info)
+    logging.info(f'Accepted connection from {client_info}')
     return client_sock
 
 def close_connection(client_sock, server_sock):
