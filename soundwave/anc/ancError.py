@@ -1,23 +1,37 @@
 import sys
 import pickle
+import threading
 import logging
 from functools import partial
+
+import numpy as np
+from blinker import signal
+
 import soundwave.bluetoothnetwork.server as btserver
 import sounddevice as sd
+
+class AncError(threading.Thread):
+    def __init__(self, device, threadName):
+        threading.Thread.__init__(self, name=threadName)
+        self.onError = signal('anc_server_errors')
+        self.device = device
+        self.errorBuffer = np.arange(2).reshape(1,2)
+
+    def listener(self, indata, frames, time, status):
+        logging.debug('The error microphone is processing data in the shape: %s' % indata.shape)
+        self.errorBuffer = np.concatenate((self.errorBuffer, indata), axis=0)
+
+    def run(self):
+        try:
+            with sd.InputStream(device=(self.device, self.device),
+                        blocksize=128,
+                        channels=2,
+                        callback=self.listener):
+                input()
+        except Exception as e:
+            self.onError.send(e)
+
 """
-def anc_error_microphone_listener(indata, frames, time, status):
-    global errorBuffer
-    errorBuffer = np.concatenate((errorBuffer, indata), axis=0)
-    logging.debug('errorBuffer', errorBuffer)
-
-
-def setup_error_microphone_buffer(device):
-    with sd.InputStream(device=(device, device), 
-                         blocksize=128, #make an env var
-                         channels=2,
-                         callback=anc_error_microphone_listener):
-        input()
-
 def anc_output_listener(outdata, frames, time, status):
     global outputBuffer
     outputChunk = outputBuffer[slice(128), :] #make env var

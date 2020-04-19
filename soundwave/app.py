@@ -17,7 +17,8 @@ import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
-from soundwave.anc.anc_client import AncClient
+from soundwave.anc.ancReference import AncReference
+from soundwave.anc.ancError import AncError
 
 
 mu = 0.00001
@@ -164,10 +165,19 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
     try:
         if(btmode == 'server'):
             # anc_server(device, targetFile, algorithm)
-            test = 1
+            server = AncError(device, 'anc-error-main')
+            server.onError.connect(log_error)
+            server.start()
+
+            while True:
+                server.join(0.1)
+                if server.isAlive():
+                    continue
+                else:
+                    break
             #break each of the threads reference/error/output setups into separate classes?
         elif(btmode == 'client'):
-            client = AncClient(device, 'anc-client-main')
+            client = AncReference(device, 'anc-reference-main')
             client.onError.connect(log_error)
             client.start()
 

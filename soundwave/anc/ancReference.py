@@ -10,10 +10,10 @@ import soundwave.bluetoothnetwork.client as btclient
 import sounddevice as sd
 
 
-class AncClient(threading.Thread):
+class AncReference(threading.Thread):
     def __init__(self, device, threadName):
         threading.Thread.__init__(self, name=threadName)
-        self.onError = signal('anc_client_errors')
+        self.onError = signal('anc_reference_errors')
         self.device = device
 
     def listener(self, indata, frames, time, status):
@@ -37,5 +37,4 @@ class AncClient(threading.Thread):
             
             btclient.close_connection(self.clientSocket)
         except Exception as e:
-            logging.error('Handling exception in the anc client main thread.')
             self.onError.send(e)
