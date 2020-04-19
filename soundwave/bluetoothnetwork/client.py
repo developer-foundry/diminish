@@ -11,7 +11,6 @@ def configure_client():
 
     if len(service_matches) == 0:
         print('Could not find the ANCServer service.')
-        sys.exit(0)
 
     first_match = service_matches[0]
     port = first_match['port']
