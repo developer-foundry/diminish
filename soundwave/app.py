@@ -184,7 +184,7 @@ def process_anc(device, targetFile, algorithm, btmode):
 
             while True:
                 client.join(0.0)
-                if client.isAlive():
+                if not client.stopped():
                     continue
                 else:
                     break

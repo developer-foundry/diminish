@@ -60,14 +60,14 @@ class AncOrchestrator(threading.Thread):
                 logging.debug(f'Receiving data from the anc client. Size is : {sys.getsizeof(packet)}')
 
                 # refactor?
-                self.ancError.join(0.1)
-                if self.ancError.isAlive():
+                self.ancError.join(0.0)
+                if not self.ancError.stopped():
                     continue
                 else:
                     break
 
-                self.ancOutput.join(0.1)
-                if self.ancOutput.isAlive():
+                self.ancOutput.join(0.0)
+                if not self.ancOutput.stopped():
                     continue
                 else:
                     break
