@@ -12,9 +12,21 @@ import sounddevice as sd
 
 class AncReference(threading.Thread):
     def __init__(self, device, threadName):
-        threading.Thread.__init__(self, name=threadName)
+        threading.Thread.__init__(self, name=threadName, daemon=True)
         self.onError = signal('anc_reference_errors')
         self.device = device
+        self._stop = threading.Event() 
+  
+    def stop(self): 
+        logging.debug('Stopping Reference thread')
+        self._stop.set()
+  
+    def stopped(self): 
+        return self._stop.isSet()
+    
+    def cleanup(self):
+        logging.debug('Cleaning up reference thread')
+        btclient.close_connection(self.clientSocket)
 
     def listener(self, indata, frames, time, status):
         logging.debug(f'The reference microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
@@ -35,6 +47,6 @@ class AncReference(threading.Thread):
                         callback=self.listener):
                 input()
             
-            btclient.close_connection(self.clientSocket)
+            self.cleanup()
         except Exception as e:
             self.onError.send(e)

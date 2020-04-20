@@ -9,10 +9,21 @@ import sounddevice as sd
 
 class AncError(threading.Thread):
     def __init__(self, device, threadName):
-        threading.Thread.__init__(self, name=threadName)
+        threading.Thread.__init__(self, name=threadName, daemon=True)
         self.onError = signal('anc_error_errors')
         self.device = device
         self.errorBuffer = np.arange(2).reshape(1,2)
+        self._stop = threading.Event() 
+  
+    def stop(self): 
+        logging.debug('Stopping Error thread')
+        self._stop.set()
+  
+    def stopped(self): 
+        return self._stop.isSet()
+    
+    def cleanup(self):
+        logging.debug('Cleaning up Error thread')
 
     def listener(self, indata, frames, time, status):
         logging.debug(f'The error microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
@@ -25,5 +36,7 @@ class AncError(threading.Thread):
                         channels=2,
                         callback=self.listener):
                 input()
+            
+            self.cleanup()
         except Exception as e:
             self.onError.send(e)

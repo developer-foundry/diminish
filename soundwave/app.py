@@ -4,6 +4,7 @@ from functools import partial
 from profilehooks import profile
 
 import sys
+import os
 import pickle
 import _thread as thread
 import logging
@@ -160,7 +161,9 @@ def process_live(parser, device, targetFile, algorithm):
         parser.exit(type(e).__name__ + ': ' + str(e))
 
 
-def process_anc(parser, device, targetFile, algorithm, btmode):
+def process_anc(device, targetFile, algorithm, btmode):
+    server = None
+    client = None
     try:
         if(btmode == 'server'):
             # anc_server(device, targetFile, algorithm)
@@ -169,8 +172,8 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
             server.start()
 
             while True:
-                server.join(0.1) #probably too high
-                if server.isAlive():
+                server.join(0.0)
+                if not server.stopped():
                     continue
                 else:
                     break
@@ -180,16 +183,20 @@ def process_anc(parser, device, targetFile, algorithm, btmode):
             client.start()
 
             while True:
-                client.join(0.1)
+                client.join(0.0)
                 if client.isAlive():
                     continue
                 else:
                     break
 
     except KeyboardInterrupt:
-        parser.exit('\nInterrupted by user')
+        if(server is not None):
+            server.stop()
+        if(client is not None):
+            client.stop()
+        logging.info('Exiting Program due to keyboard interrupt')
     except Exception as e:
-        parser.exit(type(e).__name__ + ': ' + str(e))
+        logging.error(f'Exception thrown: {e}')
 
 
 

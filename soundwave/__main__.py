@@ -32,7 +32,7 @@ if __name__ == '__main__':
             app.process_live(parser, DEVICE,
                              TARGET_FILE, ALGORITHM)
         elif MODE == 'anc':
-            app.process_anc(parser, DEVICE,
+            app.process_anc(DEVICE,
                              TARGET_FILE, ALGORITHM, BT_MODE)
 
     except KeyboardInterrupt:
