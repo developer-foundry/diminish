@@ -6,7 +6,7 @@ from profilehooks import profile
 import sys
 import os
 import pickle
-import _thread as thread
+import threading
 import logging
 
 import sounddevice as sd
