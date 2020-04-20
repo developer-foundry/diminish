@@ -167,7 +167,7 @@ def process_anc(device, targetFile, algorithm, btmode):
     try:
         if(btmode == 'server'):
             # anc_server(device, targetFile, algorithm)
-            server = AncOrchestrator(device, 'anc-orchestrator-main')
+            server = AncOrchestrator(device, algorithm, targetFile, 'anc-orchestrator-main')
             server.onError.connect(log_error)
             server.start()
 

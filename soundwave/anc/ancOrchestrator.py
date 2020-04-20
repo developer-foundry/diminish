@@ -11,7 +11,7 @@ from soundwave.anc.ancError import AncError
 from soundwave.anc.ancOutput import AncOutput
 
 class AncOrchestrator(threading.Thread):
-    def __init__(self, device, threadName):
+    def __init__(self, device, algorithm, targetFile, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.onError = signal('anc_orchestrator_errors')
         self.device = device
@@ -20,7 +20,9 @@ class AncOrchestrator(threading.Thread):
         self.client_socket = None
         self.ancError = AncError(device, 'anc-error-main')
         self.ancOutput = AncOutput(device, 'anc-output-main')
-        self._stop = threading.Event() 
+        self._stop = threading.Event()
+        self.algorithm = algorithm
+        self.targetFile = targetFile
   
     def stop(self): 
         logging.debug('Stopping orchestrator thread')
@@ -59,26 +61,19 @@ class AncOrchestrator(threading.Thread):
                 self.referenceBuffer.append(packet)
                 logging.debug(f'Receiving data from the anc client. Size is : {sys.getsizeof(packet)}')
 
-                # refactor?
+                #refactor to integrate with the error and output thread via blinker signals
+                if(np.shape(self.ancError.errorBuffer)[0] >= 128): #make env var
+                    errorChunk = self.ancError.errorBuffer[slice(128), :] #make env var
+                    self.ancOutput.outputBuffer = np.concatenate((self.ancOutput.outputBuffer, errorChunk), axis=0)
+                    self.ancError.errorBuffer = np.delete(self.ancError.errorBuffer,slice(128), 0)
+
                 self.ancError.join(0.0)
-                if not self.ancError.stopped():
-                    continue
-                else:
+                if self.ancError.stopped():
                     break
 
                 self.ancOutput.join(0.0)
-                if not self.ancOutput.stopped():
-                    continue
-                else:
+                if self.ancOutput.stopped():
                     break
-
-                #refactor to integrate with the error and output thread via blinker signals
-                """
-                if(np.shape(errorBuffer)[0] >= 128): #make env var
-                    errorChunk = errorBuffer[slice(128), :] #make env var
-                    outputBuffer = np.concatenate((outputBuffer, errorChunk), axis=0)
-                    errorBuffer = np.delete(errorBuffer,slice(128), 0)
-                """
             
             self.cleanup()
         except Exception as e:

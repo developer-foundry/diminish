@@ -5,6 +5,7 @@ import logging
 
 import numpy as np
 from blinker import signal
+from bluetooth.btcommon import BluetoothError
 
 import soundwave.bluetoothnetwork.client as btclient
 import sounddevice as sd
@@ -29,10 +30,15 @@ class AncReference(threading.Thread):
         btclient.close_connection(self.clientSocket)
 
     def listener(self, indata, frames, time, status):
-        logging.debug(f'The reference microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
-        reference_data = pickle.dumps(indata)
-        btclient.send_data(self.clientSocket, reference_data)
-        logging.debug('The reference microphone has received an ack from the bluetooth server.')
+        try:
+            logging.debug(f'The reference microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
+            reference_data = pickle.dumps(indata)
+            btclient.send_data(self.clientSocket, reference_data)
+            logging.debug('The reference microphone has received an ack from the bluetooth server.')
+
+        except BluetoothError:
+            self.stop()
+            self.cleanup()
 
     def run(self):
         try:

@@ -26,4 +26,4 @@ def wait_on_client_connection(server_sock):
 def close_connection(client_sock, server_sock):
     client_sock.close()
     server_sock.close()
-    logging.info('Closing bluetooth connection from client')
+    logging.info('Closing bluetooth connection to client')

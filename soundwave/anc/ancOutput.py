@@ -30,7 +30,7 @@ class AncOutput(threading.Thread):
 
         if(np.shape(outputChunk)[0] == 128):
             outdata[:] = outputChunk
-            outputBuffer = np.delete(outputBuffer,slice(128), 0)
+            self.outputBuffer = np.delete(self.outputBuffer,slice(128), 0)
 
     def run(self):
         try:
