@@ -57,14 +57,15 @@ The bluetooth configuration requires running bluetooth in compatibility mode on 
 
 1. Edit `/etc/systemd/system/dbus-org.bluez.service`
 2. Change `ExecStart=/usr/lib/bluetooth/bluetoothd` to `ExecStart=/usr/lib/bluetooth/bluetoothd -C`
-3. Run `sudo systemctl daemon-reload`
-4. `sudo systemctl restart bluetooth`
-5. Run `python3 -m soundwave`
-6. You should get a permission denied error.
-7. Need to perform the following steps:
-    2. `sudo usermod -G bluetooth -a ${username}`
-    3. `sudo chgrp bluetooth /var/run/sdp`
-    4. Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.path` and add the following contents:
+3. `sudo sdptool add SP`
+4. Run `sudo systemctl daemon-reload`
+5. `sudo systemctl restart bluetooth`
+6. Run `python3 -m soundwave`
+7. You should get a permission denied error.
+8. Need to perform the following steps:
+    1. `sudo usermod -G bluetooth -a ${username}`
+    2. `sudo chgrp bluetooth /var/run/sdp`
+    3. Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.path` and add the following contents:
         ```
         [Unit]
         Descrption=Monitor /var/run/sdp
@@ -76,7 +77,7 @@ The bluetooth configuration requires running bluetooth in compatibility mode on 
         PathExists=/var/run/sdp
         Unit=var-run-sdp.service
         ```
-    5. Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.service` and add the following contents:
+    4. Then perform a `sudo vim` on `/etc/systemd/system/var-run-sdp.service` and add the following contents:
         ```
         [Unit]
         Description=Set permission of /var/run/sdp
@@ -89,15 +90,15 @@ The bluetooth configuration requires running bluetooth in compatibility mode on 
         ExecStart=/bin/chgrp bluetooth /var/run/sdp
         ExecStartPost=/bin/chmod 662 /var/run/sdp
         ```
-    6. Run the following commands to restart bluetooth dameon
+    5. Run the following commands to restart bluetooth dameon
         ```
         sudo systemctl daemon-reload
         sudo systemctl enable var-run-sdp.path
         sudo systemctl enable var-run-sdp.service
         sudo systemctl start var-run-sdp.path
         ```
-8. Set the `BT_MODE=server` in `.env`
-9. Run `python3 -m soundwave`
+9. Set the `BT_MODE=server` in `.env`
+10. Run `python3 -m soundwave`
 
 ## Tests
 
