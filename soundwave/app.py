@@ -18,8 +18,8 @@ import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
 
-from soundwave.anc.ancReference import AncReference
-from soundwave.anc.ancOrchestrator import AncOrchestrator
+from soundwave.anc.ancClientOrchestrator import AncClientOrchestrator
+from soundwave.anc.ancServerOrchestrator import AncServerOrchestrator
 
 
 mu = 0.00001
@@ -166,7 +166,7 @@ def process_anc(device, targetFile, algorithm, btmode):
     client = None
     try:
         if(btmode == 'server'):
-            server = AncOrchestrator(device, algorithm, targetFile, 'anc-orchestrator-main')
+            server = AncServerOrchestrator(device, algorithm, targetFile, 'anc-server-orchestrator')
             server.onError.connect(log_error)
             server.start()
 
@@ -177,7 +177,7 @@ def process_anc(device, targetFile, algorithm, btmode):
                 else:
                     break
         elif(btmode == 'client'):
-            client = AncReference(device, 'anc-reference-main')
+            client = AncClientOrchestrator(device, 'anc-client-orchestrator')
             client.onError.connect(log_error)
             client.start()
 
