@@ -49,7 +49,6 @@ class AncReference(threading.Thread):
                 raise Exception('The anc client could not establish connection to anc server.')
 
             with sd.InputStream(device=(self.device, self.device),
-                        blocksize=128,
                         channels=2,
                         callback=self.listener):
                 input()

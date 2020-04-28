@@ -11,8 +11,8 @@ class AncError(threading.Thread):
     def __init__(self, device, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.onError = signal('anc_error_errors')
+        self.onData = signal('anc_error_data')
         self.device = device
-        self.errorBuffer = np.arange(2).reshape(1,2)
         self._stop = threading.Event() 
   
     def stop(self): 
@@ -26,14 +26,11 @@ class AncError(threading.Thread):
         logging.debug('Cleaning up Error thread')
 
     def listener(self, indata, frames, time, status):
-        logging.debug(f'The error microphone is processing data in the shape: {indata.shape[0]} {indata.shape[1]}')
-        self.errorBuffer = np.concatenate((self.errorBuffer, indata), axis=0) #concatenate seems to be slow at a certain size
-        logging.debug(f'The error buffer is now in the shape: {self.errorBuffer.shape[0]} {self.errorBuffer.shape[1]}')
+        self.onData.send(indata)
 
     def run(self):
         try:
             with sd.InputStream(device=(self.device, self.device),
-                        blocksize=128,
                         channels=2,
                         callback=self.listener):
                 input()

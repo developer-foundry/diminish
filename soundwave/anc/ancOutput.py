@@ -12,6 +12,7 @@ class AncOutput(threading.Thread):
         self.onError = signal('anc_output_errors')
         self.device = device
         self.outputBuffer = np.arange(2).reshape(1,2)
+        self.onData = signal('anc_output_data')
         self._stop = threading.Event() 
   
     def stop(self): 
@@ -25,17 +26,17 @@ class AncOutput(threading.Thread):
         logging.debug('Cleaning up Output thread')
     
     def listener(self, outdata, frames, time, status):
-        outputChunk = self.outputBuffer[slice(128), :] #make env var
-        logging.debug(f'The output speaker is processing data in the shape: {outputChunk.shape[0]} {outputChunk.shape[1]}')
+        if(np.shape(self.outputBuffer)[0] > 0):
+            outdata[:len(self.outputBuffer)] = self.outputBuffer
+            self.outputBuffer = np.arange(2).reshape(1,2)
 
-        if(np.shape(outputChunk)[0] == 128):
-            outdata[:] = outputChunk
-            self.outputBuffer = np.delete(self.outputBuffer,slice(128), 0)
+    def addOutputSignal(self, data):
+        self.outputBuffer = np.append(self.outputBuffer, data, axis = 0)
 
     def run(self):
         try:
+            self.onData.connect(self.addOutputSignal)
             with sd.OutputStream(device=(self.device, self.device), 
-                         blocksize=128, #make an env var
                          channels=2,
                          callback=self.listener):
                 input()
