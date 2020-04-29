@@ -30,10 +30,11 @@ class AncBluetoothClient(threading.Thread):
         btclient.close_connection(self.client_socket)
 
     def listenForInput(self, data):
-        logging.debug(f'Receiving data from Client Orchestration thread:')
-        logging.debug(data)
-        reference_data = pickle.dumps(data)
-        btclient.send_data(self.client_socket, reference_data)
+        if self.client_socket is not None:
+            logging.debug(f'Receiving data from Client Orchestration thread:')
+            logging.debug(data)
+            reference_data = pickle.dumps(data)
+            btclient.send_data(self.client_socket, reference_data)
 
     def run(self):
         try:
