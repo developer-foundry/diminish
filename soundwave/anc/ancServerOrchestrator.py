@@ -21,6 +21,7 @@ class AncServerOrchestrator(threading.Thread):
         self.onError = signal('anc_server_orchestrator_errors')
         self.onReady = signal('anc_ready')
         self.onInputData = signal('anc_input_data')
+        self.onOutputData = signal('anc_output_data')
         self.onInputData.connect(self.listenForErrorMicrophoneInput)
 
         # ANC algorithm information
@@ -52,9 +53,12 @@ class AncServerOrchestrator(threading.Thread):
 
     def listenForErrorMicrophoneInput(self, data):
         logging.debug(f'Receiving data from Error Microphone thread:')
-        logging.debug(self.errorMicrophoneBuffer)
         self.errorMicrophoneBuffer = np.append(
             self.errorMicrophoneBuffer, data)
+        self.onOutputData.send(self.errorMicrophoneBuffer)
+
+    def ancReady(self):
+        return self.errorMicrophoneBuffer.shape[0] >= 5000
 
     def run(self):
         try:
@@ -73,6 +77,9 @@ class AncServerOrchestrator(threading.Thread):
                     thread.join(0.0)
                     if thread.stopped():
                         self.stop()
+
+                if self.ancReady():
+                    self.onReady.send(True)
 
         except Exception as e:
             self.onError.send(e)

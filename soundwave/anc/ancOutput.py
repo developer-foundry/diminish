@@ -21,7 +21,7 @@ class AncOutput(threading.Thread):
         self.device = device
 
         # Buffers
-        self.outputBuffer = np.arange(2).reshape(1, 2)
+        self.outputBuffer = np.zeros((0, 2))
 
         self._stop = threading.Event()
 
@@ -38,19 +38,20 @@ class AncOutput(threading.Thread):
     def listener(self, outdata, frames, time, status):
         if(np.shape(self.outputBuffer)[0] > 0):
             outdata[:len(self.outputBuffer)] = self.outputBuffer
-            self.outputBuffer = np.arange(2).reshape(1, 2)
+            self.outputBuffer = np.zeros(0,2)
 
     def receiveOutput(self, data):
         logging.debug(f'Receiving data for Output Speaker thread:')
         logging.debug(data)
-        # Todo add to buffer
+        self.outputBuffer = np.append(self.outputBuffer, data)
 
-    def initializeOutputStream(self):
-        logging.debug(f'Setting up the output stream for processing:')
-        with sd.OutputStream(device=self.device,
-                             channels=2,
-                             callback=self.listener):
-            input()
+    def initializeOutputStream(self, is_ready):
+        if is_ready:
+            logging.debug(f'Setting up the output stream for processing:')
+            with sd.OutputStream(device=self.device,
+                                channels=2,
+                                callback=self.listener):
+                input()
 
     def run(self):
         try:

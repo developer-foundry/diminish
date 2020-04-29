@@ -55,6 +55,7 @@ gcc -shared -o libclms.so clms.o
 ### Configure Hardware
 The bluetooth configuration requires running bluetooth in compatibility mode on the ANC device or the device that is in `server` mode. You can turn this on by performing the following steps on your server device:
 
+0. Run `sudo hciconfig hci0 piscan`
 1. Edit `/etc/systemd/system/dbus-org.bluez.service`
 2. Change `ExecStart=/usr/lib/bluetooth/bluetoothd` to `ExecStart=/usr/lib/bluetooth/bluetoothd -C`
 3. `sudo sdptool add SP`
