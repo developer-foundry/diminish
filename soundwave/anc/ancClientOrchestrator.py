@@ -10,33 +10,37 @@ from blinker import signal
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
 
+# TODO refactor an abstract class to container the commond stop/run/etc
+
+
 class AncClientOrchestrator(threading.Thread):
     def __init__(self, device, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         logging.debug('Initialize Client Orchestration thread')
 
-        #Signals
+        # Signals
         self.onError = signal('anc_client_orchestrator_errors')
         self.onInputData = signal('anc_input_data')
         self.onInputData.connect(self.listenForInput)
         self.onOutputData = signal('anc_btclient_data')
 
-        #ANC algorithm information
+        # ANC algorithm information
         self.device = device
 
-        #Thread Management
-        self.threads = [AncInput(device, 'anc-reference-microphone'), AncBluetoothClient('anc-btclient')]
+        # Thread Management
+        self.threads = [AncInput(
+            device, 'anc-reference-microphone'), AncBluetoothClient('anc-btclient')]
         self._stop = threading.Event()
-  
-    def stop(self): 
+
+    def stop(self):
         logging.debug('Stopping Client Orchestration thread')
         self._stop.set()
         for thread in self.threads:
             thread.stop()
-  
-    def stopped(self): 
+
+    def stopped(self):
         return self._stop.isSet()
-    
+
     def cleanup(self):
         logging.debug('Cleaning up Client Orchestration thread')
         for thread in self.threads:
@@ -54,12 +58,12 @@ class AncClientOrchestrator(threading.Thread):
                 thread.start()
 
             while True:
-                #check and see if the thread has been killed
+                # check and see if the thread has been killed
                 if(self.stopped()):
                     self.cleanup()
                     return
 
-                #check to see if any of the threads have stopped. If so, kill the orchestrator
+                # check to see if any of the threads have stopped. If so, kill the orchestrator
                 for thread in self.threads:
                     thread.join(0.0)
                     if thread.stopped():

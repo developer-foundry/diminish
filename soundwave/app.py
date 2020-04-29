@@ -167,6 +167,7 @@ def process_anc(device, targetFile, algorithm, btmode):
     try:
         if(btmode == 'server'):
             server = AncServerOrchestrator(device, algorithm, targetFile, 'anc-server-orchestrator')
+            #Todo refactor to not reference variable directly
             server.onError.connect(log_error)
             server.start()
 
