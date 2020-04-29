@@ -7,6 +7,7 @@ from blinker import signal
 
 import sounddevice as sd
 
+
 class AncInput(threading.Thread):
     def __init__(self, device, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
@@ -14,29 +15,30 @@ class AncInput(threading.Thread):
         self.onError = signal('anc_input_errors')
         self.onData = signal('anc_input_data')
         self.device = device
-        self._stop = threading.Event() 
-  
-    def stop(self): 
+        self._stop = threading.Event()
+
+    def stop(self):
         logging.debug('Stopping Input Microphone thread')
         self._stop.set()
-  
-    def stopped(self): 
+
+    def stopped(self):
         return self._stop.isSet()
-    
+
     def cleanup(self):
         logging.debug('Cleaning up Input Microphone thread')
 
     def listener(self, indata, frames, time, status):
-        self.onData.send(indata)
+        logging.debug(status)
+        i = 0
 
     def run(self):
         try:
             logging.debug('Running Input Microphone thread')
-            with sd.InputStream(device=(self.device, self.device),
-                        channels=2,
-                        callback=self.listener):
+            with sd.InputStream(device=self.device,
+                                channels=2,
+                                callback=self.listener):
                 input()
-            
+
             self.cleanup()
         except Exception as e:
             self.onError.send(e)

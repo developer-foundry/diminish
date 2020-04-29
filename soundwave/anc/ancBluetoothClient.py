@@ -27,7 +27,8 @@ class AncBluetoothClient(threading.Thread):
 
     def cleanup(self):
         logging.debug('Cleaning up Bluetooth Client thread')
-        btclient.close_connection(self.client_socket)
+        if self.client_socket is not None:
+            btclient.close_connection(self.client_socket)
 
     def listenForInput(self, data):
         if self.client_socket is not None:
