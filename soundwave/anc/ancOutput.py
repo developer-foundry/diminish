@@ -42,8 +42,10 @@ class AncOutput(threading.Thread):
 
     def receiveOutput(self, data):
         logging.debug(f'Receiving data for Output Speaker thread:')
-        logging.debug(data)
-        self.outputBuffer = np.append(self.outputBuffer, data)
+        self.outputBuffer = np.concatenate((
+            self.outputBuffer, data), axis=0)
+        logging.debug(f'Shape of data = {data.shape}')
+        logging.debug(f'Shape of output buffer = {self.outputBuffer.shape}')
 
     def initializeOutputStream(self, is_ready):
         if is_ready:

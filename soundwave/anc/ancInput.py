@@ -28,6 +28,7 @@ class AncInput(threading.Thread):
         logging.debug('Cleaning up Input Microphone thread')
 
     def listener(self, indata, frames, time, status):
+        logging.debug(f'Shape of indata = {indata.shape}')
         self.onData.send(indata)
 
     def run(self):

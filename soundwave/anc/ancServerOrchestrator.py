@@ -30,7 +30,7 @@ class AncServerOrchestrator(threading.Thread):
         self.targetFile = targetFile
 
         # Continuous Buffers
-        self.errorMicrophoneBuffer = np.zeros((1, 2))
+        self.errorMicrophoneBuffer = np.zeros((0, 2))
 
         # Thread Management
         self.threads = [AncInput(device, 'anc-error-microphone'), AncOutput(device, 'anc-output-speaker'),
@@ -53,8 +53,9 @@ class AncServerOrchestrator(threading.Thread):
 
     def listenForErrorMicrophoneInput(self, data):
         logging.debug(f'Receiving data from Error Microphone thread:')
-        self.errorMicrophoneBuffer = np.append(
-            self.errorMicrophoneBuffer, data)
+        logging.debug(f'Shape of data in error listener = {data.shape}')
+        self.errorMicrophoneBuffer = np.concatenate((
+            self.errorMicrophoneBuffer, data), axis=0)
         self.onOutputData.send(self.errorMicrophoneBuffer)
 
     def ancReady(self):
