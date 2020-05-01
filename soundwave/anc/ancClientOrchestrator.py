@@ -5,66 +5,29 @@ import logging
 
 import pickle
 import numpy as np
-from blinker import signal
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
-
+from soundwave.common.continuousBuffer import ContinuousBuffer
 
 class AncClientOrchestrator():
-    def __init__(self, device):
+    def __init__(self, waitSize, stepSize, device):
         logging.debug('Initialize Client Orchestration thread')
-
-        # Signals
-        self.onInputData = signal('anc_input_data')
-        self.onInputData.connect(self.listenForInput)
-        self.onOutputData = signal('anc_btclient_data')
-
-        # ANC algorithm information
         self.device = device
-
-        # Thread Management
-        self.threads = [AncInput(
-            device, 'anc-reference-microphone'), AncBluetoothClient('anc-btclient')]
-        self._stop = threading.Event()
-
-    def stop(self):
-        logging.debug('Stopping Client Orchestration thread')
-        self._stop.set()
-        for thread in self.threads:
-            thread.stop()
-
-    def stopped(self):
-        return self._stop.isSet()
-
-    def cleanup(self):
-        logging.debug('Cleaning up Client Orchestration thread')
-        for thread in self.threads:
-            thread.cleanup()
-
-    def listenForInput(self, data):
-        logging.debug(f'Receiving data from Input Microphone thread:')
-        logging.debug(data)
-        self.onOutputData.send(data)
+        self.referenceBuffer = ContinuousBuffer(waitSize, stepSize)
+        self.threads = [AncInput(device, self.referenceBuffer, 'anc-reference-microphone'), 
+                        AncBluetoothClient(self.referenceBuffer, 'anc-btclient')]
 
     def run(self):
         try:
             logging.debug('Running Client Orchestration thread')
+
             for thread in self.threads:
                 thread.start()
 
+            # will ensure the main thread is paused until ctrl + c
             while True:
-                # check and see if the thread has been killed
-                if(self.stopped()):
-                    self.cleanup()
-                    return
-
-                # check to see if any of the threads have stopped. If so, kill the orchestrator
-                for thread in self.threads:
-                    thread.join(0.0)
-                    if thread.stopped():
-                        self.stop()
+                input()
 
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
-            self.cleanup()

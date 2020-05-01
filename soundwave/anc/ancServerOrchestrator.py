@@ -20,8 +20,9 @@ class AncServerOrchestrator():
                         AncBluetoothServer('anc-btserver')]
 
     def run_algorithm(self):
-        data = self.errorBuffer.pop()
-        self.outputBuffer.push(data)
+        if self.errorBuffer.is_ready():
+            data = self.errorBuffer.pop()
+            self.outputBuffer.push(data)
 
     def run(self):
         try:
@@ -32,8 +33,7 @@ class AncServerOrchestrator():
             
             # will ensure the main thread is paused until ctrl + c
             while True:
-                if self.errorBuffer.is_ready():
-                    self.run_algorithm()
+                self.run_algorithm()
 
         except Exception as e:
             logging.error(f'Exception thrown: {e}')

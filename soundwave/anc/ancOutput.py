@@ -18,9 +18,6 @@ class AncOutput(threading.Thread):
         if(self.buffer.is_ready()):
             outdata[:self.buffer.stepSize] = self.buffer.pop()
 
-    def initializeOutputStream(self, is_ready):
-        logging.debug(f'Setting up the output stream for processing:')
-
     def run(self):
         try:
             logging.debug('Running Output Speaker thread')
