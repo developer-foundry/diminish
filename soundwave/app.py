@@ -12,7 +12,6 @@ import logging
 import sounddevice as sd
 import soundfile as sf
 
-from soundwave.common.common import log_error
 import soundwave.algorithms.least_mean_squares as lmsalgos
 import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
@@ -20,6 +19,7 @@ import soundwave.plotting.plot as plot
 
 from soundwave.anc.ancClientOrchestrator import AncClientOrchestrator
 from soundwave.anc.ancServerOrchestrator import AncServerOrchestrator
+import soundwave.common.common
 
 
 mu = 0.00001
@@ -52,7 +52,7 @@ def process_signal(inputSignal, targetSignal, algorithm):
     for channel in range(numChannels):
         targetChannel = targetSignal[:, channel]
         inputChannel = np.stack((inputSignal[:, channel],
-                                 targetChannel), axis=1)
+                                targetChannel), axis=1)
 
         # perform algorithm on left channel, then right right
         outputChannel, errorChannel = run_algorithm(
@@ -82,7 +82,7 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
     # player.play_signal(parser, outputSignal, inputFs, device)
 
     plot.plot_vertical(algorithm, 'prerecorded', inputSignal,
-                       targetSignal, outputSignal, errorSignal)
+                        targetSignal, outputSignal, errorSignal)
 
 
 # call back for the sounddevice Stream to perform live processing
@@ -153,7 +153,7 @@ def process_live(parser, device, targetFile, algorithm):
         
         # plot the results on exit
         plot.plot_vertical(algorithm, 'live', liveInputSignal,
-                       liveTargetSignal, liveOutputSignal, liveErrorSignal)
+                        liveTargetSignal, liveOutputSignal, liveErrorSignal)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
@@ -161,46 +161,16 @@ def process_live(parser, device, targetFile, algorithm):
         parser.exit(type(e).__name__ + ': ' + str(e))
 
 
-def process_anc(device, targetFile, algorithm, btmode):
-    server = None
-    client = None
+def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize):
+    orchestrator = None
     try:
         if(btmode == 'server'):
-            server = AncServerOrchestrator(device, algorithm, targetFile, 'anc-server-orchestrator')
-            #Todo refactor to not reference variable directly
-            server.onError.connect(log_error)
-            server.start()
-
-            while True:
-                server.join(0.0)
-                if not server.stopped():
-                    continue
-                else:
-                    break
+            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize)
         elif(btmode == 'client'):
-            client = AncClientOrchestrator(device, 'anc-client-orchestrator')
-            client.onError.connect(log_error)
-            client.start()
-
-            while True:
-                client.join(0.0)
-                if not client.stopped():
-                    continue
-                else:
-                    break
-
+            orchestrator = AncClientOrchestrator(device)
+        
+        orchestrator.run()
     except KeyboardInterrupt:
-        if(server is not None):
-            server.stop()
-        if(client is not None):
-            client.stop()
         logging.info('Exiting Program due to keyboard interrupt')
     except Exception as e:
         logging.error(f'Exception thrown: {e}')
-
-
-
-
-
-
-    

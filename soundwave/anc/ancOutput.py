@@ -8,61 +8,26 @@ import sounddevice as sd
 
 
 class AncOutput(threading.Thread):
-    def __init__(self, device, threadName):
-        threading.Thread.__init__(self, name=threadName, daemon=True)
+    def __init__(self, device, buffer, threadName):
         logging.debug('Initializing Output Speaker thread')
-
-        # Signals
-        self.onError = signal('anc_output_errors')
-        self.onData = signal('anc_output_data')
-        self.onReady = signal('anc_ready')
-
-        # Devices
+        threading.Thread.__init__(self, name=threadName, daemon=True)
         self.device = device
-
-        # Buffers
-        self.outputBuffer = np.zeros((0, 2))
-
-        self._stop = threading.Event()
-
-    def stop(self):
-        logging.debug('Stopping Output Speaker thread')
-        self._stop.set()
-
-    def stopped(self):
-        return self._stop.isSet()
-
-    def cleanup(self):
-        logging.debug('Cleaning up Output Speaker thread')
+        self.buffer = buffer
 
     def listener(self, outdata, frames, time, status):
-        if(np.shape(self.outputBuffer)[0] > 0):
-            outdata[:len(self.outputBuffer)] = self.outputBuffer
-            self.outputBuffer = np.zeros(0,2)
-
-    def receiveOutput(self, data):
-        logging.debug(f'Receiving data for Output Speaker thread:')
-        self.outputBuffer = np.concatenate((
-            self.outputBuffer, data), axis=0)
-        logging.debug(f'Shape of data = {data.shape}')
-        logging.debug(f'Shape of output buffer = {self.outputBuffer.shape}')
+        if(self.buffer.is_ready()):
+            outdata[:self.buffer.stepSize] = self.buffer.pop()
 
     def initializeOutputStream(self, is_ready):
-        if is_ready:
-            logging.debug(f'Setting up the output stream for processing:')
-            with sd.OutputStream(device=self.device,
-                                channels=2,
-                                callback=self.listener):
-                input()
+        logging.debug(f'Setting up the output stream for processing:')
 
     def run(self):
         try:
             logging.debug('Running Output Speaker thread')
-            self.onData.connect(self.receiveOutput)
-            self.onReady.connect(self.initializeOutputStream)
-
-            while True:
-                i = 0
+            with sd.OutputStream(device=self.device,
+                            channels=2,
+                            callback=self.listener):
+                input()
 
         except Exception as e:
-            self.onError.send(e)
+            logging.error(f'Exception thrown: {e}')

@@ -10,16 +10,12 @@ from blinker import signal
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
 
-# TODO refactor an abstract class to container the commond stop/run/etc
 
-
-class AncClientOrchestrator(threading.Thread):
-    def __init__(self, device, threadName):
-        threading.Thread.__init__(self, name=threadName, daemon=True)
+class AncClientOrchestrator():
+    def __init__(self, device):
         logging.debug('Initialize Client Orchestration thread')
 
         # Signals
-        self.onError = signal('anc_client_orchestrator_errors')
         self.onInputData = signal('anc_input_data')
         self.onInputData.connect(self.listenForInput)
         self.onOutputData = signal('anc_btclient_data')
@@ -70,5 +66,5 @@ class AncClientOrchestrator(threading.Thread):
                         self.stop()
 
         except Exception as e:
-            self.onError.send(e)
+            logging.error(f'Exception thrown: {e}')
             self.cleanup()

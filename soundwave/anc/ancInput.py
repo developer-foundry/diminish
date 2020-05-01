@@ -6,30 +6,17 @@ import numpy as np
 from blinker import signal
 
 import sounddevice as sd
-
+from soundwave.common.continuousBuffer import ContinuousBuffer
 
 class AncInput(threading.Thread):
-    def __init__(self, device, threadName):
-        threading.Thread.__init__(self, name=threadName, daemon=True)
+    def __init__(self, device, buffer, threadName):
         logging.debug('Initialize Input Microphone thread')
-        self.onError = signal('anc_input_errors')
-        self.onData = signal('anc_input_data')
+        threading.Thread.__init__(self, name=threadName, daemon=True)
+        self.buffer = buffer
         self.device = device
-        self._stop = threading.Event()
-
-    def stop(self):
-        logging.debug('Stopping Input Microphone thread')
-        self._stop.set()
-
-    def stopped(self):
-        return self._stop.isSet()
-
-    def cleanup(self):
-        logging.debug('Cleaning up Input Microphone thread')
 
     def listener(self, indata, frames, time, status):
-        logging.debug(f'Shape of indata = {indata.shape}')
-        self.onData.send(indata)
+        self.buffer.push(indata)
 
     def run(self):
         try:
@@ -39,6 +26,5 @@ class AncInput(threading.Thread):
                                 callback=self.listener):
                 input()
 
-            self.cleanup()
         except Exception as e:
-            self.onError.send(e)
+            logging.error(f'Exception thrown: {e}')

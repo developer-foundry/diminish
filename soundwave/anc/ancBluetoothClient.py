@@ -12,7 +12,6 @@ class AncBluetoothClient(threading.Thread):
     def __init__(self, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         logging.debug('Initialize Bluetooth Client thread')
-        self.onError = signal('anc_btclient_errors')
         self.onData = signal('anc_btclient_data')
         self.onData.connect(self.listenForInput)
         self._stop = threading.Event()
@@ -61,4 +60,4 @@ class AncBluetoothClient(threading.Thread):
             self.stop()
             self.cleanup()
         except Exception as e:
-            self.onError.send(e)
+            logging.error(f'Exception thrown: {e}')

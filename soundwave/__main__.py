@@ -9,6 +9,13 @@ from soundwave import app
 from dotenv import load_dotenv
 load_dotenv()
 
+def getInt(val):
+    if(val is None):
+        val = 0
+    else:
+        val = int(val)
+    return val
+
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(description='POC for ACN testing')
@@ -17,23 +24,20 @@ if __name__ == '__main__':
         INPUT_FILE = os.getenv("INPUT_FILE")
         TARGET_FILE = os.getenv("TARGET_FILE")
         DEVICE = os.getenv("DEVICE")
-        SIZE = os.getenv("SIZE")
+        SIZE = getInt(os.getenv("SIZE"))
         BT_MODE = os.getenv("BT_MODE")
-
-        if(SIZE is None):
-            SIZE = 0
-        else:
-            SIZE = int(SIZE)
+        WAIT_SIZE = getInt(os.getenv("WAIT_SIZE"))
+        STEP_SIZE = getInt(os.getenv("STEP_SIZE"))
 
         if MODE == 'prerecorded':
             app.process_prerecorded(DEVICE, INPUT_FILE,
                                     TARGET_FILE, SIZE, ALGORITHM)
         elif MODE == 'live':
             app.process_live(parser, DEVICE,
-                             TARGET_FILE, ALGORITHM)
+                            TARGET_FILE, ALGORITHM)
         elif MODE == 'anc':
             app.process_anc(DEVICE,
-                             TARGET_FILE, ALGORITHM, BT_MODE)
+                            TARGET_FILE, ALGORITHM, BT_MODE, WAIT_SIZE, STEP_SIZE)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')
