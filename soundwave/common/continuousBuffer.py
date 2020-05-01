@@ -15,8 +15,11 @@ class ContinuousBuffer():
     
     def pop(self):
         with self.lock:
-            dataToRemove = self.buffer[self.waitSize::self.stepSize]
-            np.delete(self.buffer, np.s_[self.waitSize::self.stepSize], 0)
+            #step size in this case represents the end of what you want to slize
+            #from the continuous buffer. The first pop should be self.buffer[5000:5064]
+            end = self.waitSize + self.stepSize
+            dataToRemove = self.buffer[self.waitSize:end]
+            np.delete(self.buffer, np.s_[self.waitSize:end], 0)
             return dataToRemove
     
     def is_ready(self):
