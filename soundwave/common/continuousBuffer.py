@@ -8,6 +8,7 @@ class ContinuousBuffer():
         self.buffer = np.zeros((0, numChannels))
         self.waitSize = waitSize
         self.stepSize = stepSize
+        self.numChannels = numChannels
 
     def push(self, data):
         with self.lock:
@@ -19,7 +20,7 @@ class ContinuousBuffer():
             #from the continuous buffer. The first pop should be self.buffer[5000:5064]
             end = self.waitSize + self.stepSize
             dataToRemove = self.buffer[self.waitSize:end]
-            np.delete(self.buffer, np.s_[self.waitSize:end], 0)
+            self.buffer = np.delete(self.buffer, np.s_[self.waitSize:end], 0)
             return dataToRemove
     
     def is_ready(self):

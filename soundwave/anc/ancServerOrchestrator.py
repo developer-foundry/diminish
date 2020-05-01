@@ -1,5 +1,6 @@
 import sys
 import logging
+import threading
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancOutput import AncOutput
@@ -14,15 +15,17 @@ class AncServerOrchestrator():
         self.targetFile = targetFile
         self.errorBuffer = ContinuousBuffer(waitSize, stepSize)
         self.outputBuffer = ContinuousBuffer(stepSize, stepSize) #output buffer does not need to wait until 'waitSize' is reached
-
+        self.ancWaitCondition = threading.Condition()
         self.threads = [AncInput(device, self.errorBuffer, 'anc-error-microphone'),
-                        AncOutput(device, self.outputBuffer, 'anc-output-speaker'),
+                        AncOutput(device, self.outputBuffer, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
 
     def run_algorithm(self):
-        if self.errorBuffer.is_ready():
-            data = self.errorBuffer.pop()
-            self.outputBuffer.push(data)
+        data = self.errorBuffer.pop()
+        self.outputBuffer.push(data)
+
+    def is_ready(self):
+        return self.errorBuffer.is_ready()
 
     def run(self):
         try:
@@ -31,6 +34,13 @@ class AncServerOrchestrator():
             for thread in self.threads:
                 thread.start()
             
+            #loop until algorithm is ready to start
+            while not self.is_ready():
+                pass
+
+            with self.ancWaitCondition:
+                self.ancWaitCondition.notifyAll()
+
             # will ensure the main thread is paused until ctrl + c
             while True:
                 self.run_algorithm()
