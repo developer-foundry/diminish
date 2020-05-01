@@ -167,7 +167,7 @@ def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize):
         if(btmode == 'server'):
             orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize)
         elif(btmode == 'client'):
-            orchestrator = AncClientOrchestrator(device)
+            orchestrator = AncClientOrchestrator(device, waitSize, stepSize)
         
         orchestrator.run()
     except KeyboardInterrupt:

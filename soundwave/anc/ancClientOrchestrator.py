@@ -11,7 +11,7 @@ from soundwave.anc.ancBluetoothClient import AncBluetoothClient
 from soundwave.common.continuousBuffer import ContinuousBuffer
 
 class AncClientOrchestrator():
-    def __init__(self, waitSize, stepSize, device):
+    def __init__(self, device, waitSize, stepSize):
         logging.debug('Initialize Client Orchestration thread')
         self.device = device
         self.referenceBuffer = ContinuousBuffer(waitSize, stepSize)
