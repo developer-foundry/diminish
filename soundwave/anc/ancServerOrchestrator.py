@@ -14,10 +14,10 @@ class AncServerOrchestrator():
         self.algorithm = algorithm
         self.targetFile = targetFile
         self.errorBuffer = ContinuousBuffer(waitSize, stepSize)
-        self.outputBuffer = ContinuousBuffer(stepSize, stepSize) #output buffer does not need to wait until 'waitSize' is reached
+        self.outputBuffer = ContinuousBuffer(0, stepSize) #output buffer does not need to wait for a waitSize; just start playing as soon as you have a big enough step
         self.ancWaitCondition = threading.Condition()
-        self.threads = [AncInput(device, self.errorBuffer, 'anc-error-microphone'),
-                        AncOutput(device, self.outputBuffer, self.ancWaitCondition, 'anc-output-speaker'),
+        self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
+                        AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
 
     def run_algorithm(self):

@@ -9,11 +9,12 @@ import sounddevice as sd
 from soundwave.common.continuousBuffer import ContinuousBuffer
 
 class AncInput(threading.Thread):
-    def __init__(self, device, buffer, threadName):
+    def __init__(self, device, buffer, stepSize, threadName):
         logging.debug('Initialize Input Microphone thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.buffer = buffer
         self.device = device
+        self.stepSize = stepSize
 
     def listener(self, indata, frames, time, status):
         self.buffer.push(indata)
@@ -23,6 +24,7 @@ class AncInput(threading.Thread):
             logging.debug('Running Input Microphone thread')
             with sd.InputStream(device=self.device,
                                 channels=2,
+                                blocksize=self.stepSize,
                                 callback=self.listener):
                 input()
 
