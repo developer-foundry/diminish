@@ -26,8 +26,8 @@ class AncServerOrchestrator():
     def run_algorithm(self):
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
-        #outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
-        self.outputBuffer.push(targetSignal)
+        outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
+        self.outputBuffer.push(outputSignal)
 
     def is_ready(self):
         return self.errorBuffer.is_ready()
@@ -48,7 +48,8 @@ class AncServerOrchestrator():
 
             # will ensure the main thread is paused until ctrl + c
             while True:
-                self.run_algorithm()
+                if self.is_ready(): #have to keep checking as the buffer gets popped
+                    self.run_algorithm()
 
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
