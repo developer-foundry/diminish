@@ -7,4 +7,6 @@ matplotlib
 padasip
 profilehooks
 invoke
-pynput
+pybluez
+python-dotenv
+blinker
