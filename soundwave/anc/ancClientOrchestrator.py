@@ -8,14 +8,14 @@ import numpy as np
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
-from soundwave.common.continuousBuffer import ContinuousBuffer
+from soundwave.common.fifoBuffer import FifoBuffer
 
 class AncClientOrchestrator():
     def __init__(self, device, waitSize, stepSize):
         logging.debug('Initialize Client Orchestration thread')
         self.device = device
-        self.referenceBuffer = ContinuousBuffer(waitSize, stepSize)
-        self.threads = [AncInput(device, self.referenceBuffer, 'anc-reference-microphone'), 
+        self.referenceBuffer = FifoBuffer('reference', waitSize, stepSize)
+        self.threads = [AncInput(device, self.referenceBuffer, stepSize, 'anc-reference-microphone'), 
                         AncBluetoothClient(self.referenceBuffer, 'anc-btclient')]
 
     def run(self):
