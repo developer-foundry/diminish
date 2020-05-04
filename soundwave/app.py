@@ -12,7 +12,7 @@ import logging
 import sounddevice as sd
 import soundfile as sf
 
-import soundwave.algorithms.least_mean_squares as lmsalgos
+from soundwave.algorithms.signal_processing import process_signal
 import soundwave.playback.playback as player
 import soundwave.microphone.microphone as mic
 import soundwave.plotting.plot as plot
@@ -22,51 +22,12 @@ from soundwave.anc.ancServerOrchestrator import AncServerOrchestrator
 import soundwave.common.common
 
 
-mu = 0.00001
 targetLocation = 0
 liveInputSignal = None
 liveTargetSignal = None
 liveOutputSignal = None
 liveErrorSignal = None
 processing = True
-
-def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
-    switcher = {
-        'lms': partial(lmsalgos.lms, inputSignal, targetSignal, mu, numChannels),
-        'nlms': partial(lmsalgos.nlms, inputSignal, targetSignal, mu, numChannels),
-        'nsslms': partial(lmsalgos.nsslms, inputSignal, targetSignal, mu, numChannels),
-        'rls': partial(lmsalgos.rls, inputSignal, targetSignal, mu, numChannels),
-        'clms': partial(lmsalgos.clms, inputSignal, targetSignal, mu, numChannels),
-        'crls': partial(lmsalgos.crls, inputSignal, targetSignal, mu, numChannels)
-    }
-
-    func = switcher.get(algorithm)
-    return func()
-
-
-def process_signal(inputSignal, targetSignal, algorithm):
-    # loop over each channel and perform the algorithm
-    numChannels = len(inputSignal[0])
-    outputSignal = None
-    errorSignal = None
-    for channel in range(numChannels):
-        targetChannel = targetSignal[:, channel]
-        inputChannel = np.stack((inputSignal[:, channel],
-                                targetChannel), axis=1)
-
-        # perform algorithm on left channel, then right right
-        outputChannel, errorChannel = run_algorithm(
-            algorithm, inputChannel, targetChannel, numChannels)
-
-        if outputSignal is None:
-            outputSignal = outputChannel
-            errorSignal = errorChannel
-        else:
-            outputSignal = np.stack((outputSignal, outputChannel), axis=1)
-            errorSignal = np.stack((errorSignal, errorChannel), axis=1)
-
-    return outputSignal, errorSignal
-
 
 def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
     inputSignal, inputFs = sf.read(inputFile, dtype='float32')

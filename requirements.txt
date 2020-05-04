@@ -9,4 +9,3 @@ profilehooks
 invoke
 pybluez
 python-dotenv
-blinker

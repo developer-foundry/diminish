@@ -3,8 +3,6 @@ import threading
 import logging
 import pickle
 
-from blinker import signal
-
 import soundwave.bluetoothnetwork.client as btclient
 
 
