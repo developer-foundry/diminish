@@ -7,7 +7,7 @@ import numpy as np
 import sounddevice as sd
 from soundwave.common.continuousBuffer import ContinuousBuffer
 
-class AncInput(threading.Thread):
+class AncTarget(threading.Thread):
     def __init__(self, device, buffer, stepSize, threadName):
         logging.debug('Initialize Input Microphone thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)

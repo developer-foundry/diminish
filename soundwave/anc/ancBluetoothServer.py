@@ -2,8 +2,6 @@ import sys
 import threading
 import logging
 
-from blinker import signal
-
 import soundwave.bluetoothnetwork.server as btserver
 
 
