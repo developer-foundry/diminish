@@ -4,28 +4,24 @@ import logging
 
 import numpy as np
 
-import sounddevice as sd
+import soundfile as sf
 from soundwave.common.continuousBuffer import ContinuousBuffer
 
 class AncTarget(threading.Thread):
-    def __init__(self, device, buffer, stepSize, threadName):
-        logging.debug('Initialize Input Microphone thread')
+    def __init__(self, targetFile, buffer, stepSize, threadName):
+        logging.debug('Initialize Target File thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.buffer = buffer
-        self.device = device
         self.stepSize = stepSize
-
-    def listener(self, indata, frames, time, status):
-        self.buffer.push(indata)
+        self.targetFile = targetFile
+        self.targetSignal = None
 
     def run(self):
         try:
-            logging.debug('Running Input Microphone thread')
-            with sd.InputStream(device=self.device,
-                                channels=2,
-                                blocksize=self.stepSize,
-                                callback=self.listener):
-                input()
+            #this thread does not keep running. it will end as soon as the buffer is populated
+            logging.debug('Running Target File thread')
+            self.targetSignal, targetFs = sf.read(self.targetFile, dtype='float32')
+            self.buffer.push(self.targetSignal)
 
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
