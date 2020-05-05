@@ -1,6 +1,7 @@
 import threading
 import logging
 import numpy as np
+from typing import Callable
 
 class FifoBuffer():
     def __init__(self, name, waitSize, stepSize, numChannels = 2):
@@ -10,6 +11,10 @@ class FifoBuffer():
         self.stepSize = stepSize
         self.numChannels = numChannels
         self.name = name #used to help with debugging
+        self.subscriber:Callable #define a subscriber that is interested in the pop feature
+
+    def subscribe(self, observer:Callable):
+        self.subscriber = observer
 
     def push(self, data):
         with self.lock:
@@ -22,6 +27,10 @@ class FifoBuffer():
             end = self.waitSize + self.stepSize
             dataToRemove = self.buffer[self.waitSize:end]
             self.buffer = np.delete(self.buffer, np.s_[self.waitSize:end], 0)
+
+            #notify subscriber
+            if self.subscriber is not None:
+                self.subscriber(self.name, dataToRemove)
             return dataToRemove
     
     def is_ready(self):
