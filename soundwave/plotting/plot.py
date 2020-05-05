@@ -2,7 +2,7 @@ import matplotlib  # nopep8
 matplotlib.use('Agg')  # nopep8
 import os
 import matplotlib.pyplot as plt
-
+import logging
 
 def get_dir(algorithm, mode):
     base_dir = os.getcwd()
@@ -43,4 +43,19 @@ def plot_vertical(algorithm, mode, inputSignal, targetSignal, outputSignal, erro
     axs[3].plot(errorSignal, '-r')
     axs[3].title.set_text(f'{algorithm} Error Signal')
     axs[3].set_ylim((-0.4, 0.4))
+    plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
+
+def plot_vertical_buffers(algorithm, mode, buffers):
+    colors = ['-b', '-g', '-k', '-r']
+    algDirectory = get_dir(algorithm, mode)
+
+    fig, axs = plt.subplots(len(buffers))
+    fig.set_size_inches(18.5, 10.5)
+    fig.tight_layout(pad=3.0)
+
+    for index, bufferName in enumerate(buffers):
+        axs[index].plot(buffers[bufferName], colors[index])
+        axs[index].title.set_text(f'{algorithm} {bufferName} Signal')
+        axs[index].set_ylim((-0.4, 0.4))
+
     plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
