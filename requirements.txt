@@ -11,3 +11,4 @@ pybluez
 python-dotenv
 blinker
 twisted
+protobuf
