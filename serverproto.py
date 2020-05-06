@@ -1,11 +1,13 @@
 from soundproto import sound_pb2
+import bluetooth
+import struct
 import sys
 import csv
 
 def send_message(sock, message):
     s = message.SerializeToString()
     packed_len = struct.pack('>L', len(s))
-    sock.send(packed_len + s)
+    sock.sendall(packed_len + s)
 
 if __name__ == "__main__":
   soundwave = sound_pb2.SoundWave()
@@ -25,12 +27,12 @@ if __name__ == "__main__":
   sock.bind(('', bluetooth.PORT_ANY))
   sock.listen(1)
 
-  port = self.sock.getsockname()[1]
+  port = sock.getsockname()[1]
 
-  bluetooth.advertise_service(self.sock, 'ANCServer', service_id=self.uuid,
-                              service_classes=[self.uuid, bluetooth.ADVANCED_AUDIO_CLASS],
+  bluetooth.advertise_service(sock, 'ANCServer', service_id=uuid,
+                              service_classes=[uuid, bluetooth.ADVANCED_AUDIO_CLASS],
                               profiles=[bluetooth.ADVANCED_AUDIO_PROFILE]
                               )
 
-  client_sock, client_info = self.sock.accept()
+  client_sock, client_info = sock.accept()
   send_message(client_sock, soundwave)
