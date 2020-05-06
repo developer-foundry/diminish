@@ -1,19 +1,23 @@
 from soundproto import sound_pb2
 import sys
+import bluetooth
+import struct
 
 def socket_read_n(sock, n):
-    buf = ''
+    buf = bytes()
     while n > 0:
         data = sock.recv(n)
         if data == '':
             raise RuntimeError('unexpected connection close')
         buf += data
         n -= len(data)
+        print(f'Read {len(data)} bytes and have {n} to go')
     return buf
 
 def get_message(sock, msgtype):
     len_buf = socket_read_n(sock, 4)
     msg_len = struct.unpack('>L', len_buf)[0]
+    print(f'Message length: {msg_len}')
     msg_buf = socket_read_n(sock, msg_len)
 
     msg = msgtype()
