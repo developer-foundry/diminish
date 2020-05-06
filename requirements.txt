@@ -10,3 +10,4 @@ invoke
 pybluez
 python-dotenv
 blinker
+twisted
