@@ -1,12 +1,12 @@
 import urwid
-from tui.dashboard.dashboardForm import DashboardForm
+from tui.controllers.dashboardController import DashboardController
 from common.common import getEnvironmentVariables
 
 
 if __name__ == '__main__':
     try:
         parameters = getEnvironmentVariables()
-        dashboard = DashboardForm(parameters)
+        dashboard = DashboardController(parameters)
         dashboard.run()
 
     except KeyboardInterrupt:
