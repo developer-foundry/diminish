@@ -2,7 +2,9 @@ import urwid
 from tui.palette.palette import palette
 
 class DashboardForm():
-    def __init__(self):
+    def __init__(self, parameters):
+        self.parameters = parameters
+        
         header_text = urwid.Text(u' Stock Quotes')
         header = urwid.AttrMap(header_text, 'banner')
 
