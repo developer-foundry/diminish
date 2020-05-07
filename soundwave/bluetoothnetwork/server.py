@@ -39,13 +39,11 @@ def socket_read_n(sock, n):
             raise RuntimeError('unexpected connection close')
         buf += data
         n -= len(data)
-        print(f'Read {len(data)} bytes and have {n} to go')
     return buf
 
 def get_message(sock, msgtype):
     len_buf = socket_read_n(sock, 4)
     msg_len = struct.unpack('>L', len_buf)[0]
-    print(f'Message length: {msg_len}')
     msg_buf = socket_read_n(sock, msg_len)
 
     msg = msgtype()
@@ -54,8 +52,9 @@ def get_message(sock, msgtype):
 
 def recv(socket):
     soundwave = get_message(socket, sound_pb2.SoundWave)
-    arr = np.empty((0,2))
+    wave = np.empty((0,2))
     for i in soundwave.samples:
-        arr = np.concatenate((arr, [i.first, i.second]), axis=0)
+        sample_arr = np.array([[i.first, i.second]])
+        wave = np.concatenate((wave, sample_arr), axis=0)
 
-    return arr
+    return wave
