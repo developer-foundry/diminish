@@ -13,7 +13,7 @@ if __name__ == "__main__":
   soundwave = sound_pb2.SoundWave()
   soundwave.name = "Input"
 
-  f = open('data/input.csv')
+  f = open('data/input-smaller.csv')
   csv_f = csv.reader(f, delimiter=' ')
 
   for row in csv_f:
