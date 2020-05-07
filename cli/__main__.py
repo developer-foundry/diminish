@@ -1,8 +1,3 @@
-import getopt
-import wave
-import sys
-import os
-
 from common.common import getEnvVar
 from soundwave import app
 
