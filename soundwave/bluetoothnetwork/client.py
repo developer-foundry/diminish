@@ -38,9 +38,8 @@ def send_data(socket, data):
     soundwave = sound_pb2.SoundWave()
     soundwave.name = "Reference"
 
-    for x in np.nditer(data, order='C'):
+    for x in data:
       sample = soundwave.samples.add()
-      logging.debug(f'Adding {x[0]},{x[1]} to the soundwave message')
       sample.first = float(x[0])
       sample.second = float(x[1])
 

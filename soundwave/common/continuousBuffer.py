@@ -12,7 +12,7 @@ class ContinuousBuffer():
         self.stepSize = stepSize
         self.numChannels = numChannels
         self.name = name #used to help with debugging
-        self.subscriber:Callable #define a subscriber that is interested in the pop feature
+        self.subscriber:Callable = None #define a subscriber that is interested in the pop feature
 
     def subscribe(self, observer:Callable):
         self.subscriber = observer
