@@ -1,4 +1,4 @@
-from soundproto import sound_pb2
+import sound_pb2
 import bluetooth
 import struct
 import sys
@@ -7,7 +7,7 @@ import csv
 def send_message(sock, message):
     s = message.SerializeToString()
     packed_len = struct.pack('>L', len(s))
-    sock.sendall(packed_len + s)
+    sock.send(packed_len + s)
 
 if __name__ == "__main__":
   soundwave = sound_pb2.SoundWave()

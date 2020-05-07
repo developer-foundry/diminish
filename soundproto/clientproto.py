@@ -1,4 +1,4 @@
-from soundproto import sound_pb2
+import sound_pb2
 import sys
 import bluetooth
 import struct
