@@ -16,7 +16,7 @@ if __name__ == '__main__':
         STEP_SIZE = getEnvVar("STEP_SIZE", True)
 
         dashboard = DashboardForm()
-        urwid.MainLoop(dashboard.layout, palette=[('reversed', 'standout', '')]).run()
+        dashboard.run()
 
     except KeyboardInterrupt:
         exit('\nInterrupted by user')
