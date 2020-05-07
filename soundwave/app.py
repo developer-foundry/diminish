@@ -10,7 +10,7 @@ import soundwave.plotting.plot as plot
 
 from soundwave.anc.ancClientOrchestrator import AncClientOrchestrator
 from soundwave.anc.ancServerOrchestrator import AncServerOrchestrator
-import soundwave.common.common
+import common.common
 
 
 def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):

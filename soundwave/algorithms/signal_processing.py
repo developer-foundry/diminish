@@ -2,7 +2,7 @@ import logging
 from functools import partial
 import numpy as np
 import soundwave.algorithms.least_mean_squares as lmsalgos
-from soundwave.common.common import mu
+from common.common import mu
 
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
