@@ -1,5 +1,8 @@
 import bluetooth
 import logging
+import struct
+import numpy as np
+from soundproto import sound_pb2
 
 uuid = '87f39d29-7d6d-437d-973b-fba39e49d4ee'
 
@@ -27,3 +30,32 @@ def close_connection(client_sock, server_sock):
     client_sock.close()
     server_sock.close()
     logging.info('Closing bluetooth connection to client')
+
+def socket_read_n(sock, n):
+    buf = bytes()
+    while n > 0:
+        data = sock.recv(n)
+        if data == '':
+            raise RuntimeError('unexpected connection close')
+        buf += data
+        n -= len(data)
+        print(f'Read {len(data)} bytes and have {n} to go')
+    return buf
+
+def get_message(sock, msgtype):
+    len_buf = socket_read_n(sock, 4)
+    msg_len = struct.unpack('>L', len_buf)[0]
+    print(f'Message length: {msg_len}')
+    msg_buf = socket_read_n(sock, msg_len)
+
+    msg = msgtype()
+    msg.ParseFromString(msg_buf)
+    return msg
+
+def recv(socket):
+    soundwave = get_message(socket, sound_pb2.SoundWave)
+    arr = np.empty((0,2))
+    for i in soundwave.samples:
+        arr = np.concatenate((arr, [i.first, i.second]), axis=0)
+
+    return arr

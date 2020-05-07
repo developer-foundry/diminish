@@ -28,18 +28,8 @@ class AncBluetoothServer(threading.Thread):
                     'No Bluetooth Connection was established. Bluetooth Server thread closing.')
                 self.cleanup()
                 return
-
-            while True:
-                packet = self.client_socket.recv(1024)  # make an env var
-                if not packet:
-                    break
-                else:
-                    logging.debug(
-                        f'Bluetooth Server received packet from Bluetooth Client. Size is: {sys.getsizeof(packet)}')
-
-            logging.debug(
-                'No more packets received from Bluetooth Client. Bluetooth Server shutting down')
-
+            arr = btserver.recv(self.client_socket)
+            logging.debug(f'Received arr with shape {arr.shape}')
             self.cleanup()
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
