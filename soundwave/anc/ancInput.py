@@ -3,7 +3,6 @@ import threading
 import logging
 
 import numpy as np
-from blinker import signal
 
 import sounddevice as sd
 from soundwave.common.continuousBuffer import ContinuousBuffer

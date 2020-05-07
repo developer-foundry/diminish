@@ -33,9 +33,6 @@ if __name__ == '__main__':
             app.process_prerecorded(DEVICE, INPUT_FILE,
                                     TARGET_FILE, SIZE, ALGORITHM)
         elif MODE == 'live':
-            app.process_live(parser, DEVICE,
-                            TARGET_FILE, ALGORITHM)
-        elif MODE == 'anc':
             app.process_anc(DEVICE,
                             TARGET_FILE, ALGORITHM, BT_MODE, WAIT_SIZE, STEP_SIZE)
 
