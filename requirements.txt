@@ -9,3 +9,4 @@ profilehooks
 invoke
 pybluez
 python-dotenv
+urwid
