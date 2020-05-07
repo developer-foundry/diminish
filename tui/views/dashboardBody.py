@@ -16,5 +16,5 @@ class DashboardBody(urwid.WidgetWrap):
                 ('fixed',1,vline), #fixed means it can't move
                 ('weight',2,data) #weight means 'fill in the rest of the screen'
             ],
-            dividechars=1, focus_column=2)
+            dividechars=1)
         return body

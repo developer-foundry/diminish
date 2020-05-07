@@ -11,7 +11,8 @@ class DashboardData(urwid.WidgetWrap):
 
         l = [
             header,
+            header
             ]
 
-        w = urwid.ListBox(urwid.SimpleListWalker(l))
+        w = urwid.Filler(urwid.Pile(l))
         return w
