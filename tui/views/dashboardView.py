@@ -1,6 +1,8 @@
 import urwid
 
 from tui.components.headerComponent import HeaderComponent
+from tui.components.footerComponent import FooterComponent
+from tui.views.dashboardBody import DashboardBody
 
 class DashboardView(urwid.WidgetWrap):
     def __init__(self, model):
@@ -8,17 +10,12 @@ class DashboardView(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
     
     def build(self):
-        header = HeaderComponent(f'Dashboard - {self.model.mode.title()}', 'banner')
+        header = HeaderComponent(f'Dashboard - {self.model.mode.title()}', 'header')
+        footer = FooterComponent([
+            u'Press (', ('runButton', u'R'), u') to run algorithm.',
+            u' Press (', ('quitButton', u'Q'), u') to quit.'
+        ], 'footer')
+        body = DashboardBody(self.model)
 
-        menu = urwid.Text([
-            u'Press (', ('refresh button', u'S'), u') to manually refresh. ',
-            u'Press (', ('quit button', u'Q'), u') to quit.'
-        ])
-        
-        quote_text = urwid.Text(u'Press (R) to get your first quote!')
-        quote_filler = urwid.Filler(quote_text, valign='top', top=1, bottom=1)
-        v_padding = urwid.Padding(quote_filler, left=1, right=1)
-        quote_box = urwid.LineBox(v_padding)
-
-        layout = urwid.Frame(header=header, body=quote_box, footer=menu)
+        layout = urwid.Frame(header=header, body=body, footer=footer)
         return layout
