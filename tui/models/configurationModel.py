@@ -1,14 +1,6 @@
+from tui.models.configurationOptionsModel import ConfigurationOptionsModel
+
 class ConfigurationModel():
-    mode: ''
-    algorithm: ''
-    inputFile: ''
-    targetFile: ''
-    device: ''
-    size: 0
-    role: ''
-    waitSize: 0
-    stepSize: 0
-    
     def __init__(self, parameters):
         self.mode = parameters['mode']
         self.algorithm = parameters['algorithm']
@@ -19,3 +11,4 @@ class ConfigurationModel():
         self.role = parameters['role']
         self.waitSize = parameters['waitSize']
         self.stepSize = parameters['stepSize']
+        self.options = ConfigurationOptionsModel()

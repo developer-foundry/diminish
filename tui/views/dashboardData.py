@@ -1,4 +1,5 @@
 import urwid
+from tui.components.headerComponent import HeaderComponent
 
 class DashboardData(urwid.WidgetWrap):
     def __init__(self, model):
@@ -6,6 +7,11 @@ class DashboardData(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
     
     def build(self):
-        quote_text = urwid.Text(u'Data!')
-        quote_filler = urwid.Filler(quote_text, valign='top', top=1, bottom=1)
-        return quote_filler
+        header = HeaderComponent(f'Data View', 'header')
+
+        l = [
+            header,
+            ]
+
+        w = urwid.ListBox(urwid.SimpleListWalker(l))
+        return w
