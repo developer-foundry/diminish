@@ -10,6 +10,13 @@
       "request": "launch",
       "module": "cli",
       "justMyCode": false
+    },
+    {
+      "name": "Debug TUI",
+      "type": "python",
+      "request": "launch",
+      "module": "tui",
+      "justMyCode": false
     }
   ]
 }

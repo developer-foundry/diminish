@@ -1,9 +1,14 @@
 import urwid
+
+from tui.components.headerComponent import HeaderComponent
+
 class DashboardView(urwid.WidgetWrap):
     def __init__(self, model):
         self.model = model
-        header_text = urwid.Text(f'Dashboard - {self.model.mode.title()}')
-        header = urwid.AttrMap(header_text, 'banner')
+        urwid.WidgetWrap.__init__(self, self.build())
+    
+    def build(self):
+        header = HeaderComponent(f'Dashboard - {self.model.mode.title()}', 'banner')
 
         menu = urwid.Text([
             u'Press (', ('refresh button', u'S'), u') to manually refresh. ',
@@ -15,4 +20,5 @@ class DashboardView(urwid.WidgetWrap):
         v_padding = urwid.Padding(quote_filler, left=1, right=1)
         quote_box = urwid.LineBox(v_padding)
 
-        self.layout = urwid.Frame(header=header, body=quote_box, footer=menu)
+        layout = urwid.Frame(header=header, body=quote_box, footer=menu)
+        return layout

@@ -8,7 +8,7 @@ class DashboardController():
         self.model = ConfigurationModel(parameters)
         self.view = DashboardView(self.model)
         
-        self.loop = urwid.MainLoop(self.view.layout, palette=palette, unhandled_input=self.handle_input)
+        self.loop = urwid.MainLoop(self.view, palette=palette, unhandled_input=self.handle_input)
     
     def run(self):
         self.loop.run()
