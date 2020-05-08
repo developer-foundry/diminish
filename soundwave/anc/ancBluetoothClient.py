@@ -22,8 +22,7 @@ class AncBluetoothClient(threading.Thread):
         if self.client_socket is not None:
             logging.debug('Bluetooth Client sending packets.')
             dataToSend = self.buffer.pop()
-            reference_data = pickle.dumps(dataToSend)
-            btclient.send_data(self.client_socket, reference_data)
+            btclient.send_data(self.client_socket, dataToSend)
 
     def run(self):
         try:

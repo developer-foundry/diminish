@@ -11,7 +11,7 @@ if __name__ == '__main__':
                                     parameters['targetFile'], parameters['size'], parameters['algorithm'])
         elif parameters['mode'] == 'live':
             app.process_anc(parameters['device'],
-                            parameters['targetFile'], parameters['algorithm'], parameters['role'], parameters['waitSize'], parameters['stepSize'])
+                            parameters['targetFile'], parameters['algorithm'], parameters['role'], parameters['waitSize'], parameters['stepSize'], , parameters['size'])
 
     except KeyboardInterrupt:
         exit('\nInterrupted by user')

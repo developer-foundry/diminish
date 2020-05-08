@@ -12,16 +12,16 @@ from common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
 
 class AncServerOrchestrator():
-    def __init__(self, device, algorithm, targetFile, waitSize, stepSize):
+    def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size):
         logging.debug('Initialize Server Orchestration')
         self.algorithm = algorithm
-        self.errorBuffer = FifoBuffer('Error Microphone', waitSize, stepSize)
-        self.outputBuffer = FifoBuffer('Output', 0, stepSize) #output buffer does not need to wait for a waitSize; just start playing as soon as you have a big enough step
-        self.outputErrorBuffer = FifoBuffer('Output Error', 0, stepSize)
-        self.targetBuffer = ContinuousBuffer('Target', stepSize)
+        self.errorBuffer = FifoBuffer('error', waitSize, stepSize)
+        self.outputBuffer = FifoBuffer('output', waitSize, stepSize)
+        self.outputErrorBuffer = FifoBuffer('output-error', 0, stepSize)
+        self.targetBuffer = ContinuousBuffer('target', stepSize)
         self.ancWaitCondition = threading.Condition()
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
-                        AncTarget(targetFile, self.targetBuffer, stepSize, 'anc-target-file'),
+                        AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
         self.ancPlot = None
@@ -38,7 +38,7 @@ class AncServerOrchestrator():
         self.outputErrorBuffer.pop()
 
     def is_ready(self):
-        return self.errorBuffer.is_ready()
+        return self.errorBuffer.is_ready() and self.outputBuffer.is_ready()
 
     def run(self):
         try:

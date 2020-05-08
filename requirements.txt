@@ -9,3 +9,4 @@ invoke
 pybluez
 python-dotenv
 urwid
+protobuf
