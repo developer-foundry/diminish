@@ -9,11 +9,19 @@ class DashboardData(urwid.WidgetWrap):
     
     def build(self):
         header = HeaderComponent(f'Data View', 'header')
-        errorSignal = SignalGraph(self.model, 'error')
+        errorSignal = SignalGraph(self.model, 'Error Microphone')
+        targetSignal = SignalGraph(self.model, 'Target File')
+        referenceSignal = SignalGraph(self.model, 'Reference Microphone')
+        outputSignal = SignalGraph(self.model, 'Output Spaker')
+        algorithmErrorSignal = SignalGraph(self.model, 'Algorithm Error')
 
         l = [
             header,
-            errorSignal
+            errorSignal,
+            targetSignal,
+            referenceSignal,
+            outputSignal,
+            algorithmErrorSignal,
             ]
 
         w = urwid.Filler(urwid.Pile(l), 'top')
