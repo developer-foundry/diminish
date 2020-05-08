@@ -11,10 +11,11 @@ class DashboardBody(urwid.WidgetWrap):
         controls = DashboardControls(self.model)
         data = DashboardData(self.model)
         vline = urwid.AttrWrap( urwid.SolidFill(u'\u2502'), 'line')
+        
         body = urwid.Columns([
                 (30, controls), #30 is number of columns wide
                 ('fixed',1,vline), #fixed means it can't move
-                ('weight',2,data) #weight means 'fill in the rest of the screen'
+                data
             ],
             dividechars=1)
         return body

@@ -15,6 +15,7 @@ class DashboardView(urwid.WidgetWrap):
             u'Press (', ('runButton', u'R'), u') to run algorithm.',
             u' Press (', ('quitButton', u'Q'), u') to quit.'
         ], 'footer')
+
         body = DashboardBody(self.model)
 
         layout = urwid.Frame(header=header, body=body, footer=footer)

@@ -14,7 +14,7 @@ class DashboardControls(urwid.WidgetWrap):
         header = HeaderComponent(f'Algorithm Controls', 'header')
 
         l = [
-            header,    
+            header,
             urwid.AttrWrap(urwid.Text("Mode"), 'contentheader'),
             mode_buttons,
             urwid.Divider(),
@@ -22,7 +22,7 @@ class DashboardControls(urwid.WidgetWrap):
             algorithm_buttons,
             ]
 
-        w = urwid.Filler(urwid.Pile(l))
+        w = urwid.Filler(urwid.Pile(l), 'top')
         return w
     
     def on_radio_change(self, button, state, groupName):
