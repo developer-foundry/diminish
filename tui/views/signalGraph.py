@@ -12,7 +12,7 @@ class SignalGraph(urwid.WidgetWrap):
         header = HeaderComponent(f'{self.name.title()} Signal', 'h2')
         data = [ [10,0], [20,0], [50,0], [20,0], [60,0], [80,0], [10,0]]
         bg = urwid.BarGraph(['bg background','bg 1','bg 1'])
-        bg.set_data(data, 100, None)
+        bg.set_data(data, 100, [10,20,30,40,50,60,70,80,90])
         body = urwid.BoxAdapter(bg, 10)
 
         l = [header,body]
