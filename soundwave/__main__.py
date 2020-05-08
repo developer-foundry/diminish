@@ -34,7 +34,7 @@ if __name__ == '__main__':
                                     TARGET_FILE, SIZE, ALGORITHM)
         elif MODE == 'live':
             app.process_anc(DEVICE,
-                            TARGET_FILE, ALGORITHM, BT_MODE, WAIT_SIZE, STEP_SIZE)
+                            TARGET_FILE, ALGORITHM, BT_MODE, WAIT_SIZE, STEP_SIZE, SIZE)
 
     except KeyboardInterrupt:
         parser.exit('\nInterrupted by user')

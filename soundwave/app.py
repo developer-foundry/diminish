@@ -29,11 +29,11 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
     plot.plot_vertical(algorithm, 'prerecorded', inputSignal,
                         targetSignal, outputSignal, errorSignal)
 
-def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize):
+def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size):
     orchestrator = None
     try:
         if(btmode == 'server'):
-            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize)
+            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize, size)
         elif(btmode == 'client'):
             orchestrator = AncClientOrchestrator(device, waitSize, stepSize)
         

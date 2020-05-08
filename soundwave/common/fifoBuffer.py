@@ -34,7 +34,15 @@ class FifoBuffer():
             return dataToRemove
     
     def is_ready(self):
-        return self.size() > self.waitSize + self.stepSize
+        switcher = {
+            'output': lambda: self.size() < self.waitSize*5,
+            'output-error': lambda: True,
+            'error': lambda: self.size() > self.waitSize + self.stepSize,
+            'reference': lambda: True
+        }
+
+        func = switcher.get(self.name)
+        return func()
 
     def size(self):
         return self.buffer.shape[0]
