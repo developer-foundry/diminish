@@ -3,11 +3,10 @@ import os
 import threading
 import logging
 
-import pickle
 import numpy as np
 
 from soundwave.anc.ancInput import AncInput
-from soundwave.anc.ancBluetoothClient import AncBluetoothClient
+from soundwave.anc.ancNetworkClient import AncNetworkClient
 from soundwave.common.fifoBuffer import FifoBuffer
 
 class AncClientOrchestrator():
@@ -16,7 +15,7 @@ class AncClientOrchestrator():
         self.device = device
         self.referenceBuffer = FifoBuffer('reference', waitSize, stepSize)
         self.threads = [AncInput(device, self.referenceBuffer, stepSize, 'anc-reference-microphone'), 
-                        AncBluetoothClient(self.referenceBuffer, 'anc-btclient')]
+                        AncNetworkClient(self.referenceBuffer, 'anc-networkclient')]
 
     def run(self):
         try:

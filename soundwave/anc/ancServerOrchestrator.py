@@ -1,12 +1,13 @@
 import sys
 import logging
 import threading
+import numpy as np
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
 from soundwave.anc.ancOutput import AncOutput
 from soundwave.anc.ancPlot import AncPlot
-from soundwave.anc.ancBluetoothServer import AncBluetoothServer
+from soundwave.anc.ancNetworkServer import AncNetworkServer
 from soundwave.common.continuousBuffer import ContinuousBuffer
 from soundwave.common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
@@ -18,27 +19,39 @@ class AncServerOrchestrator():
         self.errorBuffer = FifoBuffer('error', waitSize, stepSize)
         self.outputBuffer = FifoBuffer('output', waitSize, stepSize)
         self.outputErrorBuffer = FifoBuffer('output-error', 0, stepSize)
+        self.referenceBuffer = FifoBuffer('reference', 0, stepSize)
         self.targetBuffer = ContinuousBuffer('target', stepSize)
+
         self.ancWaitCondition = threading.Condition()
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
-                        AncBluetoothServer('anc-btserver')]
+                        AncNetworkServer(self.referenceBuffer, 'anc-networkserver')]
         self.ancPlot = None
 
     def run_algorithm(self):
-        errorSignal = self.errorBuffer.pop()
-        targetSignal = self.targetBuffer.pop()
-        outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
-        self.outputBuffer.push(outputSignal)
+        referenceSignal = self.referenceBuffer.pop()
+
+        # referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
+        # outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+        # logging.info(f'outputSignal: {outputSignal.shape}')
+        # self.outputBuffer.push(outputSignal)
+        #if referenceSignal.shape[0] > 0:
+        if referenceSignal.shape[0] == 1024:
+            errorSignal = self.errorBuffer.pop()
+            targetSignal = self.targetBuffer.pop()
+            logging.info(f'pushing sound: {referenceSignal.shape}:{targetSignal.shape}')
+            self.outputBuffer.push(referenceSignal)
 
         #for tracking the output error buffer we just need to push and pop
         #so that the plot subscriber picks it up
-        self.outputErrorBuffer.push(outputErrors)
-        self.outputErrorBuffer.pop()
+        # self.outputErrorBuffer.push(outputErrors)
+        # self.outputErrorBuffer.pop()
 
     def is_ready(self):
-        return self.errorBuffer.is_ready() and self.outputBuffer.is_ready()
+        return self.errorBuffer.is_ready() and \
+               self.outputBuffer.is_ready() and \
+               self.referenceBuffer.is_ready()
 
     def run(self):
         try:

@@ -1,31 +1,27 @@
 import time
-import bluetooth
+import socket
 import logging
 import struct
 import numpy as np
+import os
 from soundproto import sound_pb2
 
-uuid = '87f39d29-7d6d-437d-973b-fba39e49d4ee'
+from dotenv import load_dotenv
+load_dotenv()
 
 def configure_server():
-    server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    server_sock.bind(('', bluetooth.PORT_ANY))
-    server_sock.listen(1)
-
-    port = server_sock.getsockname()[1]
-
-    bluetooth.advertise_service(server_sock, 'ANCServer', service_id=uuid,
-                                service_classes=[uuid, bluetooth.ADVANCED_AUDIO_CLASS],
-                                profiles=[bluetooth.ADVANCED_AUDIO_PROFILE]
-                                )
-
-    logging.info(f'Waiting for connection on RFCOMM channel {port}')
-    return server_sock
+    HOST = os.getenv('SERVER')
+    PORT = os.getenv('PORT')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
+        server_sock.bind((HOST,PORT))
+        server_sock.listen(1)
+        logging.info(f'Waiting for connection on socket port {PORT}')
+        return server_sock
 
 def wait_on_client_connection(server_sock):
-    client_sock, client_info = server_sock.accept()
-    logging.info(f'Accepted connection from {client_info}')
-    return client_sock
+    conn, addr = server_sock.accept()
+    logging.info(f'Accepted connection from {addr}')
+    return conn
 
 def close_connection(client_sock, server_sock):
     client_sock.close()

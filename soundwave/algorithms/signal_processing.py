@@ -19,13 +19,19 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
-    numChannels = len(inputSignal[0])
+    numChannels = len(inputSignal[0]) // 2 # assumes that error and a single reference microphone are combined
     outputSignal = None
     errorSignal = None
+    logging.info(f'targetSignal size: {targetSignal.shape}')
     for channel in range(numChannels):
+        logging.info(f'channel: {channel}')
         targetChannel = targetSignal[:, channel]
         inputChannel = np.stack((inputSignal[:, channel],
-                                targetChannel), axis=1)
+                                 inputSignal[:, (channel + 2)]), axis=1)
+        logging.info(f'input size: {inputChannel.shape}')
+        inputChannel = np.column_stack([inputChannel, targetChannel])
+        logging.info(f'inputChannel size: {inputChannel.shape}')
+        logging.info(f'targetChannel size: {targetChannel.shape}')
 
         # perform algorithm on left channel, then right right
         outputChannel, errorChannel = run_algorithm(

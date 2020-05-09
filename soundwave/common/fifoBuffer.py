@@ -38,7 +38,7 @@ class FifoBuffer():
             'output': lambda: self.size() < self.waitSize*5,
             'output-error': lambda: True,
             'error': lambda: self.size() > self.waitSize + self.stepSize,
-            'reference': lambda: True
+            'reference': lambda: self.size() >= self.waitSize + self.stepSize
         }
 
         func = switcher.get(self.name)
