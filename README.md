@@ -100,6 +100,7 @@ The bluetooth configuration requires running bluetooth in compatibility mode on 
         ```
 9. Set the `BT_MODE=server` in `.env`
 10. Run `python3 -m soundwave`
+11. open networking port - `sudo ufw allow 65432/tcp`
 
 ## Tests
 

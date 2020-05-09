@@ -11,12 +11,12 @@ load_dotenv()
 
 def configure_server():
     HOST = os.getenv('SERVER')
-    PORT = os.getenv('PORT')
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
-        server_sock.bind((HOST,PORT))
-        server_sock.listen(1)
-        logging.info(f'Waiting for connection on socket port {PORT}')
-        return server_sock
+    PORT = int(os.getenv('PORT'))
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_sock.bind(('',PORT))
+    server_sock.listen(1)
+    logging.info(f'Waiting for connection on socket port {PORT}')
+    return server_sock
 
 def wait_on_client_connection(server_sock):
     conn, addr = server_sock.accept()
