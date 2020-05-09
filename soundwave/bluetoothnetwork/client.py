@@ -37,6 +37,8 @@ def send_message(sock, message):
 def send_data(socket, data):
     soundwave = sound_pb2.SoundWave()
     soundwave.name = "Reference"
+    #logging.info(f'Bluetooth client is sending {data[0,:]} as the first row')
+    #logging.info(f'Bluetooth client is sending {data[len(data) - 1,:]} as the last row')
 
     for x in data:
       sample = soundwave.samples.add()

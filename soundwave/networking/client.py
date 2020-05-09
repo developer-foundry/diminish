@@ -12,12 +12,12 @@ load_dotenv()
 
 def configure_client():
     HOST = os.getenv('SERVER')
-    PORT = os.getenv('PORT')
+    PORT = int(os.getenv('PORT'))
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-        logging.info(f'Connected to server {HOST}')
-        return s
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    logging.info(f'Connected to server {HOST}')
+    return s
 
 def send_message(sock, message):
     s = message.SerializeToString()
