@@ -10,3 +10,4 @@ pybluez
 python-dotenv
 urwid
 protobuf
+pyspectator
