@@ -16,7 +16,10 @@ class DashboardView(urwid.WidgetWrap):
             u' Press (', ('quitButton', u'Q'), u') to quit.'
         ], 'footer')
 
-        body = DashboardBody(self.model)
+        self.body = DashboardBody(self.model)
 
-        layout = urwid.Frame(header=header, body=body, footer=footer)
+        layout = urwid.Frame(header=header, body=self.body, footer=footer)
         return layout
+    
+    def refresh(self):
+        self.body.refresh()

@@ -8,14 +8,18 @@ class DashboardBody(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
     
     def build(self):
-        controls = DashboardControls(self.model)
-        data = DashboardData(self.model)
+        self.controls = DashboardControls(self.model)
+        self.data = DashboardData(self.model)
         vline = urwid.AttrWrap( urwid.SolidFill(u'\u2502'), 'line')
         
         body = urwid.Columns([
-                (30, controls), #30 is number of columns wide
+                (30, self.controls), #30 is number of columns wide
                 ('fixed',1,vline), #fixed means it can't move
-                data
+                self.data
             ],
             dividechars=1)
         return body
+    
+    def refresh(self):
+        self.controls.refresh()
+        self.data.refresh()

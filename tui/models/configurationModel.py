@@ -11,4 +11,7 @@ class ConfigurationModel():
         self.role = parameters['role']
         self.waitSize = parameters['waitSize']
         self.stepSize = parameters['stepSize']
+        self.errorBuffer = [ [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005]]
+        self.graphTop = 0.01
+        self.graphBottom = -0.01
         self.options = ConfigurationOptionsModel()

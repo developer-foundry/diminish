@@ -11,13 +11,15 @@ class SignalGraph(urwid.WidgetWrap):
     
     def build(self):
         header = HeaderComponent(f'{self.name.title()} Signal', 'h2')
-        data = [ [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005]]
-        bg = PositiveNegativeBarGraph(['bg background','bg 1'])
-        bg.set_data(data, 0.01, -0.01)
-        bg.set_bar_width(1)
-        body = urwid.BoxAdapter(bg, 10) #maxrow has to be divisible by 2
+        self.bg = PositiveNegativeBarGraph(['bg background','bg 1'])
+        self.bg.set_data(self.model.errorBuffer, self.model.graphTop, self.model.graphBottom)
+        self.bg.set_bar_width(1)
+        body = urwid.BoxAdapter(self.bg, 10) #maxrow has to be divisible by 2
 
         l = [header,body]
         w = urwid.Pile(l)
         b = urwid.LineBox(w)
         return b
+    
+    def refresh(self):
+        self.bg.set_data(self.model.errorBuffer, self.model.graphTop, self.model.graphBottom)
