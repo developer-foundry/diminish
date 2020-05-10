@@ -7,7 +7,7 @@ class LoggingView(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
 
     def build(self):
-        return urwid.BoxAdapter(urwid.LineBox(urwid.ListBox(self.entries)), 10)
+        return urwid.BoxAdapter(urwid.LineBox(urwid.ListBox(self.entries),title="Logging"), 10)
 
     def convert(self, entries):
         textArray = []
