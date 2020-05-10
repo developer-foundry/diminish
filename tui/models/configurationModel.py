@@ -14,4 +14,5 @@ class ConfigurationModel():
         self.errorBuffer = [ [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005]]
         self.graphTop = 0.01
         self.graphBottom = -0.01
+        self.logEntries = ['Entry One', 'Entry Two']
         self.options = ConfigurationOptionsModel()
