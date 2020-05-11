@@ -11,4 +11,6 @@ palette = [
     ('bg 1', '', 'dark blue', ''),
     ('bigtextgood', 'dark green', ''),
     ('bigtextbad', 'dark red', ''),
+    ('controlLabel', 'dark cyan', ''),
+    ('controlText', 'light gray', ''),
 ]
