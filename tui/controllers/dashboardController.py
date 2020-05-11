@@ -9,10 +9,11 @@ class DashboardController():
         self.logger = logger
         self.loggingHandler = loggingHandler
         self.model = ConfigurationModel(parameters)
+        self.loggingHandler.configureModel(self.model)
+        self.model.logger = logger
+
         self.view = DashboardView(self.model)
         self.loop = urwid.MainLoop(self.view, palette=palette, unhandled_input=self.handle_input)
-
-        self.loggingHandler.configureModel(self.model)
         self.loop.run()
     
     def run(self):

@@ -1,8 +1,9 @@
 import urwid
 
 class VerticalRadioButtonGroup(urwid.Pile):
-    def __init__(self, model, attribute, labelOptions, group):
+    def __init__(self, model, attribute, labelOptions, group, modelRefreshFunction):
         self.model = model
+        self.modelRefreshFunction = modelRefreshFunction
         self.attribute = attribute
         urwid.Pile.__init__(self, self.build(labelOptions, group))
     
@@ -12,6 +13,7 @@ class VerticalRadioButtonGroup(urwid.Pile):
         for txt in labelOptions:
             r = urwid.RadioButton(group, txt, False)
             urwid.connect_signal(r, 'change', self.on_radio_change, self.attribute)
+            urwid.connect_signal(r, 'change', self.modelRefreshFunction, self.attribute)
             ra = urwid.AttrWrap(r, 'button normal','button select')
             self.buttons.append(ra)
 

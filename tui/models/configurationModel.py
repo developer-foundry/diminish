@@ -2,6 +2,7 @@ from tui.models.configurationOptionsModel import ConfigurationOptionsModel
 
 class ConfigurationModel():
     def __init__(self, parameters):
+        self.logger = None
         self.mode = parameters['mode']
         self.algorithm = parameters['algorithm']
         self.inputFile = parameters['inputFile']
