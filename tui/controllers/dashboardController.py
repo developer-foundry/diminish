@@ -13,10 +13,10 @@ class DashboardController():
         self.loop = urwid.MainLoop(self.view, palette=palette, unhandled_input=self.handle_input)
 
         self.loggingHandler.configureModel(self.model)
+        self.loop.run()
     
     def run(self):
         self.loop.set_alarm_in(0, self.refresh)
-        self.loop.run()
     
     def refresh(self, _loop, data):
         self.logger.info('Refreshing screen')
@@ -34,3 +34,5 @@ class DashboardController():
     def handle_input(self, key):
         if key == 'Q' or key == 'q':
             raise urwid.ExitMainLoop()
+        if key == 'R' or key == 'r':
+            self.run()

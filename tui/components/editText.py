@@ -1,16 +1,16 @@
 import urwid
 
-class EditText(urwid.GridFlow):
-    def __init__(self, label, model, attribute, labelStyle, textStyle, width, hSep, vSep, alignment):
+class EditText(urwid.Pile):
+    def __init__(self, label, model, attribute, labelStyle, textStyle):
         self.model = model
         self.attribute = attribute
         self.label = label
         self.labelStyle = labelStyle
         self.textStyle = textStyle
-        urwid.GridFlow.__init__(self, self.build(), width, hSep, vSep, alignment)
+        urwid.Pile.__init__(self, self.build())
     
     def build(self):
-        self.editLabel = urwid.AttrWrap(urwid.Text(f'{self.label}\n', 'left'), self.labelStyle)
+        self.editLabel = urwid.AttrWrap(urwid.Text(f'{self.label}', 'left'), self.labelStyle)
         self.editInput = urwid.Edit('', 'left')
 
         editWithAttr = urwid.AttrWrap(self.editInput, self.textStyle)

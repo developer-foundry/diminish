@@ -23,7 +23,6 @@ if __name__ == '__main__':
         parameters = getEnvironmentVariables()
         logger, handler = configureLogging()
         dashboard = DashboardController(parameters, logger, handler)
-        dashboard.run()
 
     except KeyboardInterrupt:
         exit('\nInterrupted by user')

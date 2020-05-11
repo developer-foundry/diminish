@@ -10,17 +10,17 @@ class DashboardControls(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
     
     def build(self):
-        self.mode_buttons = VerticalRadioButtonGroup(self.model, 'mode', self.model.options.availableModes, [], 30, 0, 1, 'left')
-        self.algorithm_buttons = VerticalRadioButtonGroup(self.model, 'algorithm', self.model.options.availableAlgorithms, [], 30, 0, 1, 'left')
+        self.mode_buttons = VerticalRadioButtonGroup(self.model, 'mode', self.model.options.availableModes, [])
+        self.algorithm_buttons = VerticalRadioButtonGroup(self.model, 'algorithm', self.model.options.availableAlgorithms, [])
         header = HeaderComponent(f'Algorithm Controls', 'header')
 
-        self.inputFile = EditText("Input File", self.model, 'inputFile', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.targetFile = EditText("Target File", self.model, 'targetFile', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.device = EditText("Device", self.model, 'device', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.size = EditText("Size", self.model, 'size', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.role = EditText("Role", self.model, 'role', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.waitSize = EditText("Wait Size", self.model, 'waitSize', 'controlLabel', 'controlText', 30, 0, 1, 'left')
-        self.stepSize = EditText("Step Size", self.model, 'stepSize', 'controlLabel', 'controlText', 30, 0, 1, 'left')
+        self.inputFile = EditText("Input File", self.model, 'inputFile', 'controlLabel', 'controlText')
+        self.targetFile = EditText("Target File", self.model, 'targetFile', 'controlLabel', 'controlText')
+        self.device = EditText("Device", self.model, 'device', 'controlLabel', 'controlText')
+        self.size = EditText("Size", self.model, 'size', 'controlLabel', 'controlText')
+        self.role = EditText("Role", self.model, 'role', 'controlLabel', 'controlText')
+        self.waitSize = EditText("Wait Size", self.model, 'waitSize', 'controlLabel', 'controlText')
+        self.stepSize = EditText("Step Size", self.model, 'stepSize', 'controlLabel', 'controlText')
         self.errorPercentage = ErrorPercentage(self.model)
 
         l = [
@@ -30,13 +30,21 @@ class DashboardControls(urwid.WidgetWrap):
             urwid.Divider(),
             urwid.AttrWrap(urwid.Text("Algorithm"), 'controlLabel'),
             self.algorithm_buttons,
+            urwid.Divider(),
             self.inputFile,
+            urwid.Divider(),
             self.targetFile,
+            urwid.Divider(),
             self.device,
+            urwid.Divider(),
             self.size,
+            urwid.Divider(),
             self.role,
+            urwid.Divider(),
             self.waitSize,
+            urwid.Divider(),
             self.stepSize,
+            urwid.Divider(),
             self.errorPercentage
             ]
 
