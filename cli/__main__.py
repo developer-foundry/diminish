@@ -1,6 +1,10 @@
 from common.common import getEnvironmentVariables
 from soundwave import app
+import logging
+import os
 
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
+                    format='%(levelname)s {%(filename)s:%(lineno)d} (%(threadName)-9s) %(message)s',)
 
 if __name__ == '__main__':
     try:

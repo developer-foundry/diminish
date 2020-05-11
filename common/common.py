@@ -8,9 +8,6 @@ load_dotenv(dotenv_path=env_path)
 
 mu = 0.00001
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
-                    format='%(levelname)s {%(filename)s:%(lineno)d} (%(threadName)-9s) %(message)s',)
-
 def getEnvironmentVariables():
     return {
         'mode': getEnvVar("MODE"),
