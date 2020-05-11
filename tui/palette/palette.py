@@ -9,4 +9,6 @@ palette = [
     ('button select','dark blue', ''),
     ('bg background','light gray', ''),
     ('bg 1', '', 'dark blue', ''),
+    ('bigtextgood', 'dark green', ''),
+    ('bigtextbad', 'dark red', ''),
 ]

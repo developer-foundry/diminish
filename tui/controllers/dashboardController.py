@@ -21,6 +21,7 @@ class DashboardController():
         self.model.errorBuffer.append([uniform(-0.01, 0.01)])
         self.model.referenceBuffer.append([uniform(-0.01, 0.01)])
         self.model.outputBuffer.append([uniform(-0.01, 0.01)])
+        self.model.errorPercentage = uniform(0.01, 0.99)
         self.view.refresh()
         _loop.set_alarm_in(1, self.refresh)
 
