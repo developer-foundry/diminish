@@ -1,9 +1,7 @@
 import urwid
-from tui.components.headerComponent import HeaderComponent
 from tui.views.signalGraph import SignalGraph
 from tui.views.loggingView import LoggingView
 from tui.views.systemMonitors import SystemMonitors
-from tui.views.errorPercentage import ErrorPercentage
 
 class DashboardData(urwid.WidgetWrap):
     def __init__(self, model):
@@ -11,22 +9,18 @@ class DashboardData(urwid.WidgetWrap):
         urwid.WidgetWrap.__init__(self, self.build())
     
     def build(self):
-        header = HeaderComponent(f'Data View', 'header')
         self.errorSignal = SignalGraph(self.model, 'errorBuffer', 'Error Microphone', 5, 1)
         self.referenceSignal = SignalGraph(self.model, 'referenceBuffer', 'Reference Microphone', 5, 1)
         self.outputSignal = SignalGraph(self.model, 'outputBuffer', 'Output Speaker', 5, 1)
-        self.logging = LoggingView(self.model)
+        self.logging = LoggingView(self.model, 20)
         self.systemMonitors = SystemMonitors(self.model)
-        self.errorPercentage = ErrorPercentage(self.model)
 
         l = [
-            header,
             self.errorSignal,
             self.referenceSignal,
             self.outputSignal,
             self.logging,
-            self.systemMonitors,
-            self.errorPercentage
+            self.systemMonitors
             ]
 
         w = urwid.Filler(urwid.Pile(l), 'top')
@@ -38,5 +32,3 @@ class DashboardData(urwid.WidgetWrap):
         self.outputSignal.refresh()
         self.logging.refresh()
         self.systemMonitors.refresh()
-        self.errorPercentage.refresh()
-        

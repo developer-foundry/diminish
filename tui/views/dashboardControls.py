@@ -2,6 +2,7 @@ import urwid
 from tui.components.headerComponent import HeaderComponent
 from tui.components.verticalRadioButtonGroup import VerticalRadioButtonGroup
 from tui.components.editText import EditText
+from tui.views.errorPercentage import ErrorPercentage
 
 class DashboardControls(urwid.WidgetWrap):
     def __init__(self, model):
@@ -20,6 +21,7 @@ class DashboardControls(urwid.WidgetWrap):
         self.role = EditText("Role", self.model, 'role', 'controlLabel', 'controlText', 30, 0, 1, 'left')
         self.waitSize = EditText("Wait Size", self.model, 'waitSize', 'controlLabel', 'controlText', 30, 0, 1, 'left')
         self.stepSize = EditText("Step Size", self.model, 'stepSize', 'controlLabel', 'controlText', 30, 0, 1, 'left')
+        self.errorPercentage = ErrorPercentage(self.model)
 
         l = [
             header,
@@ -34,7 +36,8 @@ class DashboardControls(urwid.WidgetWrap):
             self.size,
             self.role,
             self.waitSize,
-            self.stepSize
+            self.stepSize,
+            self.errorPercentage
             ]
 
         w = urwid.Filler(urwid.Pile(l), 'top')
@@ -43,3 +46,11 @@ class DashboardControls(urwid.WidgetWrap):
     def refresh(self):
         self.mode_buttons.refresh()
         self.algorithm_buttons.refresh()
+        self.inputFile.refresh()
+        self.targetFile.refresh()
+        self.device.refresh()
+        self.size.refresh()
+        self.role.refresh()
+        self.waitSize.refresh()
+        self.stepSize.refresh()
+        self.errorPercentage.refresh()

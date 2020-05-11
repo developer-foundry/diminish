@@ -13,7 +13,7 @@ class ConfigurationModel():
         self.stepSize = parameters['stepSize']
         self.graphTop = 0.01
         self.graphBottom = -0.01
-        self.logEntries = ['Entry One', 'Entry Two']
+        self.logEntries = []
         self.options = ConfigurationOptionsModel()
         self.errorPercentage = 0.5
         self.errorBuffer = [ [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005], [0.005], [-0.005],
