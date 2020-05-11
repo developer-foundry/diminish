@@ -10,8 +10,8 @@ class SystemMonitors(urwid.WidgetWrap):
     def build(self):
         self.cpuMonitor = SystemMonitor('cpu', 'header', 'CPU Load')
         self.memoryMonitor = SystemMonitor('memory', 'header', 'Used Memory (%)')
-        self.received = SystemMonitor('networkreceived', 'header', 'Kilobytes Received')
-        self.sent = SystemMonitor('networksent', 'header', 'Kilobytes Sent')
+        self.received = SystemMonitor('networkreceived', 'header', 'Bytes Received')
+        self.sent = SystemMonitor('networksent', 'header', 'Bytes Sent')
 
         l = [self.cpuMonitor, self.memoryMonitor, self.received, self.sent]
         return urwid.Columns(l)

@@ -11,13 +11,17 @@ class DashboardData(urwid.WidgetWrap):
     
     def build(self):
         header = HeaderComponent(f'Data View', 'header')
-        self.errorSignal = SignalGraph(self.model, 'Error Microphone')
+        self.errorSignal = SignalGraph(self.model, 'errorBuffer', 'Error Microphone', 5, 1)
+        self.referenceSignal = SignalGraph(self.model, 'referenceBuffer', 'Reference Microphone', 5, 1)
+        self.outputSignal = SignalGraph(self.model, 'outputBuffer', 'Output Speaker', 5, 1)
         self.logging = LoggingView(self.model)
         self.systemMonitors = SystemMonitors(self.model)
 
         l = [
             header,
             self.errorSignal,
+            self.referenceSignal,
+            self.outputSignal,
             self.logging,
             self.systemMonitors
             ]
@@ -27,6 +31,8 @@ class DashboardData(urwid.WidgetWrap):
 
     def refresh(self):
         self.errorSignal.refresh()
+        self.referenceSignal.refresh()
+        self.outputSignal.refresh()
         self.logging.refresh()
         self.systemMonitors.refresh()
         

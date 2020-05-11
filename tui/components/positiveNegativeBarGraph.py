@@ -10,7 +10,7 @@ class PositiveNegativeGraphError(Exception):
 
 class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget)):
     _sizing = frozenset([BOX])
-
+    maxcol = None
     ignore_focus = True
 
     def __init__(self, attlist, hatt=None):
@@ -210,6 +210,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         Render BarGraph.
         """
         (maxcol, maxrow) = size
+        self.maxcol = maxcol
         disp = self.calculate_display((maxcol, maxrow))
 
         combinelist = []

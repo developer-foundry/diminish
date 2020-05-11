@@ -18,9 +18,9 @@ class DashboardController():
         self.model.mode = 'prerecorded' if self.model.mode == 'live' else 'live'
         self.model.algorithm = 'rls'
         self.model.logEntries.append(f'New One {randint(0, 100)}')
-        for index,v in enumerate(self.model.errorBuffer):
-            self.model.errorBuffer[index] = [uniform(-0.01, 0.01)]
-
+        self.model.errorBuffer.append([uniform(-0.01, 0.01)])
+        self.model.referenceBuffer.append([uniform(-0.01, 0.01)])
+        self.model.outputBuffer.append([uniform(-0.01, 0.01)])
         self.view.refresh()
         _loop.set_alarm_in(1, self.refresh)
 
