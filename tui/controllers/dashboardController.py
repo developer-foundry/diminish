@@ -20,9 +20,6 @@ class DashboardController():
     
     def refresh(self, _loop, data):
         self.logger.info('Refreshing screen')
-        
-        self.model.mode = 'prerecorded' if self.model.mode == 'live' else 'live'
-        self.model.algorithm = 'rls'
         self.model.errorBuffer.append([uniform(-0.01, 0.01)])
         self.model.referenceBuffer.append([uniform(-0.01, 0.01)])
         self.model.outputBuffer.append([uniform(-0.01, 0.01)])
