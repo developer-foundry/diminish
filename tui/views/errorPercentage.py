@@ -7,7 +7,7 @@ class ErrorPercentage(urwid.WidgetWrap):
 
     def build(self):
         self.bigtext = urwid.BigText("", urwid.HalfBlock5x4Font())
-        bt = urwid.Padding(self.bigtext, 'left', None)
+        bt = urwid.Padding(self.bigtext, 'center', None)
         self.attribute = urwid.AttrWrap(bt, 'bigtextgood')
         bt = urwid.Filler(self.attribute, 'bottom', None, 7)
         bt = urwid.BoxAdapter(urwid.LineBox(bt, "Error Rate"), 7)
