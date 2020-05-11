@@ -157,24 +157,25 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         #initialize matrix
         halfwayScaled = maxrow // 2
         #use overscore if the item is above 0 or underscore if below 0, dash if on 0
-        disp = [['\u203E' if i < halfwayScaled else '_' if i == halfwayScaled else '_' for j in range(maxcol)] for i in range(maxrow)]
+        disp = [['\u203E' if i < halfwayScaled else '-' if i == halfwayScaled else '_' for j in range(maxcol)] for i in range(maxrow)]
 
         def split(word): 
             return [char for char in word] 
 
         #first column should be used for scale and
-        formatString = '{:0.3f}' if type(bardata[0][0]) is float else '{:4d}'
-        for i in range(maxrow):
-            value = self.calculate_scale(maxrow, top, i)
-            stringVal = ''
-            if(value >= 0):
-                stringVal = ' ' + formatString.format(value)[1:]
-            else:
-                stringVal = '-' + formatString.format(value)[2:]
+        if(len(bardata) > 0):
+            formatString = '{:0.3f}' if type(bardata[0][0]) is float else '{:4d}'
+            for i in range(maxrow):
+                value = self.calculate_scale(maxrow, top, i)
+                stringVal = ''
+                if(value >= 0):
+                    stringVal = ' ' + formatString.format(value)[1:]
+                else:
+                    stringVal = '-' + formatString.format(value)[2:]
 
-            characters = split(stringVal)
-            for cIndex, c in enumerate(characters):
-                disp[i][cIndex] = c
+                characters = split(stringVal)
+                for cIndex, c in enumerate(characters):
+                    disp[i][cIndex] = c
 
         #add bar entries to matrix
         bar_positions = self.get_bar_positions(bardata, top, bottom, widths, maxrow)
@@ -217,11 +218,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         for row in disp:
             l = []
             for columnNumber, currLoc in enumerate(row, start=0):
-                if currLoc == '_':
-                    # horizontal lines
-                    a = self.hatt[0] #background 
-                    t = "1" if columnNumber == 0 else "_"
-                elif currLoc == 'X':
+                if currLoc == 'X':
                     #bar
                     a = self.attr[1]
                     t = self.char[0]

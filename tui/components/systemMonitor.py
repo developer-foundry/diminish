@@ -7,7 +7,7 @@ from random import randint
 class SystemMonitor(urwid.LineBox):
     def __init__(self, monitorType, style, title):
         self.monitorType = monitorType
-        self.monitor_text = urwid.Text(self.getText(self.monitorType), align="center")
+        self.monitor_text = urwid.Text('', align="center")
         attMap = urwid.AttrMap(self.monitor_text, style)
         urwid.LineBox.__init__(self, attMap, title=title)
     

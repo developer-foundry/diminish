@@ -11,7 +11,7 @@ class EditText(urwid.Pile):
     
     def build(self):
         self.editLabel = urwid.AttrWrap(urwid.Text(f'{self.label}', 'left'), self.labelStyle)
-        self.editInput = urwid.Edit('', 'left')
+        self.editInput = urwid.Edit('', '')
 
         editWithAttr = urwid.AttrWrap(self.editInput, self.textStyle)
 

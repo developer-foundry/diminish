@@ -18,8 +18,6 @@ class SignalGraph(urwid.WidgetWrap):
         self.bg.set_bar_width(self.barWidth)
         body = urwid.BoxAdapter(self.bg, self.height)
 
-        self.refresh()
-
         l = [header,body]
         w = urwid.Pile(l)
         b = urwid.LineBox(w)
