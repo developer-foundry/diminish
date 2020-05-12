@@ -5,7 +5,7 @@ import logging
 import numpy as np
 
 import sounddevice as sd
-from soundwave.common.continuousBuffer import ContinuousBuffer
+from common.continuousBuffer import ContinuousBuffer
 import soundwave.plotting.plot as plot
 
 class AncPlot():

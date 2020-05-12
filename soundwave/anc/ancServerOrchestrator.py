@@ -7,8 +7,8 @@ from soundwave.anc.ancTarget import AncTarget
 from soundwave.anc.ancOutput import AncOutput
 from soundwave.anc.ancPlot import AncPlot
 from soundwave.anc.ancBluetoothServer import AncBluetoothServer
-from soundwave.common.continuousBuffer import ContinuousBuffer
-from soundwave.common.fifoBuffer import FifoBuffer
+from common.continuousBuffer import ContinuousBuffer
+from common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
 
 class AncServerOrchestrator():

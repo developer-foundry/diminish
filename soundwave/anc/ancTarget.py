@@ -5,7 +5,7 @@ import logging
 import numpy as np
 
 import soundfile as sf
-from soundwave.common.continuousBuffer import ContinuousBuffer
+from common.continuousBuffer import ContinuousBuffer
 
 class AncTarget(threading.Thread):
     def __init__(self, targetFile, buffer, stepSize, size, threadName):

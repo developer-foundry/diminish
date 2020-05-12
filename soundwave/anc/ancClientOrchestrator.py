@@ -8,7 +8,7 @@ import numpy as np
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
-from soundwave.common.fifoBuffer import FifoBuffer
+from common.fifoBuffer import FifoBuffer
 
 class AncClientOrchestrator():
     def __init__(self, device, waitSize, stepSize):
