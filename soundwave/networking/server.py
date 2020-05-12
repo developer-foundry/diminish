@@ -48,13 +48,18 @@ def get_message(sock, msgtype):
     return msg
 
 def recv(socket):
-    start = time.time()
+    #start = time.time()
     soundwave = get_message(socket, sound_pb2.SoundWave)
-    wave = np.empty((0,2))
-    for i in soundwave.samples:
-        sample_arr = np.array([[i.first, i.second]])
-        wave = np.concatenate((wave, sample_arr), axis=0)
+    #end = time.time()
+    #if len(soundwave.samples) > 0:
+    #    logging.info(f'Time to recieve: {end - start}')
 
-    end = time.time()
-    logging.info(f'Time to recevie: {end - start}')
+    #logging.info(f'Received {len(soundwave.samples)} samples with {soundwave.samples[0].first},{soundwave.samples[0].second}')
+    wave = []
+    for i in soundwave.samples:
+        sample_arr = [i.first, i.second]
+        wave.append(sample_arr)
+
+    wave = np.array(wave)
+
     return wave

@@ -31,17 +31,13 @@ class AncServerOrchestrator():
 
     def run_algorithm(self):
         referenceSignal = self.referenceBuffer.pop()
+        errorSignal = self.errorBuffer.pop()
+        targetSignal = self.targetBuffer.pop()
+        self.outputBuffer.push(referenceSignal)
 
         # referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
         # outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
-        # logging.info(f'outputSignal: {outputSignal.shape}')
         # self.outputBuffer.push(outputSignal)
-        #if referenceSignal.shape[0] > 0:
-        if referenceSignal.shape[0] == 1024:
-            errorSignal = self.errorBuffer.pop()
-            targetSignal = self.targetBuffer.pop()
-            logging.info(f'pushing sound: {referenceSignal.shape}:{targetSignal.shape}')
-            self.outputBuffer.push(referenceSignal)
 
         #for tracking the output error buffer we just need to push and pop
         #so that the plot subscriber picks it up
