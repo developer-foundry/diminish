@@ -19,7 +19,8 @@ class AncNetworkClient(threading.Thread):
         if self.client_socket is not None:
             logging.debug('Network Client sending packets.')
             dataToSend = self.buffer.pop()
-            client.send_data(self.client_socket, dataToSend)
+            if (len(dataToSend) > 0):
+                client.send_data(self.client_socket, dataToSend)
 
     def run(self):
         try:

@@ -13,7 +13,7 @@ class AncClientOrchestrator():
     def __init__(self, device, waitSize, stepSize):
         logging.debug('Initialize Client Orchestration thread')
         self.device = device
-        self.referenceBuffer = FifoBuffer('reference', waitSize, stepSize)
+        self.referenceBuffer = FifoBuffer('reference', 0, stepSize)
         self.threads = [AncInput(device, self.referenceBuffer, stepSize, 'anc-reference-microphone'), 
                         AncNetworkClient(self.referenceBuffer, 'anc-networkclient')]
 
