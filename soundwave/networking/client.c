@@ -4,6 +4,7 @@
 #include <stdlib.h>     /* for atoi() and exit() */
 #include <string.h>     /* for memset() */
 #include <unistd.h>     /* for close() */
+#include "dotenv.h"
 
 #define RCVBUFSIZE 32   /* Size of receive buffer */
 
@@ -13,69 +14,58 @@ void DieWithError(char *errorMessage)
     exit(1);
 }
 
-int main(int argc, char *argv[])
+void send_data(float* input)
 {
-    int sock;                        /* Socket descriptor */
-    struct sockaddr_in echoServAddr; /* Echo server address */
-    unsigned short echoServPort;     /* Echo server port */
-    char *servIP;                    /* Server IP address (dotted quad) */
-    char *echoString;                /* String to send to echo server */
+    env_load("../.env", false);
+    char *server_ip = getenv("SERVER");
+    char *server_port = getenv("PORT");
+    char *step_size = getenv("STEP_SIZE");
+
+    int sock;
+    struct sockaddr_in serv_addr;
+    unsigned short port;
+    unsigned int length;
+
     char echoBuffer[RCVBUFSIZE];     /* Buffer for echo string */
-    unsigned int echoStringLen;      /* Length of string to echo */
-    int bytesRcvd, totalBytesRcvd;   /* Bytes read in single recv() 
-                                        and total bytes read */
+    int bytes_rcved, total_bytes_rcved;
 
-    if ((argc < 3) || (argc > 4))    /* Test for correct number of arguments */
-    {
-       fprintf(stderr, "Usage: %s <Server IP> <Echo Word> [<Echo Port>]\n",
-               argv[0]);
-       exit(1);
-    }
+    port = atoi(server_port);
+    length = atoi(step_size);
 
-    servIP = argv[1];             /* First arg: server IP address (dotted quad) */
-    echoString = argv[2];         /* Second arg: string to echo */
-
-    if (argc == 4)
-        echoServPort = atoi(argv[3]); /* Use given port, if any */
-    else
-        echoServPort = 7;  /* 7 is the well-known port for the echo service */
 
     /* Create a reliable, stream socket using TCP */
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         DieWithError("socket() failed");
 
     /* Construct the server address structure */
-    memset(&echoServAddr, 0, sizeof(echoServAddr));     /* Zero out structure */
-    echoServAddr.sin_family      = AF_INET;             /* Internet address family */
-    echoServAddr.sin_addr.s_addr = inet_addr(servIP);   /* Server IP address */
-    echoServAddr.sin_port        = htons(echoServPort); /* Server port */
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family      = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(server_ip);
+    serv_addr.sin_port        = htons(port);
 
     /* Establish the connection to the echo server */
-    if (connect(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
+    if (connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         DieWithError("connect() failed");
 
-    echoStringLen = strlen(echoString);          /* Determine input length */
-
     /* Send the string to the server */
-    if (send(sock, echoString, echoStringLen, 0) != echoStringLen)
+    if (send(sock, input, length, 0) != length)
         DieWithError("send() sent a different number of bytes than expected");
 
-    /* Receive the same string back from the server */
-    totalBytesRcvd = 0;
-    printf("Received: ");                /* Setup to print the echoed string */
-    while (totalBytesRcvd < echoStringLen)
-    {
-        /* Receive up to the buffer size (minus 1 to leave space for
-           a null terminator) bytes from the sender */
-        if ((bytesRcvd = recv(sock, echoBuffer, RCVBUFSIZE - 1, 0)) <= 0)
-            DieWithError("recv() failed or connection closed prematurely");
-        totalBytesRcvd += bytesRcvd;   /* Keep tally of total bytes */
-        echoBuffer[bytesRcvd] = '\0';  /* Terminate the string! */
-        printf("%s", echoBuffer);      /* Print the echo buffer */
-    }
-
-    printf("\n");    /* Print a final linefeed */
-
     close(sock);
-    exit(0);
+}
+
+int main() {
+  FILE* input_file = fopen("data/input-smaller.csv", "r");
+  size_t length = 1024;
+  double* input = malloc (length * 2 * sizeof(double));
+
+  for (size_t count = 0; count < length*2;) {
+      int got = fscanf(input_file, "%lf,%lf", &input[count], &input[count+1]);
+      if (got != 2) break;
+      count +=2;
+  }
+  fclose(input_file);
+  send_data(input);
+  free(input);
+  exit(0);
 }
