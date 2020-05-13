@@ -34,6 +34,16 @@
       "problemMatcher": []
     },
     {
+      "label": "build c networking",
+      "type": "shell",
+      "command": "invoke build-networking",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "clean c",
       "type": "shell",
       "command": "invoke clean",

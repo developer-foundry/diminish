@@ -33,7 +33,7 @@ double* process(int socket, int size)
     return buffer;
 }
 
-void receive_message()
+void receive_message(double* buffer_out)
 {
     env_load("../.env", false);
     char *server_port = getenv("PORT");
@@ -71,6 +71,13 @@ void receive_message()
         DieWithError("accept() failed");
 
     double* buffer = process(client_sock, size);
+
+    for (int i = 0; i < size*2;) {
+        buffer_out[i] = buffer[i];
+        buffer_out[i+1] = buffer[i+1];
+        i += 2;
+    }
+
     close(client_sock);
     close(server_sock);
 }
@@ -78,6 +85,9 @@ void receive_message()
 int main(int argc, char *argv[])
 {
     printf("Starting server\n");
-    receive_message();
+    char *step_size = getenv("STEP_SIZE");
+    int size = atoi(step_size);
+    double* buffer = malloc(size * 2 * sizeof(double));
+    receive_message(buffer);
     exit(0);
 }

@@ -1,42 +1,39 @@
 import sys
 import threading
 import logging
-import soundwave.networking.client as client
+import ctypes
+import pathlib
+import os
+import numpy as np
 
 class AncNetworkClient(threading.Thread):
     def __init__(self, buffer, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         logging.debug('Initialize Network Client thread')
         self.buffer = buffer
-        self.client_socket = None
 
     def cleanup(self):
         logging.debug('Cleaning up Network Client thread')
-        if self.client_socket is not None:
-            client.close_connection(self.client_socket)
-
-    def send_data(self):
-        if self.client_socket is not None:
-            logging.debug('Network Client sending packets.')
-            dataToSend = self.buffer.pop()
-            if (len(dataToSend) > 0):
-                client.send_data(self.client_socket, dataToSend)
 
     def run(self):
         try:
             logging.debug('Running Network Client thread')
-            self.client_socket = client.configure_client()
-
-            if(self.client_socket is None):
-                logging.error(
-                    'No Client Connection was established. Network Client thread closing.')
-                return
+            libname = pathlib.Path().absolute() / "client.so"
+            c_double_p = ctypes.POINTER(ctypes.c_double)
+            c_lib = ctypes.CDLL(libname)
+            c_lib.send_data.argtypes = [c_double_p]
 
             while True:
-                self.send_data()
+                dataToSend = self.buffer.pop()
+                if (len(dataToSend) > 0):
+                    wave = dataToSend[0:len(dataToSend)]
+                    waveData = wave.astype(np.float64)
+                    waveToSend = waveData.ctypes.data_as(c_double_p)
+                    c_lib.send_data(waveToSend)
 
             logging.debug(
                 'No more packets to send from Network Client. Network Client shutting down')
+
             self.cleanup()
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
