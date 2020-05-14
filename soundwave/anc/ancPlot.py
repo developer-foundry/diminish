@@ -25,12 +25,16 @@ class AncPlot():
         plot.plot_vertical_buffers(algorithm, 'anc', self.buffers)
 
     def sendData(self):
-        self.dataClient.send(self.buffers[0][-1])
+        if(len(self.buffers['error']) > 0):
+            self.dataClient.send(self.buffers['error'][-1])
+
         threading.Timer(1.0, self.sendData).start()
         
     def create_connection(self):
         self.listener = Listener(('localhost', 5000), authkey=b'secret password')
+        logging.debug('Connecting Server...')
         self.dataClient = self.listener.accept()
+        logging.debug('Connected Server...')
         self.sendData()
 
     def close_connection(self):

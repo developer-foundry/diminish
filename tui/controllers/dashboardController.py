@@ -38,7 +38,9 @@ class DashboardController():
                                                                 self.model.targetFile,self.model.device,str(self.model.size),
                                                                 self.model.role,str(self.model.waitSize),str(self.model.stepSize),
                                                                 str(self.model.tuiConnection)],
-                        cwd=cwd
+                        cwd=cwd,
+                        stdout=self.stdout,
+                        stderr=self.stderr
                         )
         
         #loop until connected
@@ -49,14 +51,19 @@ class DashboardController():
             except ConnectionRefusedError:
                 pass
 
+        self.logger.debug('Connected to Process!')
         self.loop.set_alarm_in(0, self.refresh)
     
     def read_pipe(self, read_data):
         self.logger.info(read_data)
 
     def refresh(self, _loop, data):
-        data = self.dataClient.recv()
-        self.logger.info(data.shape)
+        try:
+            data = self.dataClient.recv()
+            self.logger.info(data)
+        except EOFError:
+            pass
+        
         self.model.errorBuffer.append([uniform(-0.01, 0.01)])
         self.model.referenceBuffer.append([uniform(-0.01, 0.01)])
         self.model.outputBuffer.append([uniform(-0.01, 0.01)])
@@ -67,6 +74,7 @@ class DashboardController():
     # Handle key presses
     def handle_input(self, key):
         if key == 'Q' or key == 'q':
+            self.proc.kill() 
             raise urwid.ExitMainLoop()
         if key == 'R' or key == 'r':
             self.run()
