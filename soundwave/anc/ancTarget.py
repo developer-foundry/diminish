@@ -25,4 +25,4 @@ class AncTarget(threading.Thread):
             self.buffer.push(self.targetSignal[0:self.size])
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

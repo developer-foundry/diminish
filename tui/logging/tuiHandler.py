@@ -5,8 +5,13 @@ class TuiHandler(StreamHandler):
         StreamHandler.__init__(self)
         
     def emit(self, record):
-        msg = self.format(record)
-        self.model.logEntries.append(msg)
+        if(record.levelno  >= self.level):
+            msg = self.format(record)
+            msg = msg.replace("\\\'", "'")
+            messages = msg.split("\\n")
+            for message in messages:
+                if(message != '"' and message != "'"):
+                    self.model.logEntries.append(message)
 
     def configureModel(self, model):
         self.model = model

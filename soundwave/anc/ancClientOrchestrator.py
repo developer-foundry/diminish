@@ -5,6 +5,7 @@ import logging
 
 import pickle
 import numpy as np
+import time
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancBluetoothClient import AncBluetoothClient
@@ -27,7 +28,7 @@ class AncClientOrchestrator():
 
             # will ensure the main thread is paused until ctrl + c
             while True:
-                input()
+                time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

@@ -36,5 +36,5 @@ class AncBluetoothServer(threading.Thread):
 
             self.cleanup()
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')
             self.cleanup()
