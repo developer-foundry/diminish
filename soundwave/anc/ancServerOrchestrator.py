@@ -5,7 +5,7 @@ import threading
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
 from soundwave.anc.ancOutput import AncOutput
-from soundwave.anc.ancPlot import AncPlot
+from soundwave.anc.ancMediator import AncMediator
 from soundwave.anc.ancBluetoothServer import AncBluetoothServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
@@ -25,7 +25,7 @@ class AncServerOrchestrator():
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
-        self.ancPlot = None
+        self.ancMediator = None
 
     def run_algorithm(self):
         errorSignal = self.errorBuffer.pop()
@@ -44,9 +44,11 @@ class AncServerOrchestrator():
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
-            self.ancPlot = AncPlot([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+            self.ancMediator = AncMediator([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+
+            #this is a blocking call; will wait until tui connects
             if(self.tuiConnection):
-                self.ancPlot.create_connection()
+                self.ancMediator.create_connection()
 
             for thread in self.threads:
                 thread.start()
@@ -64,4 +66,4 @@ class AncServerOrchestrator():
                     self.run_algorithm()
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

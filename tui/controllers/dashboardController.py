@@ -15,6 +15,8 @@ import inspect
 import numpy as np
 from multiprocessing.connection import Client
 import time
+from common.common import guiRefreshTimer
+
 
 class DashboardController():
     def __init__(self, parameters, logger, loggingHandler):
@@ -59,17 +61,29 @@ class DashboardController():
 
     def refresh(self, _loop, data):
         try:
-            data = self.dataClient.recv()
-            self.logger.info(data)
+            #first update all three buffers
+            tuiBufferName = self.dataClient.recv() #receive 'error'
+            while tuiBufferName != 'end buffers':
+                tuiData = self.dataClient.recv()
+                self.logger.debug(f'Appending {tuiData} to buffer {tuiBufferName}')
+
+                if(tuiBufferName == 'error'):
+                    self.model.errorBuffer.append([float(tuiData.flat[0])])
+                if(tuiBufferName == 'output'):
+                    self.model.outputBuffer.append([float(tuiData.flat[0])])
+                if(tuiBufferName == 'reference'):
+                    self.model.referenceBuffer.append([float(tuiData.flat[0])])
+                if(tuiBufferName == 'output-error'):
+                    self.model.errorPercentage = tuiData.flat[0]
+
+                tuiBufferName = self.dataClient.recv()
         except EOFError:
             pass
+        except Exception as e:
+            self.logger.error(e)
         
-        self.model.errorBuffer.append([uniform(-0.01, 0.01)])
-        self.model.referenceBuffer.append([uniform(-0.01, 0.01)])
-        self.model.outputBuffer.append([uniform(-0.01, 0.01)])
-        self.model.errorPercentage = uniform(0.01, 0.99)
         self.view.refresh()
-        _loop.set_alarm_in(1, self.refresh)
+        _loop.set_alarm_in(guiRefreshTimer, self.refresh)
 
     # Handle key presses
     def handle_input(self, key):

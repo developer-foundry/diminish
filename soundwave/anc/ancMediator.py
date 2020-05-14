@@ -9,8 +9,9 @@ from common.continuousBuffer import ContinuousBuffer
 import soundwave.plotting.plot as plot
 import threading
 from multiprocessing.connection import Listener
+from common.common import guiRefreshTimer
 
-class AncPlot():
+class AncMediator():
     def __init__(self, buffers):
         self.buffers = {} #dictionary to hold the data that is popped off buffers for ploting
         self.dataClient = None #used by the TUI application to pass data
@@ -25,10 +26,12 @@ class AncPlot():
         plot.plot_vertical_buffers(algorithm, 'anc', self.buffers)
 
     def sendData(self):
-        if(len(self.buffers['error']) > 0):
-            self.dataClient.send(self.buffers['error'][-1])
-
-        threading.Timer(1.0, self.sendData).start()
+        for bufferName in self.buffers:
+            if(len(self.buffers[bufferName]) > 0):
+                self.dataClient.send(bufferName)
+                self.dataClient.send(self.buffers[bufferName][-1])
+        self.dataClient.send('end buffers')
+        threading.Timer(guiRefreshTimer, self.sendData).start()
         
     def create_connection(self):
         self.listener = Listener(('localhost', 5000), authkey=b'secret password')

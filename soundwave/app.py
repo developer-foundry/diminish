@@ -44,4 +44,4 @@ def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size,
             orchestrator.ancPlot.plot_buffers(algorithm)
         logging.info('Exiting Program due to keyboard interrupt')
     except Exception as e:
-        logging.error(f'Exception thrown: {e}')
+        logging.exception(f'Exception thrown: {e}')

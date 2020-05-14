@@ -13,11 +13,11 @@ class ConfigurationModel():
         self.waitSize = parameters['waitSize']
         self.stepSize = parameters['stepSize']
         self.tuiConnection = parameters['tuiConnection']
-        self.graphTop = 0.01
-        self.graphBottom = -0.01
+        self.graphTop = 0.04
+        self.graphBottom = -0.04
         self.logEntries = []
         self.options = ConfigurationOptionsModel()
-        self.errorPercentage = 0.5
+        self.errorPercentage = 0.0
         self.errorBuffer = []
         self.referenceBuffer = []
         self.outputBuffer = []

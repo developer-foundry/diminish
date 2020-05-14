@@ -7,6 +7,7 @@ env_path = Path('./environment') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 mu = 0.00001
+guiRefreshTimer = 1.0
 
 def get_project_root() -> Path:
     return Path(__file__).parent.parent

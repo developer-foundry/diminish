@@ -30,4 +30,4 @@ class AncInput(threading.Thread):
                     time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')
