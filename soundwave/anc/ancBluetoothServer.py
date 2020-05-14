@@ -11,6 +11,10 @@ class AncBluetoothServer(threading.Thread):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.server_socket = None
         self.client_socket = None
+        self.stopped = False
+    
+    def stop(self):
+        self.stopped = True
 
     def cleanup(self):
         logging.debug('Cleaning up Bluetooth Server thread')
@@ -29,7 +33,7 @@ class AncBluetoothServer(threading.Thread):
                 self.cleanup()
                 return
 
-            while True:
+            while not self.stopped:
                 arr = btserver.recv(self.client_socket)
                 logging.info(f'Received arr with shape {arr.shape}')
                 logging.info(f'arr: {arr[0][0]}, {arr[0][1]}')

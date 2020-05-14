@@ -16,6 +16,10 @@ class AncTarget(threading.Thread):
         self.size = size
         self.targetFile = targetFile
         self.targetSignal = None
+        self.stopped = False
+    
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:

@@ -89,6 +89,10 @@ class DashboardController():
         self.view.refresh()
         _loop.set_alarm_in(guiRefreshTimer, self.refresh)
 
+    def togglePause(self):
+        self.model.paused = not self.model.paused
+        self.proc.send_signal(signal.SIGUSR1) 
+
     # Handle key presses
     def handle_input(self, key):
         if key == 'Q' or key == 'q':
@@ -96,4 +100,6 @@ class DashboardController():
             raise urwid.ExitMainLoop()
         if key == 'R' or key == 'r':
             self.run()
+        if key == 'P' or key == 'p':
+            self.togglePause()
             

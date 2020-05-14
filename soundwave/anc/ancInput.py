@@ -14,9 +14,13 @@ class AncInput(threading.Thread):
         self.buffer = buffer
         self.device = device
         self.stepSize = stepSize
+        self.stopped = False
 
     def listener(self, indata, frames, time, status):
         self.buffer.push(indata)
+    
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
@@ -26,7 +30,7 @@ class AncInput(threading.Thread):
                                 channels=2,
                                 blocksize=self.stepSize,
                                 callback=self.listener):
-                while True:
+                while not self.stopped:
                     time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:

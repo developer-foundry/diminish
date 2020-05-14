@@ -13,6 +13,7 @@ class DashboardView(urwid.WidgetWrap):
         header = HeaderComponent(f'Dashboard - {self.model.mode.title()}', 'header')
         footer = FooterComponent([
             u'Press (', ('runButton', u'R'), u') to run algorithm.',
+            u' Press (', ('runButton', u'P'), u') to pause/resume algorithm.',
             u' Press (', ('quitButton', u'Q'), u') to quit.'
         ], 'footer')
 
