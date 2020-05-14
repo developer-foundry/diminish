@@ -8,6 +8,9 @@ load_dotenv(dotenv_path=env_path)
 
 mu = 0.00001
 
+def get_project_root() -> Path:
+    return Path(__file__).parent.parent
+
 def getEnvironmentVariables():
     return {
         'mode': getEnvVar("MODE"),
@@ -19,6 +22,21 @@ def getEnvironmentVariables():
         'role': getEnvVar("ROLE"),
         'waitSize': getEnvVar("WAIT_SIZE", True),
         'stepSize': getEnvVar("STEP_SIZE", True),
+        'tuiConnection': getEnvVar("TUI_CONNECTION") == "True"
+    }
+
+def parseCliParameters(argv):
+    return {
+        'mode': argv[1],
+        'algorithm': argv[2],
+        'inputFile': argv[3],
+        'targetFile': argv[4],
+        'device': argv[5],
+        'size': int(argv[6]),
+        'role': argv[7],
+        'waitSize': int(argv[8]),
+        'stepSize': int(argv[9]),
+        'tuiConnection': argv[10] == "True",
     }
 
 def getEnvVar(varName, isInteger=False):

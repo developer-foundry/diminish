@@ -7,11 +7,13 @@ import numpy as np
 import sounddevice as sd
 from common.continuousBuffer import ContinuousBuffer
 import soundwave.plotting.plot as plot
+import threading
+from multiprocessing.connection import Listener
 
 class AncPlot():
     def __init__(self, buffers):
         self.buffers = {} #dictionary to hold the data that is popped off buffers for ploting
-
+        self.dataClient = None #used by the TUI application to pass data
         for buffer in buffers:
             self.buffers[buffer.name] = np.empty((0,2))
             buffer.subscribe(self.observe)
@@ -21,3 +23,16 @@ class AncPlot():
 
     def plot_buffers(self, algorithm):
         plot.plot_vertical_buffers(algorithm, 'anc', self.buffers)
+
+    def sendData(self):
+        self.dataClient.send(self.buffers[0][-1])
+        threading.Timer(1.0, self.sendData).start()
+        
+    def create_connection(self):
+        self.listener = Listener(('localhost', 5000), authkey=b'secret password')
+        self.dataClient = self.listener.accept()
+        self.sendData()
+
+    def close_connection(self):
+        if(self.dataClient is not None):
+            self.dataClient.close()

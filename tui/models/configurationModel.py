@@ -12,6 +12,7 @@ class ConfigurationModel():
         self.role = parameters['role']
         self.waitSize = parameters['waitSize']
         self.stepSize = parameters['stepSize']
+        self.tuiConnection = parameters['tuiConnection']
         self.graphTop = 0.01
         self.graphBottom = -0.01
         self.logEntries = []

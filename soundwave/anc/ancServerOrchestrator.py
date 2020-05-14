@@ -12,13 +12,14 @@ from common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
 
 class AncServerOrchestrator():
-    def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size):
+    def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
         logging.debug('Initialize Server Orchestration')
         self.algorithm = algorithm
         self.errorBuffer = FifoBuffer('error', waitSize, stepSize)
         self.outputBuffer = FifoBuffer('output', waitSize, stepSize)
         self.outputErrorBuffer = FifoBuffer('output-error', 0, stepSize)
         self.targetBuffer = ContinuousBuffer('target', stepSize)
+        self.tuiConnection = tuiConnection
         self.ancWaitCondition = threading.Condition()
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
@@ -43,6 +44,9 @@ class AncServerOrchestrator():
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
+            self.ancPlot = AncPlot([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+            if(self.tuiConnection):
+                self.ancPlot.create_connection()
 
             for thread in self.threads:
                 thread.start()
@@ -50,8 +54,6 @@ class AncServerOrchestrator():
             #loop until algorithm is ready to start
             while not self.is_ready():
                 pass
-
-            self.ancPlot = AncPlot([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
             with self.ancWaitCondition:
                 self.ancWaitCondition.notifyAll()

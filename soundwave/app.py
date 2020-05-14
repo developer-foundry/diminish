@@ -29,17 +29,18 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
     plot.plot_vertical(algorithm, 'prerecorded', inputSignal,
                         targetSignal, outputSignal, errorSignal)
 
-def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size):
+def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size, tuiConnection):
     orchestrator = None
     try:
         if(btmode == 'server'):
-            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize, size)
+            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection)
         elif(btmode == 'client'):
             orchestrator = AncClientOrchestrator(device, waitSize, stepSize)
         
         orchestrator.run()
     except KeyboardInterrupt:
         if(btmode == 'server'):
+            orchestrator.ancPlot.close_connection()
             orchestrator.ancPlot.plot_buffers(algorithm)
         logging.info('Exiting Program due to keyboard interrupt')
     except Exception as e:

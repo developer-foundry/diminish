@@ -1,6 +1,7 @@
 import sys
 import threading
 import logging
+import time
 
 import numpy as np
 import sounddevice as sd
@@ -30,7 +31,8 @@ class AncOutput(threading.Thread):
                                 channels=2,
                                 blocksize=self.stepSize,
                                 callback=self.listener):
-                    input()
+                    while True:
+                        time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
