@@ -30,6 +30,7 @@ class DashboardController():
         self.view = DashboardView(self.model)
         self.loop = urwid.MainLoop(self.view, palette=palette, unhandled_input=self.handle_input)
         self.loop.run()
+        self.model.running = False
     
     def run(self):
         self.logger.info('Running...')
@@ -99,6 +100,7 @@ class DashboardController():
             self.proc.send_signal(signal.SIGINT) 
             raise urwid.ExitMainLoop()
         if key == 'R' or key == 'r':
+            self.model.running = True
             self.run()
         if key == 'P' or key == 'p':
             self.togglePause()
