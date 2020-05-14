@@ -4,6 +4,7 @@ from tui.components.verticalRadioButtonGroup import VerticalRadioButtonGroup
 from tui.components.editText import EditText
 from tui.views.errorPercentage import ErrorPercentage
 from tui.components.runningTime import RunningTime
+from tui.views.statusView import StatusView
 
 class DashboardControls(urwid.WidgetWrap):
     def __init__(self, model):
@@ -44,6 +45,7 @@ class DashboardControls(urwid.WidgetWrap):
         self.stepSize = EditText("Step Size", self.model, 'stepSize', 'controlLabel', 'controlText')
         self.errorPercentage = ErrorPercentage(self.model)
         self.runningTime = RunningTime()
+        self.status = StatusView(self.model)
 
     def buildLists(self):
         self.startAlwaysVisibleList = [
@@ -79,7 +81,9 @@ class DashboardControls(urwid.WidgetWrap):
         self.endAlwaysVisibleList = [
             self.errorPercentage,
             urwid.Divider(),
-            self.runningTime
+            self.runningTime,
+            urwid.Divider(),
+            self.status
         ]
 
         self.emptyList = []
@@ -109,4 +113,5 @@ class DashboardControls(urwid.WidgetWrap):
         self.stepSize.refresh()
         self.errorPercentage.refresh()
         self.runningTime.refresh()
+        self.status.refresh()
         self.hideWidgets()

@@ -15,11 +15,15 @@ class AncOutput(threading.Thread):
         self.buffer = buffer
         self.stepSize = stepSize
         self.waitCondition = waitCondition
+        self.stopped = False
 
     def listener(self, outdata, frames, time, status):
         data = self.buffer.pop()
         size = data.shape[0]
         outdata[:size] = data
+
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
@@ -31,7 +35,7 @@ class AncOutput(threading.Thread):
                                 channels=2,
                                 blocksize=self.stepSize,
                                 callback=self.listener):
-                    while True:
+                    while not self.stopped :
                         time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:

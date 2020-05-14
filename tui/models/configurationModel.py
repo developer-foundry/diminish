@@ -25,3 +25,4 @@ class ConfigurationModel():
         self.cpu = 0
         self.packetsreceived = 0
         self.packetssent = 0
+        self.paused = False

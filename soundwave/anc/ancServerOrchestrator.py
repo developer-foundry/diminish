@@ -1,6 +1,8 @@
 import sys
 import logging
 import threading
+import signal
+import numpy as np
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
@@ -26,11 +28,30 @@ class AncServerOrchestrator():
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
         self.ancMediator = None
+        self.paused = False
+        signal.signal(signal.SIGUSR1, self.pauseHandler)
 
+    def pauseHandler(self, signum, frame):
+        logging.debug('Toggling pause')
+        self.paused = not self.paused
+
+    def stop(self):
+        for thread in self.threads:
+            thread.stop()
+
+        self.ancMediator.close_connection()
+        self.ancMediator.plot_buffers(self.algorithm)
     def run_algorithm(self):
+
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
-        outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
+
+        if not self.paused:
+            outputSignal, outputErrors = process_signal(errorSignal, targetSignal, self.algorithm)
+        else:
+            outputSignal = np.add(errorSignal, targetSignal)
+            outputErrors = np.zeros((len(targetSignal), 2))
+
         self.outputBuffer.push(outputSignal)
 
         #for tracking the output error buffer we just need to push and pop
