@@ -21,3 +21,7 @@ class ConfigurationModel():
         self.errorBuffer = []
         self.referenceBuffer = []
         self.outputBuffer = []
+        self.memory = 0
+        self.cpu = 0
+        self.packetsreceived = 0
+        self.packetssent = 0

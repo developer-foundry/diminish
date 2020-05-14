@@ -1,7 +1,8 @@
 import sys
 import threading
 import logging
-
+import os
+import psutil
 import numpy as np
 
 import sounddevice as sd
@@ -15,6 +16,7 @@ class AncMediator():
     def __init__(self, buffers):
         self.buffers = {} #dictionary to hold the data that is popped off buffers for ploting
         self.dataClient = None #used by the TUI application to pass data
+        self.process = psutil.Process(os.getpid())
         for buffer in buffers:
             self.buffers[buffer.name] = np.empty((0,2))
             buffer.subscribe(self.observe)
@@ -31,6 +33,10 @@ class AncMediator():
                 self.dataClient.send(bufferName)
                 self.dataClient.send(self.buffers[bufferName][-1])
         self.dataClient.send('end buffers')
+
+        self.dataClient.send(self.process.memory_info().rss / 1000000) #send in MB
+        self.dataClient.send(psutil.cpu_percent())
+        
         threading.Timer(guiRefreshTimer, self.sendData).start()
         
     def create_connection(self):

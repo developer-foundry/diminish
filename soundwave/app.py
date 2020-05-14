@@ -40,8 +40,8 @@ def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size,
         orchestrator.run()
     except KeyboardInterrupt:
         if(btmode == 'server'):
-            orchestrator.ancPlot.close_connection()
-            orchestrator.ancPlot.plot_buffers(algorithm)
+            orchestrator.ancMediator.close_connection()
+            orchestrator.ancMediator.plot_buffers(algorithm)
         logging.info('Exiting Program due to keyboard interrupt')
     except Exception as e:
         logging.exception(f'Exception thrown: {e}')

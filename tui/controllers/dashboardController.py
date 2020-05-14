@@ -1,4 +1,5 @@
 import urwid
+import signal
 import sys
 import threading
 from tui.palette.palette import palette
@@ -77,6 +78,9 @@ class DashboardController():
                     self.model.errorPercentage = tuiData.flat[0]
 
                 tuiBufferName = self.dataClient.recv()
+            
+            self.model.memory = int(self.dataClient.recv())
+            self.model.cpu = float(self.dataClient.recv())
         except EOFError:
             pass
         except Exception as e:
@@ -88,7 +92,7 @@ class DashboardController():
     # Handle key presses
     def handle_input(self, key):
         if key == 'Q' or key == 'q':
-            self.proc.kill() 
+            self.proc.send_signal(signal.SIGINT) 
             raise urwid.ExitMainLoop()
         if key == 'R' or key == 'r':
             self.run()
