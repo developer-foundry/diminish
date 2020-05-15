@@ -29,7 +29,7 @@ def build_exec_pc(c):
 @task
 def build_networking(c):
   print("Building")
-  c.run("gcc -c -Wall -Werror -O3 soundwave/networking/server.c soundwave/networking/dotenv.c")
+  c.run("gcc -c -Wall -Werror -O3 -fPIC soundwave/networking/server.c soundwave/networking/dotenv.c")
   c.run("gcc -shared -o server.so server.o dotenv.o")
 
   c.run("gcc -c -Wall -Werror -O3 -fPIC soundwave/networking/client.c soundwave/networking/dotenv.c")
