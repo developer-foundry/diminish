@@ -5,6 +5,8 @@ import ctypes
 import pathlib
 import os
 import numpy as np
+from numpy.ctypeslib import ndpointer
+import time
 
 class AncNetworkClient(threading.Thread):
     def __init__(self, buffer, threadName):
@@ -19,18 +21,25 @@ class AncNetworkClient(threading.Thread):
         try:
             logging.debug('Running Network Client thread')
             libname = pathlib.Path().absolute() / "client.so"
-            c_double_p = ctypes.POINTER(ctypes.c_double)
             c_lib = ctypes.CDLL(libname)
-            c_lib.send_data.argtypes = [c_double_p]
+            c_lib.setup_connection()
+
+            fun = c_lib.send_data
+            fun.restype = None
+            fun.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS")]
 
             while True:
                 dataToSend = self.buffer.pop()
                 if (len(dataToSend) > 0):
-                    wave = dataToSend[0:len(dataToSend)]
-                    waveData = wave.astype(np.float64)
-                    waveToSend = waveData.ctypes.data_as(c_double_p)
-                    c_lib.send_data(waveToSend)
+                    logging.info(f'{dataToSend.shape}')
+                    logging.info(f'{dataToSend[0,:]}')
+                    logging.info(f'{dataToSend[len(dataToSend) - 1,:]}')
+                    start = time.time()
+                    fun(dataToSend)
+                    end = time.time()
+                    logging.info(f'Time to send: {end - start}')
 
+            c_lib.shutdown_connection()
             logging.debug(
                 'No more packets to send from Network Client. Network Client shutting down')
 
