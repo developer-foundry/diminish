@@ -7,6 +7,9 @@
 #include "dotenv.h"
 
 #define MAXPENDING 5
+int server_sock;
+int client_sock;
+int size;
 
 void DieWithError(char *errorMessage)
 {
@@ -14,38 +17,31 @@ void DieWithError(char *errorMessage)
     exit(1);
 }
 
-double* process(int socket, int size)
+void process(int socket, int size, double* buffer)
 {
-    double* buffer = malloc (size * 2 * sizeof(double));
     int message_size;
     int total_received = 0;
 
     while ((total_received < size*2*sizeof(double)))
     {
-        if ((message_size = recv(socket, (void*)buffer+total_received, (size*2*sizeof(double)), 0)) < 0)
+        if ((message_size = recv(socket, (void*)buffer+total_received, (size*2*sizeof(double) - total_received), 0)) < 0)
             DieWithError("recv() failed");
         if (message_size == 0)
             break;
 
         total_received += message_size;
     }
-
-    return buffer;
 }
 
-void receive_message(double* buffer_out)
+void setup_server()
 {
-    env_load("../.env", false);
     char *server_port = getenv("PORT");
     char *step_size = getenv("STEP_SIZE");
 
-    int server_sock;
-    int client_sock;
     struct sockaddr_in server_addr;
     struct sockaddr_in client_addr;
     unsigned short port;
     unsigned int length;
-    int size;
 
     port = atoi(server_port);
     size = atoi(step_size);
@@ -69,25 +65,44 @@ void receive_message(double* buffer_out)
     if ((client_sock= accept(server_sock, (struct sockaddr *) &client_addr, 
                             &length)) < 0)
         DieWithError("accept() failed");
+}
 
-    double* buffer = process(client_sock, size);
-
-    for (int i = 0; i < size*2;) {
-        buffer_out[i] = buffer[i];
-        buffer_out[i+1] = buffer[i+1];
-        i += 2;
-    }
-
+void shutdown_server()
+{
     close(client_sock);
     close(server_sock);
 }
 
+void freedata(double* input)
+{
+    free(input);
+}
+
+void receive_message(double* buffer_out, size_t rowcount, size_t colcount)
+{
+    double* buffer = malloc (size * 2 * sizeof(double));
+    process(client_sock, size, buffer);
+
+    for(int i = 0; i < rowcount; i++)
+    {
+        for(int j = 0; j < colcount; j++)
+        {
+            buffer_out[i*colcount+j] = buffer[i*colcount+j];
+        }
+    }
+
+    free(buffer);
+}
+
 int main(int argc, char *argv[])
 {
-    printf("Starting server\n");
+    env_load("soundwave/.env", false);
     char *step_size = getenv("STEP_SIZE");
     int size = atoi(step_size);
     double* buffer = malloc(size * 2 * sizeof(double));
-    receive_message(buffer);
+    setup_server();
+    receive_message(buffer, size, 2);
+    shutdown_server();
+    free(buffer);
     exit(0);
 }

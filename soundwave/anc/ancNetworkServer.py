@@ -4,6 +4,9 @@ import logging
 import ctypes
 import pathlib
 import os
+import numpy as np
+from numpy.ctypeslib import ndpointer
+import time
 
 class AncNetworkServer(threading.Thread):
     def __init__(self, buffer, threadName):
@@ -18,17 +21,29 @@ class AncNetworkServer(threading.Thread):
         try:
             logging.debug('Running Network Server thread')
             libname = pathlib.Path().absolute() / "server.so"
-            c_double_p = ctypes.POINTER(ctypes.c_double)
             c_lib = ctypes.CDLL(libname)
-            c_lib.receive_message.argtypes = [c_double_p]
             STEP_SIZE = int(os.getenv("STEP_SIZE"))
+            c_lib.setup_server()
+
+            fun = c_lib.receive_message
+            fun.restype = None
+            fun.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS"),
+                            ctypes.c_size_t,
+                            ctypes.c_size_t
+                           ]
 
             while True:
-                wave = (ctypes.c_double * STEP_SIZE * 2)()
-                c_lib.receive_message(wave)
-                #TODO likely need to convert wave to a np array?
+                wave = np.zeros((STEP_SIZE,2))
+                start = time.time()
+                fun(wave, STEP_SIZE, 2)
+                end = time.time()
+                logging.info(f'{wave.shape}')
+                logging.info(f'{wave[0,:]}')
+                logging.info(f'{wave[len(wave) - 1,:]}')
+                logging.info(f'Time to receive: {end - start}')
                 self.buffer.push(wave)
 
+            c_lib.shutdown_server()
             self.cleanup()
         except Exception as e:
             logging.error(f'Exception thrown: {e}')
