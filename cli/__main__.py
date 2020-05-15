@@ -1,4 +1,4 @@
-from common.common import getEnvironmentVariables, parseCliParameters
+from common.common import getEnvironmentVariables
 from soundwave import app
 import logging
 import os
