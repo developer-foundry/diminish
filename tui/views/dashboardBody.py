@@ -1,6 +1,7 @@
 import urwid
 from tui.views.dashboardControls import DashboardControls
 from tui.views.liveDashboardData import LiveDashboardData
+from tui.views.prerecordedDashboard import PrerecordedDashboardData
 
 class DashboardBody(urwid.WidgetWrap):
     def __init__(self, model):
@@ -11,6 +12,7 @@ class DashboardBody(urwid.WidgetWrap):
     def build(self):
         self.controls = DashboardControls(self.model)
         self.liveDashboard = LiveDashboardData(self.model)
+        self.prerecordedDashboard = PrerecordedDashboardData(self.model)
         self.emptyDashboard = urwid.Pile([])
 
         self.data = urwid.WidgetPlaceholder(self.emptyDashboard)
@@ -32,5 +34,8 @@ class DashboardBody(urwid.WidgetWrap):
             if(self.model.mode == 'live'):
                 self.data._set_original_widget(self.liveDashboard)
                 self.liveDashboard.refresh()
+            elif(self.model.mode == 'prerecorded'):
+                self.data._set_original_widget(self.prerecordedDashboard)
+                self.prerecordedDashboard.refresh()
         else:
             self.data._set_original_widget(self.emptyDashboard)

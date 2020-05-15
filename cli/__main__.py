@@ -10,10 +10,9 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
 
 if __name__ == '__main__':
     try:
-        if len(sys.argv) == 1:
-            parameters = getEnvironmentVariables()
-        else:
-            parameters = parseCliParameters(sys.argv)
+        logging.info('Starting...')
+
+        parameters = getEnvironmentVariables()
 
         if parameters['mode'] == 'prerecorded':
             app.process_prerecorded(parameters['device'], parameters['inputFile'],
@@ -22,6 +21,7 @@ if __name__ == '__main__':
             app.process_anc(parameters['device'],
                             parameters['targetFile'], parameters['algorithm'], parameters['role'], parameters['waitSize'], parameters['stepSize'], parameters['size'], parameters['tuiConnection'])
 
+        logging.info('Finished!')
     except KeyboardInterrupt:
         exit('\nInterrupted by user')
     except Exception as e:
