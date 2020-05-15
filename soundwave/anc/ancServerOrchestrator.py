@@ -12,6 +12,7 @@ from soundwave.anc.ancBluetoothServer import AncBluetoothServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
+from soundwave.anc.ancDataStore import AncDataStore
 
 class AncServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
@@ -29,6 +30,7 @@ class AncServerOrchestrator():
                         AncBluetoothServer('anc-btserver')]
         self.ancMediator = None
         self.paused = False
+        self.dataStore = AncDataStore()
         signal.signal(signal.SIGUSR1, self.pauseHandler)
 
     def pauseHandler(self, signum, frame):
@@ -41,11 +43,11 @@ class AncServerOrchestrator():
 
         self.ancMediator.close_connection()
         self.ancMediator.plot_buffers(self.algorithm)
-    def run_algorithm(self):
 
+    def run_algorithm(self):
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
-
+        
         if not self.paused:
             outputSignal, outputErrors = process_signal(errorSignal, targetSignal, self.algorithm)
         else:
@@ -58,6 +60,11 @@ class AncServerOrchestrator():
         #so that the plot subscriber picks it up
         self.outputErrorBuffer.push(outputErrors)
         self.outputErrorBuffer.pop()
+
+        self.writeData(errorSignal, targetSignal, outputSignal, outputErrors)
+    
+    def writeData(self, errorSignal, targetSignal, outputSignal, outputErrors):
+        self.dataStore.sendData(errorSignal)
 
     def is_ready(self):
         return self.errorBuffer.is_ready() and self.outputBuffer.is_ready()
