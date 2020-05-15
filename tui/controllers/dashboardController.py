@@ -46,7 +46,7 @@ class DashboardController():
         my_env["ROLE"] = self.model.role
         my_env["WAIT_SIZE"] = str(self.model.waitSize)
         my_env["STEP_SIZE"] = str(self.model.stepSize)
-        my_env["TUI_CONNECTION"] = str(self.model.tuiConnection)
+        my_env["TUI_CONNECTION"] = str(True)
         return my_env
 
     def run(self):
@@ -63,41 +63,14 @@ class DashboardController():
                         )
         
         if(self.model.mode == 'live'):
-            connected = False
-            #loop until connected
-            while not connected:
-                try:
-                    self.dataClient = Client(('localhost', 5000), authkey=b'secret password')
-                    connected = True
-                except ConnectionRefusedError:
-                    pass
+            self.createConnectionToCli()
 
-            self.logger.debug('Connected to Process!')
         self.loop.set_alarm_in(0, self.refresh)
-    
-    def read_pipe(self, read_data):
-        self.logger.info(read_data)
 
     def refresh(self, _loop, data):
         try:
             if(self.model.mode == 'live'):
-                #first update all three buffers
-                tuiBufferName = self.dataClient.recv() #receive 'error'
-                while tuiBufferName != 'end buffers':
-                    tuiData = self.dataClient.recv()
-                    self.logger.debug(f'Appending {tuiData} to buffer {tuiBufferName}')
-
-                    if(tuiBufferName == 'error'):
-                        self.model.errorBuffer.append([float(tuiData.flat[0])])
-                    if(tuiBufferName == 'output'):
-                        self.model.outputBuffer.append([float(tuiData.flat[0])])
-                    if(tuiBufferName == 'reference'):
-                        self.model.referenceBuffer.append([float(tuiData.flat[0])])
-                    if(tuiBufferName == 'output-error'):
-                        self.model.errorPercentage = tuiData.flat[0]
-
-                    tuiBufferName = self.dataClient.recv()
-            
+                self.updateGraphs()
                 self.model.memory = int(self.dataClient.recv())
                 self.model.cpu = float(self.dataClient.recv())
         except EOFError:
@@ -107,6 +80,39 @@ class DashboardController():
         
         self.view.refresh()
         _loop.set_alarm_in(guiRefreshTimer, self.refresh)
+
+    def createConnectionToCli(self):
+        connected = False
+        #loop until connected
+        while not connected:
+            try:
+                self.dataClient = Client(('localhost', 5000), authkey=b'secret password')
+                connected = True
+            except ConnectionRefusedError:
+                pass
+
+        self.logger.debug('Connected to Process!')
+
+    def read_pipe(self, read_data):
+        self.logger.info(read_data)
+
+    def updateGraphs(self):
+        #first update all three buffers
+        tuiBufferName = self.dataClient.recv() #receive 'error'
+        while tuiBufferName != 'end buffers':
+            tuiData = self.dataClient.recv()
+            self.logger.debug(f'Appending {tuiData} to buffer {tuiBufferName}')
+
+            if(tuiBufferName == 'error'):
+                self.model.errorBuffer.append([float(tuiData.flat[0])])
+            if(tuiBufferName == 'output'):
+                self.model.outputBuffer.append([float(tuiData.flat[0])])
+            if(tuiBufferName == 'reference'):
+                self.model.referenceBuffer.append([float(tuiData.flat[0])])
+            if(tuiBufferName == 'output-error'):
+                self.model.errorPercentage = tuiData.flat[0]
+
+            tuiBufferName = self.dataClient.recv()
 
     def togglePause(self):
         self.model.paused = not self.model.paused

@@ -31,7 +31,12 @@ class AncMediator():
         for bufferName in self.buffers:
             if(len(self.buffers[bufferName]) > 0):
                 self.dataClient.send(bufferName)
-                self.dataClient.send(self.buffers[bufferName][-1])
+
+                if(bufferName != "output-error"):
+                    self.dataClient.send(self.buffers[bufferName][-1])
+                else:
+                    self.dataClient.send(np.average(self.buffers[bufferName]))
+
         self.dataClient.send('end buffers')
 
         self.dataClient.send(self.process.memory_info().rss / 1000000) #send in MB

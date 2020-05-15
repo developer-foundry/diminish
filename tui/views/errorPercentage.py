@@ -15,10 +15,10 @@ class ErrorPercentage(urwid.WidgetWrap):
         return bt
     
     def refresh(self):
-        percentage = "{:.0%}".format(self.model.errorPercentage)
+        percentage = "{0:1.3f}".format(self.model.errorPercentage)
         self.bigtext.set_text(percentage)
 
-        if(self.model.errorPercentage >= 0.5):
+        if(self.model.errorPercentage >= 0.001):
             self.attribute.set_attr('bigtextbad')
         else:
             self.attribute.set_attr('bigtextgood')
