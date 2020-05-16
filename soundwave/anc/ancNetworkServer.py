@@ -37,10 +37,7 @@ class AncNetworkServer(threading.Thread):
                 start = time.time()
                 fun(wave, STEP_SIZE, 2)
                 end = time.time()
-                logging.info(f'{wave.shape}')
-                logging.info(f'{wave[0,:]}')
-                logging.info(f'{wave[len(wave) - 1,:]}')
-                logging.info(f'Time to receive: {end - start}')
+                logging.debug(f'Time to receive: {end - start}')
                 self.buffer.push(wave)
 
             c_lib.shutdown_server()

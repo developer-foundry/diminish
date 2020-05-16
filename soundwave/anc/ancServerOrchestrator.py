@@ -31,18 +31,23 @@ class AncServerOrchestrator():
 
     def run_algorithm(self):
         referenceSignal = self.referenceBuffer.pop()
+        logging.info(f'reference shape: {referenceSignal.shape}')
         errorSignal = self.errorBuffer.pop()
+        logging.info(f'error shape: {errorSignal.shape}')
         targetSignal = self.targetBuffer.pop()
-        self.outputBuffer.push(referenceSignal)
+        logging.info(f'target shape: {targetSignal.shape}')
 
-        # referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
-        # outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
-        # self.outputBuffer.push(outputSignal)
+        referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
+        logging.info(f'referenceCombined shape: {referenceCombinedWithError.shape}')
+        outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+
+        logging.info(f'outputSignal shape: {outputSignal.shape}')
+        self.outputBuffer.push(outputSignal)
 
         #for tracking the output error buffer we just need to push and pop
         #so that the plot subscriber picks it up
-        # self.outputErrorBuffer.push(outputErrors)
-        # self.outputErrorBuffer.pop()
+        self.outputErrorBuffer.push(outputErrors)
+        self.outputErrorBuffer.pop()
 
     def is_ready(self):
         return self.errorBuffer.is_ready() and \
@@ -60,7 +65,7 @@ class AncServerOrchestrator():
             while not self.is_ready():
                 pass
 
-            self.ancPlot = AncPlot([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+            self.ancPlot = AncPlot([self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
             with self.ancWaitCondition:
                 self.ancWaitCondition.notifyAll()
