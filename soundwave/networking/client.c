@@ -52,7 +52,7 @@ void shutdown_connection()
 }
 
 int main() {
-  env_load("soundwave/.env", false);
+  env_load("environment/.env", false);
   char *step_size = getenv("STEP_SIZE");
   size_t length = atoi(step_size);
   double* input = malloc (length * 2 * sizeof(double));
