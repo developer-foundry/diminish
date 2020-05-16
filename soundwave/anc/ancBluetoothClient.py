@@ -39,5 +39,5 @@ class AncBluetoothClient(threading.Thread):
                 'No more packets to send from Bluetooth Client. Bluetooth Client shutting down')
             self.cleanup()
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')
             self.cleanup()

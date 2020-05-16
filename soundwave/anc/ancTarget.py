@@ -5,7 +5,7 @@ import logging
 import numpy as np
 
 import soundfile as sf
-from soundwave.common.continuousBuffer import ContinuousBuffer
+from common.continuousBuffer import ContinuousBuffer
 
 class AncTarget(threading.Thread):
     def __init__(self, targetFile, buffer, stepSize, size, threadName):
@@ -16,6 +16,10 @@ class AncTarget(threading.Thread):
         self.size = size
         self.targetFile = targetFile
         self.targetSignal = None
+        self.stopped = False
+    
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
@@ -25,4 +29,4 @@ class AncTarget(threading.Thread):
             self.buffer.push(self.targetSignal[0:self.size])
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

@@ -13,9 +13,13 @@ class AncNetworkClient(threading.Thread):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         logging.debug('Initialize Network Client thread')
         self.buffer = buffer
+        self.stopped = False
 
     def cleanup(self):
         logging.debug('Cleaning up Network Client thread')
+    
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
@@ -28,7 +32,7 @@ class AncNetworkClient(threading.Thread):
             fun.restype = None
             fun.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS")]
 
-            while True:
+            while not self.stopped:
                 dataToSend = self.buffer.pop()
                 if (len(dataToSend) > 0):
                     start = time.time()

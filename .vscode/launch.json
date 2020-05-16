@@ -5,11 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug",
+      "name": "Debug CLI",
       "type": "python",
       "request": "launch",
-      "module": "soundwave",
-      "justMyCode": false
+      "module": "cli",
+      "justMyCode": false,
+      "console": "externalTerminal"
+    },
+    {
+      "name": "Debug TUI",
+      "type": "python",
+      "request": "launch",
+      "module": "tui",
+      "justMyCode": false,
+      "console": "externalTerminal"
     }
   ]
 }

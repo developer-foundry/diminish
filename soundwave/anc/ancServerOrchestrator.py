@@ -1,19 +1,20 @@
 import sys
 import logging
 import threading
+import signal
 import numpy as np
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
 from soundwave.anc.ancOutput import AncOutput
-from soundwave.anc.ancPlot import AncPlot
 from soundwave.anc.ancNetworkServer import AncNetworkServer
-from soundwave.common.continuousBuffer import ContinuousBuffer
-from soundwave.common.fifoBuffer import FifoBuffer
+from common.continuousBuffer import ContinuousBuffer
+from common.fifoBuffer import FifoBuffer
+from soundwave.anc.ancMediator import AncMediator
 from soundwave.algorithms.signal_processing import process_signal
 
 class AncServerOrchestrator():
-    def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size):
+    def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
         logging.debug('Initialize Server Orchestration')
         self.algorithm = algorithm
         self.errorBuffer = FifoBuffer('error', waitSize, stepSize)
@@ -22,26 +23,45 @@ class AncServerOrchestrator():
         self.referenceBuffer = FifoBuffer('reference', 0, stepSize)
         self.targetBuffer = ContinuousBuffer('target', stepSize)
 
+        self.tuiConnection = tuiConnection
         self.ancWaitCondition = threading.Condition()
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncNetworkServer(self.referenceBuffer, 'anc-networkserver')]
-        self.ancPlot = None
+
+        self.ancMediator = None
+        self.paused = False
+        signal.signal(signal.SIGUSR1, self.pauseHandler)
+
+    def pauseHandler(self, signum, frame):
+        logging.debug('Toggling pause')
+        self.paused = not self.paused
+
+    def stop(self):
+        for thread in self.threads:
+            thread.stop()
+
+        self.ancMediator.close_connection()
+        self.ancMediator.plot_buffers(self.algorithm)
 
     def run_algorithm(self):
         referenceSignal = self.referenceBuffer.pop()
-        logging.info(f'reference shape: {referenceSignal.shape}')
+        logging.debug(f'reference shape: {referenceSignal.shape}')
         errorSignal = self.errorBuffer.pop()
-        logging.info(f'error shape: {errorSignal.shape}')
+        logging.debug(f'error shape: {errorSignal.shape}')
         targetSignal = self.targetBuffer.pop()
-        logging.info(f'target shape: {targetSignal.shape}')
-
+        logging.debug(f'target shape: {targetSignal.shape}')
         referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
-        logging.info(f'referenceCombined shape: {referenceCombinedWithError.shape}')
-        outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+        logging.debug(f'referenceCombined shape: {referenceCombinedWithError.shape}')
 
-        logging.info(f'outputSignal shape: {outputSignal.shape}')
+        if not self.paused:
+            outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+            logging.debug(f'outputSignal shape: {outputSignal.shape}')
+        else:
+            outputSignal = np.add(errorSignal, targetSignal)
+            outputErrors = np.zeros((len(targetSignal), 2))
+
         self.outputBuffer.push(outputSignal)
 
         #for tracking the output error buffer we just need to push and pop
@@ -57,6 +77,11 @@ class AncServerOrchestrator():
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
+            self.ancMediator = AncMediator([self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+
+            #this is a blocking call; will wait until tui connects
+            if(self.tuiConnection):
+                self.ancMediator.create_connection()
 
             for thread in self.threads:
                 thread.start()
@@ -64,8 +89,6 @@ class AncServerOrchestrator():
             #loop until algorithm is ready to start
             while not self.is_ready():
                 pass
-
-            self.ancPlot = AncPlot([self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
             with self.ancWaitCondition:
                 self.ancWaitCondition.notifyAll()
@@ -76,4 +99,4 @@ class AncServerOrchestrator():
                     self.run_algorithm()
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

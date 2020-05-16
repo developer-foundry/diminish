@@ -13,9 +13,13 @@ class AncNetworkServer(threading.Thread):
         logging.debug('Initialize Network Server thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)
         self.buffer = buffer
+        self.stopped = False
 
     def cleanup(self):
         logging.debug('Cleaning up Network Server thread')
+
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
@@ -32,7 +36,7 @@ class AncNetworkServer(threading.Thread):
                             ctypes.c_size_t
                            ]
 
-            while True:
+            while not self.stopped:
                 wave = np.zeros((STEP_SIZE,2))
                 start = time.time()
                 fun(wave, STEP_SIZE, 2)

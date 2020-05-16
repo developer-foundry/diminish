@@ -12,6 +12,10 @@ class AncBluetoothServer(threading.Thread):
         self.server_socket = None
         self.client_socket = None
         self.buffer = buffer
+        self.stopped = False
+    
+    def stop(self):
+        self.stopped = True
 
     def cleanup(self):
         logging.debug('Cleaning up Bluetooth Server thread')
@@ -36,5 +40,5 @@ class AncBluetoothServer(threading.Thread):
 
             self.cleanup()
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')
             self.cleanup()

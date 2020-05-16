@@ -4,10 +4,11 @@ import threading
 import logging
 
 import numpy as np
+import time
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancNetworkClient import AncNetworkClient
-from soundwave.common.fifoBuffer import FifoBuffer
+from common.fifoBuffer import FifoBuffer
 
 class AncClientOrchestrator():
     def __init__(self, device, waitSize, stepSize):
@@ -26,7 +27,7 @@ class AncClientOrchestrator():
 
             # will ensure the main thread is paused until ctrl + c
             while True:
-                input()
+                time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')

@@ -1,11 +1,11 @@
 import sys
 import threading
 import logging
-
+import time
 import numpy as np
 
 import sounddevice as sd
-from soundwave.common.continuousBuffer import ContinuousBuffer
+from common.continuousBuffer import ContinuousBuffer
 
 class AncInput(threading.Thread):
     def __init__(self, device, buffer, stepSize, threadName):
@@ -14,18 +14,24 @@ class AncInput(threading.Thread):
         self.buffer = buffer
         self.device = device
         self.stepSize = stepSize
+        self.stopped = False
 
     def listener(self, indata, frames, time, status):
         self.buffer.push(indata)
+    
+    def stop(self):
+        self.stopped = True
 
     def run(self):
         try:
             logging.debug('Running Input Microphone thread')
+
             with sd.InputStream(device=self.device,
                                 channels=2,
                                 blocksize=self.stepSize,
                                 callback=self.listener):
-                input()
+                while not self.stopped:
+                    time.sleep(1) #time takes up less cpu cycles than 'pass'
 
         except Exception as e:
-            logging.error(f'Exception thrown: {e}')
+            logging.exception(f'Exception thrown: {e}')
