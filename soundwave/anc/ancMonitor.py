@@ -14,7 +14,7 @@ import threading
 from multiprocessing.connection import Listener
 from common.common import guiRefreshTimer
 
-flushTimer = 5
+flushTimer = 1
 
 class AncMonitor(threading.Thread):
     def __init__(self, buffers, threadName):
@@ -25,7 +25,7 @@ class AncMonitor(threading.Thread):
         self.process = psutil.Process(os.getpid())
         self.influxService = InfluxService()
         self.stopped = False
-
+        self.waveName = 'Session-{0:%Y-%m-%d%H:%M:%S}'.format(datetime.datetime.now())
         for buffer in buffers:
             self.buffers[buffer.name] = FifoBuffer(buffer.name, 0, 1024)
             buffer.subscribe(self.observe) #subscribe the real buffer to AncMonitor
@@ -52,8 +52,7 @@ class AncMonitor(threading.Thread):
                 logging.info(f'Flushing {bufferName}')
                 #construct a wave and clear the buffer via flush
                 bufferData = self.buffers[bufferName].flush()
-                waveName = 'Session - {0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-                self.influxService.addWave(waveName, bufferName, bufferData)
+                self.influxService.addWave(self.waveName, bufferName, bufferData)
                 logging.info(f'Completed Flushing {bufferName}')
         
         threading.Timer(flushTimer, self.flush).start()
