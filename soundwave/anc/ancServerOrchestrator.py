@@ -7,12 +7,11 @@ import numpy as np
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
 from soundwave.anc.ancOutput import AncOutput
-from soundwave.anc.ancMediator import AncMediator
+from soundwave.anc.ancMonitor import AncMonitor
 from soundwave.anc.ancBluetoothServer import AncBluetoothServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
 from soundwave.algorithms.signal_processing import process_signal
-from soundwave.anc.ancDataStore import AncDataStore
 
 class AncServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
@@ -28,9 +27,8 @@ class AncServerOrchestrator():
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
                         AncBluetoothServer('anc-btserver')]
-        self.ancMediator = None
+        self.ancMonitor = None
         self.paused = False
-        self.dataStore = AncDataStore()
         signal.signal(signal.SIGUSR1, self.pauseHandler)
 
     def pauseHandler(self, signum, frame):
@@ -41,8 +39,8 @@ class AncServerOrchestrator():
         for thread in self.threads:
             thread.stop()
 
-        self.ancMediator.close_connection()
-        self.ancMediator.plot_buffers(self.algorithm)
+        self.ancMonitor.close_connection()
+        self.ancMonitor.stop()
 
     def run_algorithm(self):
         errorSignal = self.errorBuffer.pop()
@@ -61,22 +59,18 @@ class AncServerOrchestrator():
         self.outputErrorBuffer.push(outputErrors)
         self.outputErrorBuffer.pop()
 
-        self.writeData(errorSignal, targetSignal, outputSignal, outputErrors)
-    
-    def writeData(self, errorSignal, targetSignal, outputSignal, outputErrors):
-        self.dataStore.sendData(errorSignal)
-
     def is_ready(self):
         return self.errorBuffer.is_ready() and self.outputBuffer.is_ready()
 
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
-            self.ancMediator = AncMediator([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+            self.ancMonitor = AncMonitor([self.errorBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer], 'anc-monitor')
+            self.ancMonitor.start()
 
             #this is a blocking call; will wait until tui connects
             if(self.tuiConnection):
-                self.ancMediator.create_connection()
+                self.ancMonitor.create_connection()
 
             for thread in self.threads:
                 thread.start()

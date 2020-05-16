@@ -44,5 +44,20 @@ class FifoBuffer():
         func = switcher.get(self.name)
         return func()
 
+    def flush(self):
+        with self.lock:
+            #step size in this case represents the end of what you want to slize
+            #from the continuous buffer
+            end = len(self.buffer)
+            dataToRemove = self.buffer[0:end]
+            self.buffer = np.delete(self.buffer, np.s_[0:end], 0)
+            return dataToRemove
+
     def size(self):
         return self.buffer.shape[0]
+    
+    def peekLast(self):
+        return self.buffer[-1]
+    
+    def average(self):
+        return np.average(self.buffer)
