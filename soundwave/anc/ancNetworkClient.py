@@ -31,13 +31,10 @@ class AncNetworkClient(threading.Thread):
             while True:
                 dataToSend = self.buffer.pop()
                 if (len(dataToSend) > 0):
-                    logging.info(f'{dataToSend.shape}')
-                    logging.info(f'{dataToSend[0,:]}')
-                    logging.info(f'{dataToSend[len(dataToSend) - 1,:]}')
                     start = time.time()
                     fun(dataToSend)
                     end = time.time()
-                    logging.info(f'Time to send: {end - start}')
+                    logging.debug(f'Time to send: {end - start}')
 
             c_lib.shutdown_connection()
             logging.debug(
