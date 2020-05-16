@@ -46,7 +46,7 @@ def plot_vertical(algorithm, mode, inputSignal, targetSignal, outputSignal, erro
     plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
 
 def plot_vertical_buffers(algorithm, mode, buffers):
-    colors = ['-b', '-g', '-k', '-r']
+    colors = ['-b', '-m', '-g', '-k', '-r']
     algDirectory = get_dir(algorithm, mode)
 
     fig, axs = plt.subplots(len(buffers))
@@ -56,6 +56,6 @@ def plot_vertical_buffers(algorithm, mode, buffers):
     for index, bufferName in enumerate(buffers):
         axs[index].plot(buffers[bufferName], colors[index])
         axs[index].title.set_text(f'{algorithm} {bufferName} Signal')
-        axs[index].set_ylim((-0.4, 0.4))
+        #axs[index].set_ylim((-0.4, 0.4))
 
     plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
