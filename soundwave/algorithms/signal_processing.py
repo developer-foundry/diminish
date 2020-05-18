@@ -3,6 +3,7 @@ from functools import partial
 import numpy as np
 import soundwave.algorithms.least_mean_squares as lmsalgos
 from common.common import mu
+import os
 
 def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     switcher = {
@@ -19,17 +20,25 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
 def process_signal(inputSignal, targetSignal, algorithm):
     # loop over each channel and perform the algorithm
-    # numChannels = len(inputSignal[0]) // 2 # assumes that error and a single reference microphone are combined
-    numChannels = 2
+    useRef = (os.getenv('REFMIC') == "TRUE")
+    logging.info(f'useRef:{useRef}')
+    if useRef:
+        numChannels = len(inputSignal[0]) // 2 # assumes that error and a single reference microphone are combined
+    else:
+        numChannels = 2
+
     outputSignal = None
     errorSignal = None
     for channel in range(numChannels):
         targetChannel = targetSignal[:, channel]
-        inputChannel = np.stack((inputSignal[:, channel],
-                                 targetChannel), axis=1)
-        # inputChannel = np.stack((inputSignal[:, channel],
-        #                          inputSignal[:, (channel + 2)]), axis=1)
-        # inputChannel = np.column_stack([inputChannel, targetChannel])
+
+        if useRef:
+            inputChannel = np.stack((inputSignal[:, channel],
+                                     inputSignal[:, (channel + 2)]), axis=1)
+            inputChannel = np.column_stack([inputChannel, targetChannel])
+        else:
+            inputChannel = np.stack((inputSignal[:, channel],
+                                    targetChannel), axis=1)
 
         # perform algorithm on left channel, then right right
         outputChannel, errorChannel = run_algorithm(

@@ -3,6 +3,7 @@ import logging
 import threading
 import signal
 import numpy as np
+import os
 
 from soundwave.anc.ancInput import AncInput
 from soundwave.anc.ancTarget import AncTarget
@@ -51,10 +52,14 @@ class AncServerOrchestrator():
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
         referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
+        useRef = (os.getenv('REFMIC') == "TRUE")
+        logging.info(f'useRef:{useRef}')
 
         if not self.paused:
-            # outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
-            outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
+            if useRef:
+                outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+            else:
+                outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
         else:
             outputSignal = np.add(errorSignal, targetSignal)
             outputErrors = np.zeros((len(targetSignal), 2))
