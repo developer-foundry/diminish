@@ -3,6 +3,7 @@ matplotlib.use('Agg')  # nopep8
 import os
 import matplotlib.pyplot as plt
 import logging
+import time
 
 def get_dir(algorithm, mode):
     base_dir = os.getcwd()
@@ -66,4 +67,5 @@ def plot_vertical_buffers(algorithm, mode, buffers):
         axs[index].set_ylim((-0.4, 0.4))
         axs[index].set_xlim((0, max))
 
-    plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    plt.savefig(algDirectory + f'{algorithm}- allsignals - {timestr}.png')
