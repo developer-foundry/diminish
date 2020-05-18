@@ -17,7 +17,7 @@ class AncServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
         logging.debug('Initialize Server Orchestration')
         self.algorithm = algorithm
-        self.errorBuffer = FifoBuffer('error', waitSize, stepSize)
+        self.errorBuffer = FifoBuffer('error', 0, stepSize)
         self.outputBuffer = FifoBuffer('output', waitSize, stepSize)
         self.outputErrorBuffer = FifoBuffer('output-error', 0, stepSize)
         self.referenceBuffer = FifoBuffer('reference', 0, stepSize)
@@ -25,10 +25,11 @@ class AncServerOrchestrator():
 
         self.tuiConnection = tuiConnection
         self.ancWaitCondition = threading.Condition()
+        self.networkThread = AncNetworkServer(self.referenceBuffer, 'anc-networkserver')
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
                         AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
                         AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
-                        AncNetworkServer(self.referenceBuffer, 'anc-networkserver')]
+                       ]
 
         self.ancMediator = None
         self.paused = False
@@ -47,17 +48,12 @@ class AncServerOrchestrator():
 
     def run_algorithm(self):
         referenceSignal = self.referenceBuffer.pop()
-        logging.debug(f'reference shape: {referenceSignal.shape}')
         errorSignal = self.errorBuffer.pop()
-        logging.debug(f'error shape: {errorSignal.shape}')
         targetSignal = self.targetBuffer.pop()
-        logging.debug(f'target shape: {targetSignal.shape}')
         referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
-        logging.debug(f'referenceCombined shape: {referenceCombinedWithError.shape}')
 
         if not self.paused:
             outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
-            logging.debug(f'outputSignal shape: {outputSignal.shape}')
         else:
             outputSignal = np.add(errorSignal, targetSignal)
             outputErrors = np.zeros((len(targetSignal), 2))
@@ -83,6 +79,10 @@ class AncServerOrchestrator():
             if(self.tuiConnection):
                 self.ancMediator.create_connection()
 
+            self.networkThread.start()
+            while not self.referenceBuffer.is_ready():
+                pass
+
             for thread in self.threads:
                 thread.start()
             
@@ -92,6 +92,11 @@ class AncServerOrchestrator():
 
             with self.ancWaitCondition:
                 self.ancWaitCondition.notifyAll()
+
+            self.errorBuffer.clear()
+            self.referenceBuffer.clear()
+            self.outputBuffer.clear()
+            self.outputErrorBuffer.clear()
 
             # will ensure the main thread is paused until ctrl + c
             while True:

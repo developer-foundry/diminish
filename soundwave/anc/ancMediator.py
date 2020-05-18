@@ -25,6 +25,7 @@ class AncMediator():
         self.buffers[bufferName] = np.concatenate((self.buffers[bufferName], data), axis=0)
 
     def plot_buffers(self, algorithm):
+        logging.debug(f'Plotting buffers')
         plot.plot_vertical_buffers(algorithm, 'anc', self.buffers)
 
     def sendData(self):

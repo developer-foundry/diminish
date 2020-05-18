@@ -35,9 +35,9 @@ class FifoBuffer():
     
     def is_ready(self):
         switcher = {
-            'output': lambda: self.size() < self.waitSize*5,
+            'output': lambda: True,
             'output-error': lambda: True,
-            'error': lambda: self.size() > self.waitSize + self.stepSize,
+            'error': lambda: self.size() >= self.stepSize,
             'reference': lambda: self.size() >= self.stepSize
         }
 
@@ -46,3 +46,6 @@ class FifoBuffer():
 
     def size(self):
         return self.buffer.shape[0]
+
+    def clear(self):
+        self.buffer = np.zeros((0, self.numChannels))
