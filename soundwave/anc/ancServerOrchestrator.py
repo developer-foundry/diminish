@@ -53,7 +53,8 @@ class AncServerOrchestrator():
         referenceCombinedWithError = np.concatenate((errorSignal, referenceSignal), axis=1)
 
         if not self.paused:
-            outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+            # outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+            outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
         else:
             outputSignal = np.add(errorSignal, targetSignal)
             outputErrors = np.zeros((len(targetSignal), 2))
@@ -67,7 +68,6 @@ class AncServerOrchestrator():
 
     def is_ready(self):
         return self.errorBuffer.is_ready() and \
-               self.outputBuffer.is_ready() and \
                self.referenceBuffer.is_ready()
 
     def run(self):
