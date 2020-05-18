@@ -34,6 +34,7 @@ class AncServerOrchestrator():
 
         self.ancMediator = None
         self.paused = False
+        self.paused = not (os.getenv('RUNALGO') == "TRUE")
         signal.signal(signal.SIGUSR1, self.pauseHandler)
 
     def pauseHandler(self, signum, frame):
@@ -51,17 +52,21 @@ class AncServerOrchestrator():
         referenceSignal = self.referenceBuffer.pop()
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
+        referenceCombinedWithError = np.add(errorSignal, referenceSignal)
         useRef = (os.getenv('REFMIC') == "TRUE")
 
         if not self.paused:
             if useRef:
-                referenceCombinedWithError = np.add(errorSignal, referenceSignal)
                 outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
             else:
                 outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
         else:
-            outputSignal = np.add(errorSignal, targetSignal)
-            outputErrors = np.zeros((len(targetSignal), 2))
+            if useRef:
+                outputSignal = np.add(referenceCombinedWithError, targetSignal)
+            else:
+                outputSignal = np.add(errorSignal, targetSignal)
+
+            outputErrors = np.subtract(targetSignal, outputSignal)
 
         self.outputBuffer.push(outputSignal)
 
