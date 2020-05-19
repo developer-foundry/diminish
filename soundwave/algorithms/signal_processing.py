@@ -19,11 +19,11 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
     return func()
 
 def process_signal(inputSignal, targetSignal, algorithm):
-    # loop over each channel and perform the algorithm
     numChannels = 2
-
     outputSignal = None
     errorSignal = None
+
+    # loop over each channel and perform the algorithm
     for channel in range(numChannels):
         targetChannel = targetSignal[:, channel]
         inputChannel = np.stack((inputSignal[:, channel],

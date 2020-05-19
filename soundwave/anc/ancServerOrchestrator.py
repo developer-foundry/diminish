@@ -53,19 +53,11 @@ class AncServerOrchestrator():
         errorSignal = self.errorBuffer.pop()
         targetSignal = self.targetBuffer.pop()
         referenceCombinedWithError = np.add(errorSignal, referenceSignal)
-        useRef = (os.getenv('REFMIC') == "TRUE")
 
         if not self.paused:
-            if useRef:
-                outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
-            else:
-                outputSignal, outputErrors  = process_signal(errorSignal, targetSignal, self.algorithm)
+            outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
         else:
-            if useRef:
-                outputSignal = np.add(referenceCombinedWithError, targetSignal)
-            else:
-                outputSignal = np.add(errorSignal, targetSignal)
-
+            outputSignal = np.add(referenceSignal, targetSignal)
             outputErrors = np.subtract(targetSignal, outputSignal)
 
         self.outputBuffer.push(outputSignal)
