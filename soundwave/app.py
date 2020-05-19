@@ -5,7 +5,6 @@ import logging
 import soundfile as sf
 
 from soundwave.algorithms.signal_processing import process_signal
-import soundwave.playback.playback as player
 import soundwave.plotting.plot as plot
 
 from soundwave.anc.ancClientOrchestrator import AncClientOrchestrator
@@ -24,19 +23,19 @@ def process_prerecorded(device, inputFile, targetFile, truncateSize, algorithm):
     outputSignal, errorSignal = process_signal(
         inputSignal, targetSignal, algorithm)
 
-    # player.play_signal(parser, outputSignal, inputFs, device)
-
     plot.plot_vertical(algorithm, 'prerecorded', inputSignal,
-                        targetSignal, outputSignal, errorSignal)
+                       targetSignal, outputSignal, errorSignal)
+
 
 def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size, tuiConnection):
     orchestrator = None
     try:
         if(btmode == 'server'):
-            orchestrator = AncServerOrchestrator(device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection)
+            orchestrator = AncServerOrchestrator(
+                device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection)
         elif(btmode == 'client'):
             orchestrator = AncClientOrchestrator(device, waitSize, stepSize)
-        
+
         orchestrator.run()
     except KeyboardInterrupt:
         if(btmode == 'server'):
