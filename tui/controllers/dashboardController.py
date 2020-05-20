@@ -7,7 +7,6 @@ from tui.views.dashboardView import DashboardView
 from tui.models.configurationModel import ConfigurationModel
 from random import uniform, randint
 from common.common import get_project_root
-from soundwave import app
 
 import pickle
 import os
@@ -28,13 +27,14 @@ class DashboardController():
         self.model.logger = logger
 
         self.view = DashboardView(self.model)
-        self.loop = urwid.MainLoop(self.view, palette=palette, unhandled_input=self.handle_input)
+        self.loop = urwid.MainLoop(
+            self.view, palette=palette, unhandled_input=self.handle_input)
         self.model.running = False
         self.proc = None
 
-        #Line has to be last
+        # Line has to be last
         self.loop.run()
-    
+
     def getEnvironmentVars(self):
         my_env = os.environ.copy()
         my_env["MODE"] = self.model.mode
@@ -52,16 +52,16 @@ class DashboardController():
     def run(self):
         self.stdout = self.loop.watch_pipe(self.read_pipe)
         self.stderr = self.loop.watch_pipe(self.read_pipe)
-        
+
         my_env = self.getEnvironmentVars()
 
         self.proc = subprocess.Popen(['python3', '-m', 'cli', ],
-                        cwd=get_project_root(),
-                        stdout=self.stdout,
-                        stderr=self.stderr,
-                        env=my_env
-                        )
-        
+                                     cwd=get_project_root(),
+                                     stdout=self.stdout,
+                                     stderr=self.stderr,
+                                     env=my_env
+                                     )
+
         if(self.model.mode == 'live'):
             self.createConnectionToCli()
 
@@ -77,16 +77,17 @@ class DashboardController():
             pass
         except Exception as e:
             self.logger.error(e)
-        
+
         self.view.refresh()
         _loop.set_alarm_in(guiRefreshTimer, self.refresh)
 
     def createConnectionToCli(self):
         connected = False
-        #loop until connected
+        # loop until connected
         while not connected:
             try:
-                self.dataClient = Client(('localhost', 5000), authkey=b'secret password')
+                self.dataClient = Client(
+                    ('localhost', 5000), authkey=b'secret password')
                 connected = True
             except ConnectionRefusedError:
                 pass
@@ -97,8 +98,8 @@ class DashboardController():
         self.logger.info(read_data)
 
     def updateGraphs(self):
-        #first update all three buffers
-        tuiBufferName = self.dataClient.recv() #receive 'error'
+        # first update all three buffers
+        tuiBufferName = self.dataClient.recv()  # receive 'error'
         while tuiBufferName != 'end buffers':
             tuiData = self.dataClient.recv()
             self.logger.debug(f'Appending {tuiData} to buffer {tuiBufferName}')
@@ -116,13 +117,13 @@ class DashboardController():
 
     def togglePause(self):
         self.model.paused = not self.model.paused
-        self.proc.send_signal(signal.SIGUSR1) 
+        self.proc.send_signal(signal.SIGUSR1)
 
     # Handle key presses
     def handle_input(self, key):
         if key == 'Q' or key == 'q':
             if(self.proc is not None):
-                self.proc.send_signal(signal.SIGINT) 
+                self.proc.send_signal(signal.SIGINT)
 
             raise urwid.ExitMainLoop()
         if key == 'R' or key == 'r':
@@ -130,4 +131,3 @@ class DashboardController():
             self.run()
         if key == 'P' or key == 'p':
             self.togglePause()
-            

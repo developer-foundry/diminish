@@ -5,8 +5,10 @@ from urwid import Text
 from urwid.canvas import CanvasCombine
 BOX = 'box'
 
+
 class PositiveNegativeGraphError(Exception):
     pass
+
 
 class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget)):
     _sizing = frozenset([BOX])
@@ -45,7 +47,8 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         self.attr = []
         self.char = []
         if len(attlist) < 2:
-            raise PositiveNegativeGraphError("attlist must include at least background and seg1: %r" % (attlist,))
+            raise PositiveNegativeGraphError(
+                "attlist must include at least background and seg1: %r" % (attlist,))
         assert len(attlist) >= 2, 'must at least specify bg and fg!'
         for a in attlist:
             if type(a) != tuple:
@@ -120,7 +123,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         If self.bar_width is None this implementation will stretch
         the bars across the available space specified by maxcol.
         """
-        (maxcol, maxrow) = size
+        (maxcol, _) = size
 
         if self.bar_width is not None:
             return [self.bar_width] * min(
@@ -132,7 +135,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         widths = []
         grow = maxcol
         remain = len(bardata)
-        for row in bardata:
+        for _ in bardata:
             w = int(float(grow) / remain + 0.5)
             widths.append(w)
             grow -= w
@@ -154,17 +157,19 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         bardata, top, bottom = self.get_data((maxcol, maxrow))
         widths = self.calculate_bar_widths((maxcol, maxrow), bardata)
 
-        #initialize matrix
+        # initialize matrix
         halfwayScaled = maxrow // 2
-        #use overscore if the item is above 0 or underscore if below 0, dash if on 0
-        disp = [['\u203E' if i < halfwayScaled else '-' if i == halfwayScaled else '_' for j in range(maxcol)] for i in range(maxrow)]
+        # use overscore if the item is above 0 or underscore if below 0, dash if on 0
+        disp = [['\u203E' if i < halfwayScaled else '-' if i ==
+                 halfwayScaled else '_' for j in range(maxcol)] for i in range(maxrow)]
 
-        def split(word): 
-            return [char for char in word] 
+        def split(word):
+            return [char for char in word]
 
-        #first column should be used for scale and
+        # first column should be used for scale and
         if(len(bardata) > 0):
-            formatString = '{:0.3f}' if type(bardata[0][0]) is float else '{:4d}'
+            formatString = '{:0.3f}' if type(
+                bardata[0][0]) is float else '{:4d}'
             for i in range(maxrow):
                 value = self.calculate_scale(maxrow, top, i)
                 stringVal = ''
@@ -177,8 +182,9 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
                 for cIndex, c in enumerate(characters):
                     disp[i][cIndex] = c
 
-        #add bar entries to matrix
-        bar_positions = self.get_bar_positions(bardata, top, bottom, widths, maxrow)
+        # add bar entries to matrix
+        bar_positions = self.get_bar_positions(
+            bardata, top, bottom, widths, maxrow)
         disp = self.update_matrix_with_bar_positions(bar_positions, disp)
         return disp
 
@@ -196,11 +202,11 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
                     disp[i][j] = 'X'
 
         return disp
-    
+
     def location_is_a_bar(self, bar_positions, row, col):
         res = False
         if(bar_positions[row] is not None):
-            for segmentNum, colStart, colEnd in bar_positions[row]:
+            for _, colStart, _ in bar_positions[row]:
                 if colStart == col:
                     res = True
 
@@ -217,9 +223,9 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         combinelist = []
         for row in disp:
             l = []
-            for columnNumber, currLoc in enumerate(row, start=0):
+            for _, currLoc in enumerate(row, start=0):
                 if currLoc == 'X':
-                    #bar
+                    # bar
                     a = self.attr[1]
                     t = self.char[0]
                 elif currLoc == ' ':
@@ -227,7 +233,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
                     t = currLoc
                 else:
                     a = None
-                    t = currLoc #this would likely be printing the scale on the left hand side
+                    t = currLoc  # this would likely be printing the scale on the left hand side
 
                 l.append((a, t))
             c = Text(l).render((maxcol,))
@@ -236,8 +242,8 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
 
         canv = CanvasCombine(combinelist)
         return canv
-    
-    def scale_bar_values(self, bar, top, bottom, maxrow ):
+
+    def scale_bar_values(self, bar, top, bottom, maxrow):
         """
         Return a list of bar values aliased to integer values of maxrow.
         maxrow is the maximum colums used in the terminal
@@ -247,14 +253,15 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
 
         for v in bar:
             if(v >= 0):
-                start = maxrow // 2 #you want to start positive bar values at the middle of the widget
-                end = start - int( ( (float(v) * (maxrow // 2)) / top) + 0.5)
+                start = maxrow // 2  # you want to start positive bar values at the middle of the widget
+                end = start - int(((float(v) * (maxrow // 2)) / top) + 0.5)
                 results.append((start, end))
             else:
-                start = maxrow // 2 + 1 #you want to start the negative bar values at the last row in the widget
-                end = start + int( ( (float(v) * (maxrow // 2)) / bottom) + 0.5)
+                # you want to start the negative bar values at the last row in the widget
+                start = maxrow // 2 + 1
+                end = start + int(((float(v) * (maxrow // 2)) / bottom) + 0.5)
                 results.append((start, end))
-        
+
         return results
 
     def get_bar_positions(self, bardata, top, bottom, bar_widths, maxrow):
@@ -288,9 +295,9 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
         rows = [None] * maxrow
 
         def add_segment(seg_num, col, rowStart, rowEnd, width, rows=rows):
-            #iterate between rowStart and rowEnd filling the rows
-            #check and see if this is a positive bar. if it is you have 
-            #to use a negative step to count down because row 0 is at the top
+            # iterate between rowStart and rowEnd filling the rows
+            # check and see if this is a positive bar. if it is you have
+            # to use a negative step to count down because row 0 is at the top
             step = 1
             if(rowEnd < rowStart):
                 step = -1
@@ -300,7 +307,7 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
                     rows[rowIndex] = []
                 rows[rowIndex].append((seg_num, col, col + width))
 
-        col = 6 #has to be 6 to account for the scale column being in column 0
+        col = 6  # has to be 6 to account for the scale column being in column 0
         barnum = 0
         for bar in bardata:
             width = bar_widths[barnum]
@@ -309,7 +316,8 @@ class PositiveNegativeBarGraph(with_metaclass(urwid.BarGraphMeta, urwid.Widget))
             # loop through in reverse order
             segments = self.scale_bar_values(bar, top, bottom, maxrow)
             for k in range(len(bar) - 1, -1, -1):
-                sStart, sEnd = segments[k] #each segment has a start and end in the form of a tuple
+                # each segment has a start and end in the form of a tuple
+                sStart, sEnd = segments[k]
 
                 if sEnd >= maxrow:
                     sEnd = maxrow - 1
