@@ -6,18 +6,18 @@ import logging
 import numpy as np
 import time
 
-from soundwave.signals.ancInput import AncInput
-from soundwave.networking.ancNetworkClient import AncNetworkClient
+from soundwave.signals.inputSignal import InputSignal
+from soundwave.networking.networkClient import NetworkClient
 from common.fifoBuffer import FifoBuffer
 
 
-class AncClientOrchestrator():
+class ClientOrchestrator():
     def __init__(self, device, waitSize, stepSize):
         logging.debug('Initialize Client Orchestration thread')
         self.device = device
         self.referenceBuffer = FifoBuffer('reference', 0, stepSize)
-        self.threads = [AncInput(device, self.referenceBuffer, stepSize, 'anc-reference-microphone'),
-                        AncNetworkClient(self.referenceBuffer, 'anc-networkclient')]
+        self.threads = [InputSignal(device, self.referenceBuffer, stepSize, 'reference-microphone'),
+                        NetworkClient(self.referenceBuffer, 'networkclient')]
 
     def run(self):
         try:

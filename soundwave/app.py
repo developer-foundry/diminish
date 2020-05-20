@@ -7,8 +7,8 @@ import soundfile as sf
 from soundwave.algorithms.signal_processing import process_signal
 import soundwave.plotting.plot as plot
 
-from soundwave.orchestrators.ancClientOrchestrator import AncClientOrchestrator
-from soundwave.orchestrators.ancServerOrchestrator import AncServerOrchestrator
+from soundwave.orchestrators.clientOrchestrator import ClientOrchestrator
+from soundwave.orchestrators.serverOrchestrator import ServerOrchestrator
 import common.common
 
 
@@ -31,10 +31,10 @@ def process_anc(device, targetFile, algorithm, btmode, waitSize, stepSize, size,
     orchestrator = None
     try:
         if(btmode == 'server'):
-            orchestrator = AncServerOrchestrator(
+            orchestrator = ServerOrchestrator(
                 device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection)
         elif(btmode == 'client'):
-            orchestrator = AncClientOrchestrator(device, waitSize, stepSize)
+            orchestrator = ClientOrchestrator(device, waitSize, stepSize)
 
         orchestrator.run()
     except KeyboardInterrupt:

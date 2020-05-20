@@ -5,17 +5,17 @@ import signal
 import numpy as np
 import os
 
-from soundwave.signals.ancInput import AncInput
-from soundwave.signals.ancTarget import AncTarget
-from soundwave.signals.ancOutput import AncOutput
-from soundwave.networking.ancNetworkServer import AncNetworkServer
+from soundwave.signals.inputSignal import InputSignal
+from soundwave.signals.targetSignal import TargetSignal
+from soundwave.signals.outputSignal import OutputSignal
+from soundwave.networking.networkServer import NetworkServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
-from soundwave.monitoring.ancMediator import AncMediator
+from soundwave.monitoring.monitor import Monitor
 from soundwave.algorithms.signal_processing import process_signal
 
 
-class AncServerOrchestrator():
+class ServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
         logging.debug('Initialize Server Orchestration')
         self.algorithm = algorithm
@@ -26,17 +26,17 @@ class AncServerOrchestrator():
         self.targetBuffer = ContinuousBuffer('target', stepSize)
 
         self.tuiConnection = tuiConnection
-        self.ancWaitCondition = threading.Condition()
-        self.networkThread = AncNetworkServer(
-            self.referenceBuffer, 'anc-networkserver')
-        self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
-                        AncTarget(targetFile, self.targetBuffer,
-                                  stepSize, size, 'anc-target-file'),
-                        AncOutput(device, self.outputBuffer, stepSize,
-                                  self.ancWaitCondition, 'anc-output-speaker'),
+        self.waitCondition = threading.Condition()
+        self.networkThread = NetworkServer(
+            self.referenceBuffer, 'networkserver')
+        self.threads = [InputSignal(device, self.errorBuffer, stepSize, 'error-microphone'),
+                        TargetSignal(targetFile, self.targetBuffer,
+                                     stepSize, size, 'target-file'),
+                        OutputSignal(device, self.outputBuffer, stepSize,
+                                     self.waitCondition, 'output-speaker'),
                         ]
 
-        self.ancMediator = None
+        self.monitor = None
         self.paused = False
         self.paused = not (os.getenv('RUNALGO') == "TRUE")
         signal.signal(signal.SIGUSR1, self.pauseHandler)
@@ -49,8 +49,8 @@ class AncServerOrchestrator():
         for thread in self.threads:
             thread.stop()
 
-        self.ancMediator.close_connection()
-        self.ancMediator.plot_buffers(self.algorithm)
+        self.monitor.close_connection()
+        self.monitor.plot_buffers(self.algorithm)
 
     def run_algorithm(self):
         referenceSignal = self.referenceBuffer.pop()
@@ -79,12 +79,12 @@ class AncServerOrchestrator():
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
-            self.ancMediator = AncMediator(
+            self.monitor = Monitor(
                 [self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
             # this is a blocking call; will wait until tui connects
             if(self.tuiConnection):
-                self.ancMediator.create_connection()
+                self.monitor.create_connection()
 
             self.networkThread.start()
             while not self.referenceBuffer.is_ready():
@@ -97,8 +97,8 @@ class AncServerOrchestrator():
             while not self.is_ready():
                 pass
 
-            with self.ancWaitCondition:
-                self.ancWaitCondition.notifyAll()
+            with self.waitCondition:
+                self.waitCondition.notifyAll()
 
             self.errorBuffer.clear()
             self.referenceBuffer.clear()

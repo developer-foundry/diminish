@@ -13,7 +13,7 @@ from multiprocessing.connection import Listener
 from common.common import guiRefreshTimer
 
 
-class AncMediator():
+class Monitor():
     def __init__(self, buffers):
         self.buffers = {}  # dictionary to hold the data that is popped off buffers for ploting
         self.dataClient = None  # used by the TUI application to pass data
