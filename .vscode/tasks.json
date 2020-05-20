@@ -14,9 +14,9 @@
       "problemMatcher": []
     },
     {
-      "label": "build c pi",
+      "label": "build external libraries",
       "type": "shell",
-      "command": "invoke build-pi-library",
+      "command": "invoke build-libraries",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -24,27 +24,7 @@
       "problemMatcher": []
     },
     {
-      "label": "build c pc",
-      "type": "shell",
-      "command": "invoke build-pc-library",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "build c networking",
-      "type": "shell",
-      "command": "invoke build-networking",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "clean c",
+      "label": "clean external libraries",
       "type": "shell",
       "command": "invoke clean",
       "group": {
@@ -52,15 +32,6 @@
         "isDefault": true
       },
       "problemMatcher": []
-    },
-    {
-      "label": "test",
-      "type": "shell",
-      "command": "python3 -m pytest tests",
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      }
     }
   ]
 }
