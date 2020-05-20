@@ -1,12 +1,7 @@
-pytest
 sounddevice
 soundfile
 numpy
 matplotlib
-padasip
-profilehooks
 invoke
-pybluez
 python-dotenv
 urwid
-protobuf
