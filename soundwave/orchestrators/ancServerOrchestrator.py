@@ -5,14 +5,15 @@ import signal
 import numpy as np
 import os
 
-from soundwave.anc.ancInput import AncInput
-from soundwave.anc.ancTarget import AncTarget
-from soundwave.anc.ancOutput import AncOutput
-from soundwave.anc.ancNetworkServer import AncNetworkServer
+from soundwave.signals.ancInput import AncInput
+from soundwave.signals.ancTarget import AncTarget
+from soundwave.signals.ancOutput import AncOutput
+from soundwave.networking.ancNetworkServer import AncNetworkServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
-from soundwave.anc.ancMediator import AncMediator
+from soundwave.monitoring.ancMediator import AncMediator
 from soundwave.algorithms.signal_processing import process_signal
+
 
 class AncServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
@@ -26,11 +27,14 @@ class AncServerOrchestrator():
 
         self.tuiConnection = tuiConnection
         self.ancWaitCondition = threading.Condition()
-        self.networkThread = AncNetworkServer(self.referenceBuffer, 'anc-networkserver')
+        self.networkThread = AncNetworkServer(
+            self.referenceBuffer, 'anc-networkserver')
         self.threads = [AncInput(device, self.errorBuffer, stepSize, 'anc-error-microphone'),
-                        AncTarget(targetFile, self.targetBuffer, stepSize, size, 'anc-target-file'),
-                        AncOutput(device, self.outputBuffer, stepSize, self.ancWaitCondition, 'anc-output-speaker'),
-                       ]
+                        AncTarget(targetFile, self.targetBuffer,
+                                  stepSize, size, 'anc-target-file'),
+                        AncOutput(device, self.outputBuffer, stepSize,
+                                  self.ancWaitCondition, 'anc-output-speaker'),
+                        ]
 
         self.ancMediator = None
         self.paused = False
@@ -55,28 +59,30 @@ class AncServerOrchestrator():
         referenceCombinedWithError = np.add(errorSignal, referenceSignal)
 
         if not self.paused:
-            outputSignal, outputErrors  = process_signal(referenceCombinedWithError, targetSignal, self.algorithm)
+            outputSignal, outputErrors = process_signal(
+                referenceCombinedWithError, targetSignal, self.algorithm)
         else:
             outputSignal = np.add(referenceSignal, targetSignal)
             outputErrors = np.subtract(targetSignal, outputSignal)
 
         self.outputBuffer.push(outputSignal)
 
-        #for tracking the output error buffer we just need to push and pop
-        #so that the plot subscriber picks it up
+        # for tracking the output error buffer we just need to push and pop
+        # so that the plot subscriber picks it up
         self.outputErrorBuffer.push(outputErrors)
         self.outputErrorBuffer.pop()
 
     def is_ready(self):
         return self.errorBuffer.is_ready() and \
-               self.referenceBuffer.is_ready()
+            self.referenceBuffer.is_ready()
 
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
-            self.ancMediator = AncMediator([self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
+            self.ancMediator = AncMediator(
+                [self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
-            #this is a blocking call; will wait until tui connects
+            # this is a blocking call; will wait until tui connects
             if(self.tuiConnection):
                 self.ancMediator.create_connection()
 
@@ -86,8 +92,8 @@ class AncServerOrchestrator():
 
             for thread in self.threads:
                 thread.start()
-            
-            #loop until algorithm is ready to start
+
+            # loop until algorithm is ready to start
             while not self.is_ready():
                 pass
 
@@ -101,7 +107,7 @@ class AncServerOrchestrator():
 
             # will ensure the main thread is paused until ctrl + c
             while True:
-                if self.is_ready(): #have to keep checking as the buffer gets popped
+                if self.is_ready():  # have to keep checking as the buffer gets popped
                     self.run_algorithm()
 
         except Exception as e:
