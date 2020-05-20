@@ -1,6 +1,6 @@
-import urwid
 import logging
 import os
+import urwid
 from tui.logging.tuiHandler import TuiHandler
 from tui.controllers.dashboardController import DashboardController
 from common.common import getEnvironmentVariables
@@ -9,7 +9,8 @@ from common.common import getEnvironmentVariables
 def configureLogging():
     logger = logging.getLogger('TUI')
     logger.setLevel(os.environ.get("LOGLEVEL", "INFO"))
-    formatter = logging.Formatter('%(levelname)s {%(filename)s:%(lineno)d} (%(threadName)-9s) %(message)s')
+    formatter = logging.Formatter(
+        '%(levelname)s {%(filename)s:%(lineno)d} (%(threadName)-9s) %(message)s')
 
     ch = TuiHandler()
     ch.setLevel(logging.DEBUG)
@@ -17,6 +18,7 @@ def configureLogging():
 
     logger.addHandler(ch)
     return logger, ch
+
 
 if __name__ == '__main__':
     try:
