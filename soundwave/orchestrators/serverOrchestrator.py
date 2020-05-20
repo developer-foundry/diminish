@@ -81,6 +81,12 @@ class ServerOrchestrator():
             logging.info(f'Algorithm is {"On" if self.paused else "Off"}')
             self.pauseHandler(None, None)
 
+    def clear_buffers(self):
+        self.errorBuffer.clear()
+        self.referenceBuffer.clear()
+        self.outputBuffer.clear()
+        self.outputErrorBuffer.clear()
+
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
@@ -107,10 +113,7 @@ class ServerOrchestrator():
                 with self.waitCondition:
                     self.waitCondition.notifyAll()
 
-                self.errorBuffer.clear()
-                self.referenceBuffer.clear()
-                self.outputBuffer.clear()
-                self.outputErrorBuffer.clear()
+                self.clear_buffers()
 
                 # will ensure the main thread is paused until ctrl + c
                 while True:

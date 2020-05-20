@@ -40,6 +40,5 @@ class Soundwave():
         except KeyboardInterrupt:
             if(btmode == 'server'):
                 orchestrator.stop()
-            logging.info('Exiting Program due to keyboard interrupt')
         except Exception as e:
             logging.exception(f'Exception thrown: {e}')
