@@ -77,7 +77,7 @@ class ServerOrchestrator():
             self.referenceBuffer.is_ready()
 
     def on_release(self, key):
-        if hasattr(key, 'char') and key.char == ('p'):
+        if not self.tuiConnection and hasattr(key, 'char') and key.char == ('p'):
             logging.info(f'Algorithm is {"On" if self.paused else "Off"}')
             self.pauseHandler(None, None)
 
@@ -85,7 +85,7 @@ class ServerOrchestrator():
         try:
             logging.debug('Running Server Orchestration')
 
-            with Listener(on_release=self.on_release) as listener:
+            with Listener(on_release=self.on_release):
                 self.monitor = Monitor(
                     [self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
