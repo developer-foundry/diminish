@@ -14,8 +14,8 @@ import common.common
 
 class Soundwave():
     def process_prerecorded(self, device, inputFile, targetFile, truncateSize, algorithm):
-        inputSignal, inputFs = sf.read(inputFile, dtype='float32')
-        targetSignal, targetFs = sf.read(targetFile, dtype='float32')
+        inputSignal, _ = sf.read(inputFile, dtype='float32')
+        targetSignal, _ = sf.read(targetFile, dtype='float32')
 
         # trucate the input signal for testing purposes as the file is big
         inputSignal = inputSignal[0:truncateSize]

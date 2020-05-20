@@ -39,9 +39,7 @@ class NetworkServer(threading.Thread):
 
             while not self.stopped:
                 wave = np.zeros((STEP_SIZE, 2))
-                start = time.time()
                 fun(wave, STEP_SIZE, 2)
-                end = time.time()
                 self.buffer.push(wave)
 
             c_lib.shutdown_server()

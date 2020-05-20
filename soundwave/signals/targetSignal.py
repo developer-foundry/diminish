@@ -26,7 +26,7 @@ class TargetSignal(threading.Thread):
         try:
             # this thread does not keep running. it will end as soon as the buffer is populated
             logging.debug('Running Target File thread')
-            self.targetSignal, targetFs = sf.read(
+            self.targetSignal, _ = sf.read(
                 self.targetFile, dtype='float32')
             self.buffer.push(self.targetSignal[0:self.size])
 
