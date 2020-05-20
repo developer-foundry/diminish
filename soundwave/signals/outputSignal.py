@@ -7,7 +7,7 @@ import numpy as np
 import sounddevice as sd
 
 
-class AncOutput(threading.Thread):
+class OutputSignal(threading.Thread):
     def __init__(self, device, buffer, stepSize, waitCondition, threadName):
         logging.debug('Initializing Output Speaker thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)
@@ -32,11 +32,12 @@ class AncOutput(threading.Thread):
                 self.waitCondition.wait()
 
                 with sd.OutputStream(device=self.device,
-                                channels=2,
-                                blocksize=self.stepSize,
-                                callback=self.listener):
-                    while not self.stopped :
-                        time.sleep(1) #time takes up less cpu cycles than 'pass'
+                                     channels=2,
+                                     blocksize=self.stepSize,
+                                     callback=self.listener):
+                    while not self.stopped:
+                        # time takes up less cpu cycles than 'pass'
+                        time.sleep(1)
 
         except Exception as e:
             logging.exception(f'Exception thrown: {e}')

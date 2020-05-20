@@ -7,7 +7,8 @@ import numpy as np
 import sounddevice as sd
 from common.continuousBuffer import ContinuousBuffer
 
-class AncInput(threading.Thread):
+
+class InputSignal(threading.Thread):
     def __init__(self, device, buffer, stepSize, threadName):
         logging.debug('Initialize Input Microphone thread')
         threading.Thread.__init__(self, name=threadName, daemon=True)
@@ -18,7 +19,7 @@ class AncInput(threading.Thread):
 
     def listener(self, indata, frames, time, status):
         self.buffer.push(indata)
-    
+
     def stop(self):
         self.stopped = True
 
@@ -31,7 +32,7 @@ class AncInput(threading.Thread):
                                 blocksize=self.stepSize,
                                 callback=self.listener):
                 while not self.stopped:
-                    time.sleep(1) #time takes up less cpu cycles than 'pass'
+                    time.sleep(1)  # time takes up less cpu cycles than 'pass'
 
         except Exception as e:
             logging.exception(f'Exception thrown: {e}')

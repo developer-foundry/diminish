@@ -9,7 +9,7 @@ from numpy.ctypeslib import ndpointer
 import time
 
 
-class AncNetworkClient(threading.Thread):
+class NetworkClient(threading.Thread):
     def __init__(self, buffer, threadName):
         threading.Thread.__init__(self, name=threadName, daemon=True)
         logging.debug('Initialize Network Client thread')
