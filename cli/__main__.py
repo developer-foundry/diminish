@@ -1,5 +1,5 @@
 from common.common import getEnvironmentVariables
-from soundwave import app
+from soundwave.soundwave import Soundwave
 import logging
 import os
 import sys
@@ -11,15 +11,16 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
 if __name__ == '__main__':
     try:
         logging.info('Starting...')
+        soundwave = Soundwave()
 
         parameters = getEnvironmentVariables()
 
         if parameters['mode'] == 'prerecorded':
-            app.process_prerecorded(parameters['device'], parameters['inputFile'],
-                                    parameters['targetFile'], parameters['size'], parameters['algorithm'])
+            soundwave.process_prerecorded(parameters['device'], parameters['inputFile'],
+                                          parameters['targetFile'], parameters['size'], parameters['algorithm'])
         elif parameters['mode'] == 'live':
-            app.process_anc(parameters['device'],
-                            parameters['targetFile'], parameters['algorithm'], parameters['role'], parameters['waitSize'], parameters['stepSize'], parameters['size'], parameters['tuiConnection'])
+            soundwave.process_anc(parameters['device'],
+                                  parameters['targetFile'], parameters['algorithm'], parameters['role'], parameters['waitSize'], parameters['stepSize'], parameters['size'], parameters['tuiConnection'])
 
         logging.info('Finished!')
     except KeyboardInterrupt:
