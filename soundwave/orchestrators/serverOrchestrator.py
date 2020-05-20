@@ -4,6 +4,7 @@ import threading
 import signal
 import numpy as np
 import os
+from pynput.keyboard import Key, Listener
 
 from soundwave.signals.inputSignal import InputSignal
 from soundwave.signals.targetSignal import TargetSignal
@@ -38,7 +39,6 @@ class ServerOrchestrator():
 
         self.monitor = None
         self.paused = False
-        self.paused = not (os.getenv('RUNALGO') == "TRUE")
         signal.signal(signal.SIGUSR1, self.pauseHandler)
 
     def pauseHandler(self, signum, frame):
@@ -76,39 +76,49 @@ class ServerOrchestrator():
         return self.errorBuffer.is_ready() and \
             self.referenceBuffer.is_ready()
 
+    def on_release(self, key):
+        if not self.tuiConnection and hasattr(key, 'char') and key.char == ('p'):
+            logging.info(f'Algorithm is {"On" if self.paused else "Off"}')
+            self.pauseHandler(None, None)
+
+    def clear_buffers(self):
+        self.errorBuffer.clear()
+        self.referenceBuffer.clear()
+        self.outputBuffer.clear()
+        self.outputErrorBuffer.clear()
+
     def run(self):
         try:
             logging.debug('Running Server Orchestration')
-            self.monitor = Monitor(
-                [self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
-            # this is a blocking call; will wait until tui connects
-            if(self.tuiConnection):
-                self.monitor.create_connection()
+            with Listener(on_release=self.on_release):
+                self.monitor = Monitor(
+                    [self.errorBuffer, self.referenceBuffer, self.outputBuffer, self.targetBuffer, self.outputErrorBuffer])
 
-            self.networkThread.start()
-            while not self.referenceBuffer.is_ready():
-                pass
+                # this is a blocking call; will wait until tui connects
+                if(self.tuiConnection):
+                    self.monitor.create_connection()
 
-            for thread in self.threads:
-                thread.start()
+                self.networkThread.start()
+                while not self.referenceBuffer.is_ready():
+                    pass
 
-            # loop until algorithm is ready to start
-            while not self.is_ready():
-                pass
+                for thread in self.threads:
+                    thread.start()
 
-            with self.waitCondition:
-                self.waitCondition.notifyAll()
+                # loop until algorithm is ready to start
+                while not self.is_ready():
+                    pass
 
-            self.errorBuffer.clear()
-            self.referenceBuffer.clear()
-            self.outputBuffer.clear()
-            self.outputErrorBuffer.clear()
+                with self.waitCondition:
+                    self.waitCondition.notifyAll()
 
-            # will ensure the main thread is paused until ctrl + c
-            while True:
-                if self.is_ready():  # have to keep checking as the buffer gets popped
-                    self.run_algorithm()
+                self.clear_buffers()
+
+                # will ensure the main thread is paused until ctrl + c
+                while True:
+                    if self.is_ready():  # have to keep checking as the buffer gets popped
+                        self.run_algorithm()
 
         except Exception as e:
             logging.exception(f'Exception thrown: {e}')
