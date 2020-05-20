@@ -8,6 +8,7 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 import time
 
+
 class AncNetworkServer(threading.Thread):
     def __init__(self, buffer, threadName):
         logging.debug('Initialize Network Server thread')
@@ -34,10 +35,10 @@ class AncNetworkServer(threading.Thread):
             fun.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS"),
                             ctypes.c_size_t,
                             ctypes.c_size_t
-                           ]
+                            ]
 
             while not self.stopped:
-                wave = np.zeros((STEP_SIZE,2))
+                wave = np.zeros((STEP_SIZE, 2))
                 start = time.time()
                 fun(wave, STEP_SIZE, 2)
                 end = time.time()

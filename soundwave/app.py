@@ -7,8 +7,8 @@ import soundfile as sf
 from soundwave.algorithms.signal_processing import process_signal
 import soundwave.plotting.plot as plot
 
-from soundwave.anc.ancClientOrchestrator import AncClientOrchestrator
-from soundwave.anc.ancServerOrchestrator import AncServerOrchestrator
+from soundwave.orchestrators.ancClientOrchestrator import AncClientOrchestrator
+from soundwave.orchestrators.ancServerOrchestrator import AncServerOrchestrator
 import common.common
 
 
