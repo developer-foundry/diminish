@@ -12,5 +12,5 @@ def setup(app):
 " >> conf.py;
 make markdown;
 cd ..
-cat Sphinx-docs/_build/markdown/*.md >> docs/InternalCodeDocumentation.md;
+cp -R Sphinx-docs/_build/markdown/ docs/internal-documentation/
 rm -r Sphinx-docs;
