@@ -145,7 +145,7 @@ See the `docs` folder or navigate to [documentation](https://diminish.ai/#/). Do
 
 ## License
 
-See [Licnese](LICENSE)
+See [License](LICENSE)
 
 ## Contributing
 
