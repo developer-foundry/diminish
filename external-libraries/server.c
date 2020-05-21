@@ -96,7 +96,7 @@ void receive_message(double* buffer_out, size_t rowcount, size_t colcount)
 
 int main(int argc, char *argv[])
 {
-    env_load("soundwave/.env", false);
+    env_load("diminish/.env", false);
     char *step_size = getenv("STEP_SIZE");
     int size = atoi(step_size);
     double* buffer = malloc(size * 2 * sizeof(double));

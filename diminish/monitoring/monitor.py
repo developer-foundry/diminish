@@ -7,7 +7,7 @@ import numpy as np
 
 import sounddevice as sd
 from common.continuousBuffer import ContinuousBuffer
-import soundwave.plotting.plot as plot
+import diminish.plotting.plot as plot
 import threading
 from multiprocessing.connection import Listener
 from common.common import guiRefreshTimer

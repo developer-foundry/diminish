@@ -4,15 +4,15 @@ import logging
 
 import soundfile as sf
 
-from soundwave.algorithms.signal_processing import process_signal
-import soundwave.plotting.plot as plot
+from diminish.algorithms.signal_processing import process_signal
+import diminish.plotting.plot as plot
 
-from soundwave.orchestrators.clientOrchestrator import ClientOrchestrator
-from soundwave.orchestrators.serverOrchestrator import ServerOrchestrator
+from diminish.orchestrators.clientOrchestrator import ClientOrchestrator
+from diminish.orchestrators.serverOrchestrator import ServerOrchestrator
 import common.common
 
 
-class Soundwave():
+class Diminish():
     def process_prerecorded(self, device, inputFile, targetFile, truncateSize, algorithm):
         inputSignal, _ = sf.read(inputFile, dtype='float32')
         targetSignal, _ = sf.read(targetFile, dtype='float32')

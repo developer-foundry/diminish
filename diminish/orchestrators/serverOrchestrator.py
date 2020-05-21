@@ -6,14 +6,14 @@ import numpy as np
 import os
 from pynput.keyboard import Key, Listener
 
-from soundwave.signals.inputSignal import InputSignal
-from soundwave.signals.targetSignal import TargetSignal
-from soundwave.signals.outputSignal import OutputSignal
-from soundwave.networking.networkServer import NetworkServer
+from diminish.signals.inputSignal import InputSignal
+from diminish.signals.targetSignal import TargetSignal
+from diminish.signals.outputSignal import OutputSignal
+from diminish.networking.networkServer import NetworkServer
 from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
-from soundwave.monitoring.monitor import Monitor
-from soundwave.algorithms.signal_processing import process_signal
+from diminish.monitoring.monitor import Monitor
+from diminish.algorithms.signal_processing import process_signal
 
 
 class ServerOrchestrator():

@@ -6,8 +6,8 @@ import logging
 import numpy as np
 import time
 
-from soundwave.signals.inputSignal import InputSignal
-from soundwave.networking.networkClient import NetworkClient
+from diminish.signals.inputSignal import InputSignal
+from diminish.networking.networkClient import NetworkClient
 from common.fifoBuffer import FifoBuffer
 
 

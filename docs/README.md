@@ -16,7 +16,7 @@ Diminish is an implementation of active noise cancellation. It is not generic pu
 
 ### Installation
 ```
-git clone git@github.com:klaforce/soundwave.git
+git clone git@github.com:developer-foundry/diminish.git
 sudo apt update
 sudo apt install build-essential
 npm i docsify-cli -g

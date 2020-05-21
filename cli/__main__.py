@@ -1,5 +1,5 @@
 from common.common import getEnvironmentVariables
-from soundwave.soundwave import Soundwave
+from diminish.diminish import Diminish
 import logging
 import os
 import sys
@@ -12,15 +12,15 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"),
 if __name__ == '__main__':
     try:
         logging.info('Starting...')
-        soundwave = Soundwave()
+        diminish = Diminish()
 
         parameters = getEnvironmentVariables()
 
         if parameters['mode'] == 'prerecorded':
-            soundwave.process_prerecorded(
+            diminish.process_prerecorded(
                 parameters['device'], parameters['inputFile'], parameters['targetFile'], parameters['size'], parameters['algorithm'])
         elif parameters['mode'] == 'live':
-            soundwave.process_anc(
+            diminish.process_anc(
                 parameters['device'], parameters['targetFile'], parameters['algorithm'], parameters['role'],
                 parameters['waitSize'], parameters['stepSize'], parameters['size'], parameters['tuiConnection'])
 

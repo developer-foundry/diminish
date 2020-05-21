@@ -1,7 +1,7 @@
 import logging
 from functools import partial
 import numpy as np
-from soundwave.algorithms.crls import crls
+from diminish.algorithms.crls import crls
 from common.common import mu
 import os
 
