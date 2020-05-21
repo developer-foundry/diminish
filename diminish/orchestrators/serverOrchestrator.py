@@ -4,7 +4,11 @@ import threading
 import signal
 import numpy as np
 import os
-from pynput.keyboard import Key, Listener
+
+try:
+    from pynput.keyboard import Key, Listener
+except:
+    pass
 
 from diminish.signals.inputSignal import InputSignal
 from diminish.signals.targetSignal import TargetSignal
@@ -14,7 +18,6 @@ from common.continuousBuffer import ContinuousBuffer
 from common.fifoBuffer import FifoBuffer
 from diminish.monitoring.monitor import Monitor
 from diminish.algorithms.signal_processing import process_signal
-
 
 class ServerOrchestrator():
     def __init__(self, device, algorithm, targetFile, waitSize, stepSize, size, tuiConnection):
