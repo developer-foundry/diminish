@@ -32,23 +32,6 @@ class FifoBuffer():
         The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
     subscriber : Callable
         Each buffer can have one subscriber that will be notified upon a pop.
-
-
-    Methods
-    -------
-    subscribe(observer: Callable)
-        Subscribes an observer to be notified upon a pop of the buffer.
-    push(data: np.array)
-        Adds data to the end of the buffer
-    pop()
-        Returns a chunk of data from the front of the buffer to 'stepSize'.
-        Deletes the chunk from the buffer.
-    is_ready()
-        Determines whether or not the buffer is ready for processing
-    size()
-        Returns the size of the buffer
-    clear()
-        Zeros out the entire buffer.
     """
 
     def __init__(self, name, waitSize, stepSize, numChannels=2):

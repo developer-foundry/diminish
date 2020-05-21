@@ -1,19 +1,5 @@
-"""Common
-
+"""
 This script shares common functions and variables needed by the CLI and TUI scripts.
-
-This file can also be imported as a module and contains the following
-functions and variables:
-    * mu - utilized by the CRLS algorithm to determine the step of gradient 
-        descent algorithm
-    * guiRefreshTimer - this timer is used by the tui application to determine how 
-        long in between a screen refresh
-    * get_project_root - used to determine the root folder when the tui applications 
-        spawns the cli process.
-    * getEnvironmentVariables - returns all environment variables needed by
-        the cli and tui
-    * getEnvVar - returns a single environment variable
-    * getInt - converts a str to int for env vars
 """
 
 import os
@@ -25,15 +11,53 @@ env_path = Path('./environment') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 mu = 0.00001
+"""
+Utilized by the CRLS algorithm to determine the step of gradient descent algorithm
+"""
 
 guiRefreshTimer = 1.0
+"""
+This timer is used by the tui application to determine how long in between a screen refresh
+"""
 
 
 def get_project_root() -> Path:
+    """
+    Used to determine the root folder when the tui application spawns the cli process.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    path : Path
+        The path of the root module of diminish
+
+    Raises
+    ------
+    None
+    """
     return Path(__file__).parent.parent
 
 
 def getEnvironmentVariables():
+    """
+    Returns all environment variables needed by the cli and tui
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    envVars : dictionary
+        A dictionary of all the environment variables needed
+
+    Raises
+    ------
+    None
+    """
     return {
         'mode': getEnvVar("MODE"),
         'algorithm': getEnvVar("ALGORITHM"),
@@ -49,6 +73,26 @@ def getEnvironmentVariables():
 
 
 def getEnvVar(varName, isInteger=False):
+    """
+    Returns a single environment variable
+
+    Parameters
+    ----------
+    varName : str
+        The name of the environment variable to retrieve
+    isInteger : boolean
+        Is the environment variable an integer and needs to be cast to an int
+
+    Returns
+    -------
+    val : str
+        Returns the value of the env var requested
+
+    Raises
+    ------
+    None
+    """
+
     if isInteger:
         return getInt(os.getenv(varName))
     else:
@@ -56,6 +100,23 @@ def getEnvVar(varName, isInteger=False):
 
 
 def getInt(val):
+    """
+    Converts a string to an integer with a null check
+
+    Parameters
+    ----------
+    val : str
+        The value to convert to an integer
+
+    Returns
+    -------
+    val : int
+        Returns converted str value to an int
+
+    Raises
+    ------
+    None
+    """
     if(val is None):
         val = 0
     else:

@@ -31,19 +31,6 @@ class ContinuousBuffer():
         The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
     subscriber : Callable
         Each buffer can have one subscriber that will be notified upon a pop.
-
-
-    Methods
-    -------
-    subscribe(observer: Callable)
-        Subscribes an observer to be notified upon a pop of the buffer.
-    push(data: np.array)
-        Adds data to the end of the buffer
-    pop()
-        Returns a chunk of data from 'currentLocation' to 'currentLocation + stepSize'.
-        Moves that chunk to the end of the buffer
-    size()
-        Returns the size of the buffer
     """
 
     def __init__(self, name, stepSize, numChannels=2):

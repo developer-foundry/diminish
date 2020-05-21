@@ -4,47 +4,132 @@
 
 ## common.common module
 
-Common
-
 This script shares common functions and variables needed by the CLI and TUI scripts.
-
-This file can also be imported as a module and contains the following
-functions and variables:
-
-> 
-> * mu - utilized by the CRLS algorithm to determine the step of gradient 
-
->     descent algorithm
-
-
-> * guiRefreshTimer - this timer is used by the tui application to determine how 
-
->     long in between a screen refresh
-
-
-> * get_project_root - used to determine the root folder when the tui applications 
-
->     spawns the cli process.
-
-
-> * getEnvironmentVariables - returns all environment variables needed by
-
->     the cli and tui
-
-
-> * getEnvVar - returns a single environment variable
-
-
-> * getInt - converts a str to int for env vars
 
 
 ### common.common.getEnvVar(varName, isInteger=False)
+Returns a single environment variable
+
+
+* **Parameters**
+
+    
+    * **varName** (*str*) – The name of the environment variable to retrieve
+
+
+    * **isInteger** (*boolean*) – Is the environment variable an integer and needs to be cast to an int
+
+
+
+* **Returns**
+
+    **val** – Returns the value of the env var requested
+
+
+
+* **Return type**
+
+    str
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 ### common.common.getEnvironmentVariables()
+Returns all environment variables needed by the cli and tui
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    **envVars** – A dictionary of all the environment variables needed
+
+
+
+* **Return type**
+
+    dictionary
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 ### common.common.getInt(val)
+Converts a string to an integer with a null check
+
+
+* **Parameters**
+
+    **val** (*str*) – The value to convert to an integer
+
+
+
+* **Returns**
+
+    **val** – Returns converted str value to an int
+
+
+
+* **Return type**
+
+    int
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 ### common.common.get_project_root()
+Used to determine the root folder when the tui application spawns the cli process.
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    **path** – The path of the root module of diminish
+
+
+
+* **Return type**
+
+    Path
+
+
+
+* **Raises**
+
+    **None** – 
+
+
+
+### common.common.guiRefreshTimer( = 1.0)
+This timer is used by the tui application to determine how long in between a screen refresh
+
+
+### common.common.mu( = 1e-05)
+Utilized by the CRLS algorithm to determine the step of gradient descent algorithm
+
 ## common.continuousBuffer module
 
 
@@ -58,117 +143,211 @@ up front rather than continuously pushing data onto the buffer.
 
 ContinuousBuffer is utilized by diminish to handle the Target File buffer.
 
-lock
 
-    A lock utilized to control access to the underlying buffer because these buffers are utilized by multiple threads.
+#### lock()
+A lock utilized to control access to the underlying buffer because these buffers are utilized by multiple threads.
 
-buffer
 
-    A numpy array that holds the underlying data stream (stereo sound)
+* **Type**
 
-maxSize
+    threading.Lock
 
-    The maximum size of the buffer.
 
-currentLocation
 
-    Tracks the current location that the buffer is at. Used by the pop method to determine the starting location of the next chunk.
+#### buffer()
+A numpy array that holds the underlying data stream (stereo sound)
 
-stepSize
 
-    The amount of data to pop off the buffer.
+* **Type**
 
-numChannels
+    np.array
 
-    The number of channels of the sound file in question. Likely will always be 2.
 
-name
 
-    The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
+#### maxSize()
+The maximum size of the buffer.
 
-subscriber
 
-    Each buffer can have one subscriber that will be notified upon a pop.
+* **Type**
 
-subscribe(observer: Callable)
+    int
 
-    Subscribes an observer to be notified upon a pop of the buffer.
 
-push(data: np.array)
 
-    Adds data to the end of the buffer
+#### currentLocation()
+Tracks the current location that the buffer is at. Used by the pop method to determine the starting location of the next chunk.
 
-pop()
 
-    Returns a chunk of data from ‘currentLocation’ to ‘currentLocation + stepSize’.
-    Moves that chunk to the end of the buffer
+* **Type**
 
-size()
+    int
 
-    Returns the size of the buffer
+
+
+#### stepSize()
+The amount of data to pop off the buffer.
+
+
+* **Type**
+
+    int
+
+
+
+#### numChannels()
+The number of channels of the sound file in question. Likely will always be 2.
+
+
+* **Type**
+
+    int
+
+
+
+#### name()
+The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
+
+
+* **Type**
+
+    str
+
+
+
+#### subscriber()
+Each buffer can have one subscriber that will be notified upon a pop.
+
+
+* **Type**
+
+    Callable
+
 
 
 #### \__init__(name, stepSize, numChannels=2)
-name
 
-    The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
+* **Parameters**
 
-stepSize
+    
+    * **name** (*str*) – The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
 
-    The amount of data to pop off the buffer.
 
-numChannels
+    * **stepSize** (*int*) – The amount of data to pop off the buffer.
 
-    The number of channels of the sound file in question. Likely will always be 2.
+
+    * **numChannels** (*int*) – The number of channels of the sound file in question. Likely will always be 2.
+
 
 
 #### pop()
 Returns a chunk of data from ‘currentLocation’ to ‘currentLocation + stepSize’.
 Moves that chunk to the end of the buffer
 
-None
 
-data
+* **Parameters**
 
-    A numpy array representing a chunk of the buffer.
+    **None** – 
 
-None
+
+
+* **Returns**
+
+    **data** – A numpy array representing a chunk of the buffer.
+
+
+
+* **Return type**
+
+    np.array
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### push(data)
 Adds data to the end of the buffer
 
-data
 
-    The numpy array data to add to the end of the buffer
+* **Parameters**
 
-None
+    **data** (*np.array*) – The numpy array data to add to the end of the buffer
 
-None
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### size()
 Returns the size of the buffer
 
-None
 
-size
+* **Parameters**
 
-    Size of the buffer
+    **None** – 
 
-None
+
+
+* **Returns**
+
+    **size** – Size of the buffer
+
+
+
+* **Return type**
+
+    int
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### subscribe(observer: Callable)
 Subscribes an observer to be notified upon a pop of the buffer.
 
-observer
 
-    The observer to attach to the subscriber for notification of a pop.
+* **Parameters**
 
-None
+    **observer** (*Callable*) – The observer to attach to the subscriber for notification of a pop.
 
-None
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 ## common.fifoBuffer module
 
@@ -185,149 +364,261 @@ threads.
 FifoBuffer is utilized by diminish to handle the Input Signal
 and Output Signals.
 
-lock
 
-    A lock utilized to control access to the underlying buffer because these buffers are utilized by multiple threads.
+#### lock()
+A lock utilized to control access to the underlying buffer because these buffers are utilized by multiple threads.
 
-buffer
 
-    A numpy array that holds the underlying data stream (stereo sound)
+* **Type**
 
-waitSize
+    threading.Lock
 
-    The starting location to utilize when data is popped. Anything before that in the buffer is not needed.
-    Provides a mechanism to capture data while the algorithm is syncronizing.
 
-stepSize
 
-    The amount of data to pop off the buffer.
+#### buffer()
+A numpy array that holds the underlying data stream (stereo sound)
 
-numChannels
 
-    The number of channels of the sound file in question. Likely will always be 2.
+* **Type**
 
-name
+    np.array
 
-    The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
 
-subscriber
 
-    Each buffer can have one subscriber that will be notified upon a pop.
+#### waitSize()
+The starting location to utilize when data is popped. Anything before that in the buffer is not needed.
+Provides a mechanism to capture data while the algorithm is syncronizing.
 
-subscribe(observer: Callable)
 
-    Subscribes an observer to be notified upon a pop of the buffer.
+* **Type**
 
-push(data: np.array)
+    int
 
-    Adds data to the end of the buffer
 
-pop()
 
-    Returns a chunk of data from the front of the buffer to ‘stepSize’.
-    Deletes the chunk from the buffer.
+#### stepSize()
+The amount of data to pop off the buffer.
 
-is_ready()
 
-    Determines whether or not the buffer is ready for processing
+* **Type**
 
-size()
+    int
 
-    Returns the size of the buffer
 
-clear()
 
-    Zeros out the entire buffer.
+#### numChannels()
+The number of channels of the sound file in question. Likely will always be 2.
+
+
+* **Type**
+
+    int
+
+
+
+#### name()
+The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
+
+
+* **Type**
+
+    str
+
+
+
+#### subscriber()
+Each buffer can have one subscriber that will be notified upon a pop.
+
+
+* **Type**
+
+    Callable
+
 
 
 #### \__init__(name, waitSize, stepSize, numChannels=2)
-name
 
-    The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
+* **Parameters**
 
-waitSize
+    
+    * **name** (*str*) – The name of the buffer. Utilized for debugging, but also the monitoring system for graphing, database insertion, etc.
 
-    The starting location to utilize when data is popped. Anything before that in the buffer is not needed.
+
+    * **waitSize** (*int*) – The starting location to utilize when data is popped. Anything before that in the buffer is not needed.
     Provides a mechanism to capture data while the algorithm is syncronizing.
 
-stepSize
 
-    The amount of data to pop off the buffer.
+    * **stepSize** (*int*) – The amount of data to pop off the buffer.
 
-numChannels
 
-    The number of channels of the sound file in question. Likely will always be 2.
+    * **numChannels** (*int*) – The number of channels of the sound file in question. Likely will always be 2.
+
 
 
 #### clear()
 Zeros out the entire buffer.
 
-None
 
-None
+* **Parameters**
 
-None
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### is_ready()
 Determines whether or not the buffer is ready for processing
 
-None
 
-isReady
+* **Parameters**
 
-    A boolean representing whether or not the buffer is ready for processing in the Diminish algorithm
+    **None** – 
 
-None
+
+
+* **Returns**
+
+    **isReady** – A boolean representing whether or not the buffer is ready for processing in the Diminish algorithm
+
+
+
+* **Return type**
+
+    boolean
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### pop()
 Returns a chunk of data from the front of the buffer to ‘stepSize’.
 Deletes the chunk from the buffer.
 
-None
 
-data
+* **Parameters**
 
-    A numpy array representing a chunk of the buffer.
+    **None** – 
 
-None
+
+
+* **Returns**
+
+    **data** – A numpy array representing a chunk of the buffer.
+
+
+
+* **Return type**
+
+    np.array
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### push(data)
 Adds data to the end of the buffer
 
-data
 
-    The numpy array data to add to the end of the buffer
+* **Parameters**
 
-None
+    **data** (*np.array*) – The numpy array data to add to the end of the buffer
 
-None
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### size()
 Returns the size of the buffer
 
-None
 
-size
+* **Parameters**
 
-    Size of the buffer
+    **None** – 
 
-None
+
+
+* **Returns**
+
+    **size** – Size of the buffer
+
+
+
+* **Return type**
+
+    int
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 
 #### subscribe(observer: Callable)
 Subscribes an observer to be notified upon a pop of the buffer.
 
-observer
 
-    The observer to attach to the subscriber for notification of a pop.
+* **Parameters**
 
-None
+    **observer** (*Callable*) – The observer to attach to the subscriber for notification of a pop.
 
-None
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 ## Module contents
 
