@@ -108,7 +108,7 @@ python3 -m tui
 
 #### CLI
 
-Useful for debugging or experimentation
+Useful for debugging or experimentation. The server does support pausing the algorithm processing via a `p` keybinding.
 ```shell
 python3 -m cli
 ```
@@ -135,7 +135,7 @@ PORT=65432
 
 #### CLI
 
-Useful for debugging or experimentation. The client does support pausing the algorithm using the `p` keybinding.
+Useful for debugging or experimentation.
 ```shell
 python3 -m cli
 ```
