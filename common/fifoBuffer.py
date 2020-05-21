@@ -81,6 +81,10 @@ class FifoBuffer():
         observer : Callable
             The observer to attach to the subscriber for notification of a pop.
 
+        Returns
+        -------
+        None
+
         Raises
         ------
         None
@@ -95,6 +99,10 @@ class FifoBuffer():
         ----------
         data : np.array
             The numpy array data to add to the end of the buffer
+
+        Returns
+        -------
+        None
 
         Raises
         ------
@@ -111,6 +119,11 @@ class FifoBuffer():
         Parameters
         ----------
         None
+
+        Returns
+        -------
+        data : np.array
+            A numpy array representing a chunk of the buffer.
 
         Raises
         ------
@@ -134,6 +147,11 @@ class FifoBuffer():
         ----------
         None
 
+        Returns
+        -------
+        isReady : boolean
+            A boolean representing whether or not the buffer is ready for processing in the Diminish algorithm
+
         Raises
         ------
         None
@@ -156,6 +174,11 @@ class FifoBuffer():
         ----------
         None
 
+        Returns
+        -------
+        size : int
+            Size of the buffer
+
         Raises
         ------
         None
@@ -168,6 +191,10 @@ class FifoBuffer():
 
         Parameters
         ----------
+        None
+
+        Returns
+        -------
         None
 
         Raises

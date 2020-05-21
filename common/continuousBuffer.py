@@ -74,6 +74,10 @@ class ContinuousBuffer():
         observer : Callable
             The observer to attach to the subscriber for notification of a pop.
 
+        Returns
+        -------
+        None
+
         Raises
         ------
         None
@@ -88,6 +92,10 @@ class ContinuousBuffer():
         ----------
         data : np.array
             The numpy array data to add to the end of the buffer
+
+        Returns
+        -------
+        None
 
         Raises
         ------
@@ -105,6 +113,11 @@ class ContinuousBuffer():
         Parameters
         ----------
         None
+
+        Returns
+        -------
+        data : np.array
+            A numpy array representing a chunk of the buffer.
 
         Raises
         ------
@@ -134,6 +147,11 @@ class ContinuousBuffer():
         Parameters
         ----------
         None
+
+        Returns
+        -------
+        size : int
+            Size of the buffer
 
         Raises
         ------
