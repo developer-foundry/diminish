@@ -14,6 +14,7 @@ Diminish is an implementation of active noise cancellation. It is not generic pu
 - [Usage](#usage)
     - [Server](#server)
     - [Client](#client)
+- [Signal Processing Output](#signal-processing-output)
 - [Documentation](#documentation)
 - [License](#license)
 - [Contributing](#contributing)
@@ -41,7 +42,7 @@ There are commercial applications that are being considered, but currently this 
 - Ubuntu 19 which includes the correct version of [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/). Note version 20 has a higher version that will not work correctly with Diminish.
 - gcc compiler
 - npm
-- docsify(https://docsify.js.org/#/)
+- [docsify](https://docsify.js.org/#/)
 
 ### Installation
 ```shell
@@ -56,7 +57,7 @@ cp environment/.env.example environment/.env
 ### Environment Variables
 
 * `MODE` - options are `prerecorded` or `live`. `prerecorded` performs the active noise cancellation setup on a set of configured files. See `INPUT_FILE` and `TARGET_FILE`.
-* `ALGORITHM` - `crls` is current the only option and is the algorithm that works the fastest and converges the fastest. See [documentation](https://diminish.ai/#/) for additional details.
+* `ALGORITHM` - `crls` is current the only option and is the algorithm that works the fastest and converges the fastest. See [algorithm documentation](algorithm.md) for additional details.
 * `INPUT_FILE` - only needed in `prerecorded` mode. Defines the input signal. Has only been tested with `.wav` files.
 * `TARGET_FILE` - required for all modes of operation. The target signal that the application will converge towards. Samples include `data/silence.wav` and `data/pink-noise.wav`. Has only been tested with `.wav` files.
 * `DEVICE` - the hardware device id. Can be modified, but to use your default output and input use `DEVICE=default`.
@@ -70,9 +71,9 @@ cp environment/.env.example environment/.env
 
 ## Usage
 
-Diminish assumes that a client and a server role are running. See [documentation](https://diminish.ai/#/) for additional details and reference diagrams. The directions below specify the command line tasks to run, but for VSCode users there is also a `tasks.json` that provides access to these commands via Build tasks.
+Diminish assumes that a client and a server role are running. See [architecture documentation](architecture.md) for additional details and reference diagrams. The directions below specify the command line tasks to run, but for VSCode users there is also a `tasks.json` that provides access to these commands via Build tasks.
 
-?> Note it is important that `invoke build-libraries` is run on both the client and server before the python process is called. This generates the necessary C libraries that are required to execute. See [documentation](https://diminish.ai/#/) for additional details.
+?> Note it is important that `invoke build-libraries` is run on both the client and server before the python process is called. This generates the necessary C libraries that are required to execute. See [libraries documentation](libraries.md) for additional details.
 
 ### Server
 
