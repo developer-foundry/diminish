@@ -1,5 +1,5 @@
 <!-- diminish documentation master file, created by
-sphinx-quickstart on Thu May 21 08:13:41 2020.
+sphinx-quickstart on Thu May 21 08:19:18 2020.
 You can adapt this file completely to your liking, but it should at least
 contain the root `toctree` directive. -->
 # Welcome to diminish’s documentation!
@@ -9,9 +9,6 @@ contain the root `toctree` directive. -->
 
 
     * Module contents
-
-
-* client module
 
 
 * common package
@@ -117,15 +114,6 @@ contain the root `toctree` directive. -->
 
 
     * Module contents
-
-
-* filtering module
-
-
-* server module
-
-
-* tasks module
 
 
 * tui package

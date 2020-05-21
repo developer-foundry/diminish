@@ -1,4 +1,4 @@
-sphinx-apidoc -o Sphinx-docs . sphinx-apidoc --full -A 'Eric LaForce\nKeith LaForce';
+sphinx-apidoc -o Sphinx-docs . external-libraries/ client.o client.so filtering.o filtering.so dotenv.o server.o server.so tasks.py sphinx-apidoc --full -A 'Eric LaForce\nKeith LaForce';
 cd Sphinx-docs;
 echo "\nimport os
 import sys
