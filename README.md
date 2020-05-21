@@ -102,7 +102,7 @@ python3 -m tui
 ```
 
 <div class="sequence">
-    <img src="./docs/assets/tuirecording.svg"/>
+    <img src="./docs/assets/tuirecording.gif"/>
 </div>
 
 #### CLI
