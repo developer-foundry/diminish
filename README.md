@@ -2,7 +2,7 @@
 
 ## Overview
 
-Diminish is an implementation of active noise cancellation. It is not generic purpose at this stage though that may eventually be a part of the [Roadmap](https://diminish.ai/#/). Right now it is intended as a reference architecture and proof of concept. Please see the [documentation](https://diminish.ai/#/) for more details.
+Diminish is an implementation of active noise cancellation. It is not generic purpose at this stage though that may eventually be a part of the [Roadmap](roadmap.md). Right now it is intended as a reference architecture and proof of concept. Please see the [documentation](https://diminish.ai/#/) for more details.
 
 ## Table of Contents
 - [Background](#background)
@@ -20,13 +20,13 @@ Diminish is an implementation of active noise cancellation. It is not generic pu
 - [Authors](#authors)
 
 ## Background
-There are commercial applications that are being considered, but currently this is proof of concept work to experiment with various real world scenarios. See [Roadmap](https://diminish.ai/#/) for future considerations.
+There are commercial applications that are being considered, but currently this is proof of concept work to experiment with various real world scenarios. See [Roadmap](roadmap.md) for future considerations.
 
 ## Features
 
 - Active Noise Cancellation with Error Microphone, Reference Microphone, Output Speaker
 - Reference Microphone over TCP/IP
-- Support for multiple algorithms though [Recursive Least Squares](https://en.wikipedia.org/wiki/Recursive_least_squares_filter) is the only one currently implemented
+- Support for multiple algorithms though [Recursive Least Squares](https://en.wikipedia.org/wiki/Recursive_least_squares_filter) is the only one currently implemented. See [Algorithms](algorithms.md) for more details
 - External C libraries for filtering algorithm and networking - this was necessary to get near real time performance
 - Terminal User Interface for server role
 - Client User Interface for server and client
@@ -44,7 +44,7 @@ There are commercial applications that are being considered, but currently this 
 - docsify(https://docsify.js.org/#/)
 
 ### Installation
-```
+```shell
 git clone git@github.com:developer-foundry/diminish.git
 sudo apt update
 sudo apt install build-essential
@@ -79,7 +79,7 @@ Diminish assumes that a client and a server role are running. See [documentation
 The server can be run using either the terminal user interface (TUI) or the command line interface (CLI). The TUI is useful for running and monitoring and the CLI is useful for debugging.
 
 #### Example `.env`
-```
+```shell
 MODE=live
 ALGORITHM=crls
 INPUT_FILE=data/truck-and-construction-noises.wav
@@ -97,7 +97,7 @@ PORT=65432
 #### TUI
 
 Useful for monitoring the application over time. The TUI specifies keybindings that can be seen on screen to start, pause and quit processing.
-```
+```shell
 python3 -m tui
 ```
 
@@ -108,7 +108,7 @@ python3 -m tui
 #### CLI
 
 Useful for debugging or experimentation
-```
+```shell
 python3 -m cli
 ```
 
@@ -117,7 +117,7 @@ python3 -m cli
 The client can only be run using the command line interface (CLI).
 
 #### Example `.env`
-```
+```shell
 MODE=live
 ALGORITHM=crls
 INPUT_FILE=data/truck-and-construction-noises.wav
@@ -135,21 +135,41 @@ PORT=65432
 #### CLI
 
 Useful for debugging or experimentation. The client does support pausing the algorithm using the `p` keybinding.
-```
+```shell
 python3 -m cli
 ```
 
+## Signal Processing Output
+
+Since the algorithm can be enabled or disabled with `p` in the CLI or through the TUI, this allows users to see the impact the filtering algorithm has on the output. Once the application is closed, the application will generate a plot of the signals via Matplotlib at `plots/{algorithm-name}/{mode}`.
+
+### Algorithm On Example
+
+In this example it can be seen that the error for the output (red graph) is relatively low and that the error microphone has lower amplitudes in its' wave.
+
+<div class="sequence">
+    <img src="./docs/assets/algo-on.png"/>
+</div>
+
+### Algorithm Off Example
+
+In this example it can be seen that the error for the output (red graph) is high and that the error microphone has higher amplitudes in its' wave.
+
+<div class="sequence">
+    <img src="./docs/assets/algo-off.png"/>
+</div>
+
 ## Documentation
 
-See the `docs` folder or navigate to [documentation](https://diminish.ai/#/). Documentation is generated via [docsify](https://docsify.js.org/#/) and any terminal videos were generated via [svg-term-cli](https://github.com/marionebl/svg-term-cli)
+See the `docs` folder or navigate to [documentation](https://diminish.ai/#/). Documentation is generated via [docsify](https://docsify.js.org/#/) and any terminal videos were generated via [asciinema](https://asciinema.org/) and [webgif](https://github.com/anishkny/webgif)
 
 ## License
 
-See [License](LICENSE)
+Diminish is currently licensed under [Apache2](https://github.com/developer-foundry/diminish/blob/master/LICENSE)
 
 ## Contributing
 
-Right now diminish is not accepting contributions, but please check back in the future
+Right now diminish is not accepting contributions or support, but please check back in the future
 
 ## Authors
 
