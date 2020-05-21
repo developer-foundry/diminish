@@ -57,7 +57,7 @@ cp environment/.env.example environment/.env
 ### Environment Variables
 
 * `MODE` - options are `prerecorded` or `live`. `prerecorded` performs the active noise cancellation setup on a set of configured files. See `INPUT_FILE` and `TARGET_FILE`.
-* `ALGORITHM` - `crls` is current the only option and is the algorithm that works the fastest and converges the fastest. See [algorithm documentation](algorithm.md) for additional details.
+* `ALGORITHM` - `crls` is current the only option and is the algorithm that works the fastest and converges the fastest. See [algorithm documentation](algorithms.md) for additional details.
 * `INPUT_FILE` - only needed in `prerecorded` mode. Defines the input signal. Has only been tested with `.wav` files.
 * `TARGET_FILE` - required for all modes of operation. The target signal that the application will converge towards. Samples include `data/silence.wav` and `data/pink-noise.wav`. Has only been tested with `.wav` files.
 * `DEVICE` - the hardware device id. Can be modified, but to use your default output and input use `DEVICE=default`.
