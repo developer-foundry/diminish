@@ -72,6 +72,10 @@ Useful for monitoring the application over time
 python3 -m tui
 ```
 
+<div class="sequence">
+    <img src="./assets/tuirecording.svg"/>
+</div>
+
 #### CLI
 
 Useful for debugging or experimentation
