@@ -8,51 +8,90 @@
 ### class tui.components.editText.EditText(label, model, attribute, labelStyle, textStyle)
 Bases: `urwid.container.Pile`
 
+The EditText component is a text box coupled with a label.
+
 
 #### \__init__(label, model, attribute, labelStyle, textStyle)
 
 * **Parameters**
 
     
-    * **widget_list** (*iterable*) – child widgets
+    * **label** (*str*) – The label value that will be displayed on screen.
 
 
-    * **focus_item** (*Widget** or **int*) – child widget that gets the focus initially.
-    Chooses the first selectable widget if unset.
+    * **model** (*ConfigurationModel*) – The model that this component is linked to.
 
 
-*widget_list* may also contain tuples such as:
+    * **attribute** (*str*) – The attribute in the model that this component is linked to. i.e. self.mode[‘name’]
 
-(*given_height*, *widget*)
 
-    always treat *widget* as a box widget and give it *given_height* rows,
-    where given_height is an int
+    * **labelStyle** (*str*) – The style used by urwid to apply to the label text
 
-(`'pack'`, *widget*)
 
-    allow *widget* to calculate its own height by calling its `rows()`
-    method, ie. treat it as a flow widget.
+    * **textStyle** (*str*) – The style used by urwid to apply to the textbox
 
-(`'weight'`, *weight*, *widget*)
-
-    if the pile is treated as a box widget then treat widget as a box
-    widget with a height based on its relative weight value, otherwise
-    treat the same as (`'pack'`, *widget*).
-
-Widgets not in a tuple are the same as (`'weight'`, `1`, *widget*)\`
-
-**NOTE**: If the Pile is treated as a box widget there must be at least
-one `'weight'` tuple in `widget_list`.
 
 
 #### build()
+Creates the subwidgets of the components and stiches them together for the final render.
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 #### refresh()
+Updates the component underlying widget display values based on the model changing
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 ## tui.components.footerComponent module
 
 
 ### class tui.components.footerComponent.FooterComponent(markup, style)
 Bases: `urwid.decoration.AttrMap`
+
+The FooterComponent wraps a Text widget to used at the bottom of a urwid.Frame
 
 
 #### \__init__(markup, style)
@@ -60,35 +99,11 @@ Bases: `urwid.decoration.AttrMap`
 * **Parameters**
 
     
-    * **w** (*widget*) – widget to wrap (stored as self.original_widget)
+    * **markup** (*str*) – The urwid markup used to create the Text widget.
 
 
-    * **attr_map** (*display attribute** or **dict*) – attribute to apply to *w*, or dict of old display
-    attribute: new display attribute mappings
+    * **style** (*str*) – The style to apply to the Text widget
 
-
-    * **focus_map** (*display attribute** or **dict*) – attribute to apply when in focus or dict of
-    old display attribute: new display attribute mappings;
-    if `None` use *attr*
-
-
-```python
->>> AttrMap(Divider(u"!"), 'bright')
-<AttrMap flow widget <Divider flow widget '!'> attr_map={None: 'bright'}>
->>> AttrMap(Edit(), 'notfocus', 'focus')
-<AttrMap selectable flow widget <Edit selectable flow widget '' edit_pos=0> attr_map={None: 'notfocus'} focus_map={None: 'focus'}>
->>> size = (5,)
->>> am = AttrMap(Text(u"hi"), 'greeting', 'fgreet')
->>> next(am.render(size, focus=False).content()) # ... = b in Python 3
-[('greeting', None, ...'hi   ')]
->>> next(am.render(size, focus=True).content())
-[('fgreet', None, ...'hi   ')]
->>> am2 = AttrMap(Text(('word', u"hi")), {'word':'greeting', None:'bg'})
->>> am2
-<AttrMap flow widget <Text flow widget 'hi'> attr_map={'word': 'greeting', None: 'bg'}>
->>> next(am2.render(size).content())
-[('greeting', None, ...'hi'), ('bg', None, ...'   ')]
-```
 
 ## tui.components.headerComponent module
 
@@ -96,41 +111,19 @@ Bases: `urwid.decoration.AttrMap`
 ### class tui.components.headerComponent.HeaderComponent(markup, style)
 Bases: `urwid.decoration.AttrMap`
 
+The HeaderComponent wraps a Text widget to used at the top of a urwid.Frame
+
 
 #### \__init__(markup, style)
 
 * **Parameters**
 
     
-    * **w** (*widget*) – widget to wrap (stored as self.original_widget)
+    * **markup** (*str*) – The urwid markup used to create the Text widget.
 
 
-    * **attr_map** (*display attribute** or **dict*) – attribute to apply to *w*, or dict of old display
-    attribute: new display attribute mappings
+    * **style** (*str*) – The style to apply to the Text widget
 
-
-    * **focus_map** (*display attribute** or **dict*) – attribute to apply when in focus or dict of
-    old display attribute: new display attribute mappings;
-    if `None` use *attr*
-
-
-```python
->>> AttrMap(Divider(u"!"), 'bright')
-<AttrMap flow widget <Divider flow widget '!'> attr_map={None: 'bright'}>
->>> AttrMap(Edit(), 'notfocus', 'focus')
-<AttrMap selectable flow widget <Edit selectable flow widget '' edit_pos=0> attr_map={None: 'notfocus'} focus_map={None: 'focus'}>
->>> size = (5,)
->>> am = AttrMap(Text(u"hi"), 'greeting', 'fgreet')
->>> next(am.render(size, focus=False).content()) # ... = b in Python 3
-[('greeting', None, ...'hi   ')]
->>> next(am.render(size, focus=True).content())
-[('fgreet', None, ...'hi   ')]
->>> am2 = AttrMap(Text(('word', u"hi")), {'word':'greeting', None:'bg'})
->>> am2
-<AttrMap flow widget <Text flow widget 'hi'> attr_map={'word': 'greeting', None: 'bg'}>
->>> next(am2.render(size).content())
-[('greeting', None, ...'hi'), ('bg', None, ...'   ')]
-```
 
 ## tui.components.positiveNegativeBarGraph module
 
@@ -260,64 +253,130 @@ Bases: `Exception`
 ### class tui.components.runningTime.RunningTime()
 Bases: `urwid.widget.WidgetWrap`
 
+The RunningTime component represents a box displaying seconds counting up from 0.
+
 
 #### \__init__()
-w – widget to wrap, stored as self._w
 
-This object will pass the functions defined in Widget interface
-definition to self._w.
+* **Parameters**
 
-The purpose of this widget is to provide a base class for
-widgets that compose other widgets for their display and
-behaviour.  The details of that composition should not affect
-users of the subclass.  The subclass may decide to expose some
-of the wrapped widgets by behaving like a ContainerWidget or
-WidgetDecoration, or it may hide them from outside access.
+    **None** – 
+
 
 
 #### build()
+Creates the subwidgets of the component and stiches them together for the final render.
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 #### refresh()
+Updates the component underlying widget display values based on the system clock changing
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 ## tui.components.systemMonitor module
 
 
 ### class tui.components.systemMonitor.SystemMonitor(model, monitorType, style, title)
 Bases: `urwid.graphics.LineBox`
 
+The SystemMonitor component represents a box displaying a value being monitored in the system like cpu or memory usage
+
 
 #### \__init__(model, monitorType, style, title)
-Draw a line around original_widget.
 
-Use ‘title’ to set an initial title text with will be centered
-on top of the box.
+* **Parameters**
 
-Use title_attr to apply a specific attribute to the title text.
+    
+    * **model** (*ConfigurationModel*) – The model that this component is linked to.
 
-Use title_align to align the title to the ‘left’, ‘right’, or ‘center’.
-The default is ‘center’.
 
-You can also override the widgets used for the lines/corners:
+    * **monitorType** (*str*) – The attribute in the model that this component is linked to. i.e. self.mode[‘cpu’]
 
-    tline: top line
-    bline: bottom line
-    lline: left line
-    rline: right line
-    tlcorner: top left corner
-    trcorner: top right corner
-    blcorner: bottom left corner
-    brcorner: bottom right corner
 
-If empty string is specified for one of the lines/corners, then no
-character will be output there.  This allows for seamless use of
-adjoining LineBoxes.
+    * **style** (*str*) – The style used by urwid to apply to the label text
+
+
+    * **title** (*str*) – The title of the box that wraps the system monitor value.
+
 
 
 #### refresh()
+Updates the component underlying widget display values based on the model changing
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 ## tui.components.verticalRadioButtonGroup module
 
 
 ### class tui.components.verticalRadioButtonGroup.VerticalRadioButtonGroup(model, attribute, labelOptions, group, modelRefreshFunction)
 Bases: `urwid.container.Pile`
+
+The VerticalRadioButtonGroup component represents a list of radio buttons stacked vertically.
 
 
 #### \__init__(model, attribute, labelOptions, group, modelRefreshFunction)
@@ -325,40 +384,115 @@ Bases: `urwid.container.Pile`
 * **Parameters**
 
     
-    * **widget_list** (*iterable*) – child widgets
+    * **model** (*ConfigurationModel*) – The model that this component is linked to.
 
 
-    * **focus_item** (*Widget** or **int*) – child widget that gets the focus initially.
-    Chooses the first selectable widget if unset.
+    * **attribute** (*str*) – The attribute in the model that this component is linked to. i.e. self.mode[‘algorithm’]
 
 
-*widget_list* may also contain tuples such as:
+    * **labelOptions** (*array*) – An array that contains the text values to display for each button
 
-(*given_height*, *widget*)
 
-    always treat *widget* as a box widget and give it *given_height* rows,
-    where given_height is an int
+    * **group** (*str*) – An identifier to uniquely identify a group of radio buttons
 
-(`'pack'`, *widget*)
 
-    allow *widget* to calculate its own height by calling its `rows()`
-    method, ie. treat it as a flow widget.
+    * **modelRefreshFunction** (*str*) – A callback function that can be called when the radio button value changes in the component
 
-(`'weight'`, *weight*, *widget*)
-
-    if the pile is treated as a box widget then treat widget as a box
-    widget with a height based on its relative weight value, otherwise
-    treat the same as (`'pack'`, *widget*).
-
-Widgets not in a tuple are the same as (`'weight'`, `1`, *widget*)\`
-
-**NOTE**: If the Pile is treated as a box widget there must be at least
-one `'weight'` tuple in `widget_list`.
 
 
 #### build(labelOptions, group)
+Creates the subwidgets of the components and stiches them together for the final render.
+
+
+* **Parameters**
+
+    
+    * **labelOptions** (*array*) – An array that contains the text values to display for each button
+
+
+    * **group** (*str*) – An identifier to uniquely identify a group of radio buttons
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 #### on_radio_change(button, state, groupName)
+When the radio button value changes update the unerlying model to keep it in sync with the UI
+
+
+* **Parameters**
+
+    
+    * **button** (*str*) – The value of the radio button selected. i.e. ‘crls’ or ‘prerecorded’
+
+
+    * **state** (*boolean*) – True if the radio is selected, False otherwise
+
+
+    * **groupName** (*str*) – The name of the group the radio button selected belongs to
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 #### refresh()
+Updates the component underlying widget display values based on the model changing
+
+
+* **Parameters**
+
+    **None** – 
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 ## Module contents
+
+This module contains all TUI components. Components are urwid Widgets
+that can be reused. This compared to a diminish View, which is a collection
+of widgets.
