@@ -8,23 +8,73 @@
 ### class tui.logging.tuiHandler.TuiHandler()
 Bases: `logging.StreamHandler`
 
+TuiHandler is a custom logging handler that will add log messages
+to a ConfigurationModel object rather than directing the messages
+to stdout or stderr. This prevents urwid from displaying random
+error messages on top of DashboardView.
+
 
 #### \__init__()
-Initialize the handler.
 
-If stream is not specified, sys.stderr is used.
+* **Parameters**
+
+    **None** – 
+
 
 
 #### configureModel(model)
+Called to register the model with the handler so that messages can be appended to logEntries
+
+
+* **Parameters**
+
+    **model** (*ConfigurationModel*) – The model that this component is linked to.
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
+
 
 #### emit(record)
-Emit a record.
+Called when a message is sent to a logger.
 
-If a formatter is specified, it is used to format the record.
-The record is then written to the stream with a trailing newline.  If
-exception information is present, it is formatted using
-traceback.print_exception and appended to the stream.  If the stream
-has an ‘encoding’ attribute, it is used to determine how to do the
-output to the stream.
+
+* **Parameters**
+
+    **record** (*LogRecord*) – The record passed from the logger that contains the message and log level.
+
+
+
+* **Returns**
+
+    
+
+
+* **Return type**
+
+    None
+
+
+
+* **Raises**
+
+    **None** – 
+
 
 ## Module contents
+
+This module contains all custom logging code for the TUI application

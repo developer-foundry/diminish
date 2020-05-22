@@ -19,7 +19,27 @@ from common.common import guiRefreshTimer
 
 
 class DashboardController():
+    """
+    DashboardController is the primary controller in the diminish TUI. As
+    more screens are added later, new controllers should be created.
+
+    This controller kicks off the MainLoop for urwid, handles model updates,
+    renders views, and maintains a connection to the underlying diminish CLI
+    process for performing the ANC algorithm.
+    """
+
     def __init__(self, parameters, logger, loggingHandler):
+        """
+        Parameters
+        ----------
+        parameters : array
+            An array of environment variables used to initialize the model.
+        logger : Logger
+            A python Logger that will render logs to the screen.
+        loggingHandler : TuiHandler
+            The TuiHandler overrides the standard python logging to stdout/stderr and writes any log
+            messages to the Logging view.
+        """
         self.logger = logger
         self.loggingHandler = loggingHandler
         self.model = ConfigurationModel(parameters)
@@ -36,6 +56,21 @@ class DashboardController():
         self.loop.run()
 
     def getEnvironmentVars(self):
+        """
+        Constructs a dictionary of the environment variables to inject into the CLI process that spawns.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         my_env = os.environ.copy()
         my_env["MODE"] = self.model.mode
         my_env["ALGORITHM"] = self.model.algorithm
@@ -50,6 +85,21 @@ class DashboardController():
         return my_env
 
     def run(self):
+        """
+        Spawns the diminish CLI and runs the ANC algorithm based on the selections the user made on screen.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.stdout = self.loop.watch_pipe(self.read_pipe)
         self.stderr = self.loop.watch_pipe(self.read_pipe)
 
@@ -68,6 +118,21 @@ class DashboardController():
         self.loop.set_alarm_in(0, self.refresh)
 
     def refresh(self, _loop, data):
+        """
+        Refresh runs every {guiRefreshTimer} seconds and will rerender the screen with updated model values.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         try:
             if(self.model.mode == 'live'):
                 self.updateGraphs()
@@ -82,6 +147,23 @@ class DashboardController():
         _loop.set_alarm_in(guiRefreshTimer, self.refresh)
 
     def createConnectionToCli(self):
+        """
+        Using the python multiprocessing library, this function will create a Pipe to the 
+        process that spawned the CLI. All monitoring data will be passed from the Monitor class
+        in diminish to the TUI via this connection.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         connected = False
         # loop until connected
         while not connected:
@@ -95,9 +177,39 @@ class DashboardController():
         self.logger.debug('Connected to Process!')
 
     def read_pipe(self, read_data):
+        """
+        Monitors a stdout or stderr pipe and redirects it to the logger.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.logger.info(read_data)
 
     def updateGraphs(self):
+        """
+        Parses the data based from the diminish Monitor class related to the sound graphs.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         # first update all three buffers
         tuiBufferName = self.dataClient.recv()  # receive 'error'
         while tuiBufferName != 'end buffers':
@@ -116,11 +228,40 @@ class DashboardController():
             tuiBufferName = self.dataClient.recv()
 
     def togglePause(self):
+        """
+        Toggles whether or not the algorithm is running and passes that message to the CLI process
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.model.paused = not self.model.paused
         self.proc.send_signal(signal.SIGUSR1)
 
-    # Handle key presses
     def handle_input(self, key):
+        """
+        All keyboard input for the main screen is processed in this function
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         if key == 'Q' or key == 'q':
             if(self.proc is not None):
                 self.proc.send_signal(signal.SIGINT)
