@@ -6,3 +6,5 @@ invoke
 python-dotenv
 urwid
 pynput
+sphinx
+sphinx-markdown-builder
