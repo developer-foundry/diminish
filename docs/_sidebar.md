@@ -1,6 +1,22 @@
+Overview
 * [README](/)
 * [Roadmap](roadmap.md)
 * [Architecture Diagrams](architecture.md)
 * [Algorithms](algorithms.md)
-* [API Documentation](api.md)
 * [External Libraries](libraries.md)
+
+API Documentation
+* [Algorithms](internal-documentation/diminish.algorithms.md)
+* [CLI](internal-documentation/cli.md)
+* [Common](internal-documentation/common.md)
+* [Diminish](internal-documentation/diminish.md)
+* [Monitoring](internal-documentation/diminish.monitoring.md)
+* [Orchestrators](internal-documentation/diminish.orchestrators.md)
+* [Plotting](internal-documentation/diminish.plotting.md)
+* [Signals](internal-documentation/diminish.signals.md)
+* [TUI](internal-documentation/tui.md)
+* [TUI Components](internal-documentation/tui.components.md)
+* [TUI Controllers](internal-documentation/tui.controllers.md)
+* [TUI Models](internal-documentation/tui.models.md)
+* [TUI Palette](internal-documentation/tui.palette.md)
+* [TUI Views](internal-documentation/tui.views.md)
