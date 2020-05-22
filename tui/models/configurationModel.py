@@ -1,7 +1,19 @@
 from tui.models.configurationOptionsModel import ConfigurationOptionsModel
 
+
 class ConfigurationModel():
+    """
+    ConfigurationModel is the primary model used in the current implementation of diminish
+    TUI. The model holds all information that is displayed on the primary screen: DashboardView.
+    """
+
     def __init__(self, parameters):
+        """
+        Parameters
+        ----------
+        parameters : array
+            An array of environment variables used to initialize the model.
+        """
         self.logger = None
         self.mode = parameters['mode']
         self.algorithm = parameters['algorithm']
