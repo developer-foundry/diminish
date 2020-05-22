@@ -5,7 +5,7 @@
 Diminish is an implementation of active noise cancellation. It is not generic purpose at this stage though that may eventually be a part of the [Roadmap](roadmap.md). Right now it is intended as a reference architecture and proof of concept. Please see the [documentation](https://diminish.ai/#/) for more details.
 
 ## Table of Contents
-- [Background](#background)
+- [Background and Use Case](#background)
 - [Features](#features)
 - [Setup](#setup)
     - [Prerequisites](#prerequisites)
@@ -22,6 +22,8 @@ Diminish is an implementation of active noise cancellation. It is not generic pu
 
 ## Background
 There are commercial applications that are being considered, but currently this is proof of concept work to experiment with various real world scenarios. See [Roadmap](roadmap.md) for future considerations.
+
+The expected use case for Diminish currently is to provide Active Noise Cancellation (ANC) for a moderate sized room and prevent unwanted signals from entering the hearing of users within said room. The reference microphone is expected to be outside the room by the door and the error microphone, speaker, and ANC processing unit are within the room. Pink Noise is the primary target signal that has been tested with.
 
 ## Features
 
