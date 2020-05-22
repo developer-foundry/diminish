@@ -12,7 +12,7 @@ def run_algorithm(algorithm, inputSignal, targetSignal, numChannels):
 
     Parameters
     ----------
-    algorithm : str
+    algorithm: str
         The name of the algorithm used to perform ANC. Currently, only 'crls' is available.
     inputSignal : np.array
         Input matrix (2-dimensional array). Rows are samples. Columns are input arrays.

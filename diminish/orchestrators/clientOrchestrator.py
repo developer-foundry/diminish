@@ -50,7 +50,11 @@ class ClientOrchestrator():
 
     def run(self):
         """
-        Cleans up any necessary attributes when the thread is stopped
+        Initializes buffers, threads, and orders the timing
+        of threads to ensure everything is ready to start
+        ANC processing
+
+        Runs until the server is killed or an exception is thrown
 
         Parameters
         ----------
