@@ -622,7 +622,5 @@ Subscribes an observer to be notified upon a pop of the buffer.
 
 ## Module contents
 
-Common
-
 This module is for code that is common between the CLI, TUI, and Diminish modules.
 Common functions and configuration can be placed in this module.
