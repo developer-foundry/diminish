@@ -1,3 +1,7 @@
+"""
+This script shares common functions and variables needed to plot signal data
+"""
+
 import matplotlib  # nopep8
 matplotlib.use('Agg')  # nopep8
 import os
@@ -6,27 +10,58 @@ import logging
 import time
 
 def get_dir(algorithm, mode):
+    """
+    Used to determine the plotting folder 
+
+    Parameters
+    ----------
+    algorithm: String
+        The name of the current ANC algorithm running
+    mode: String
+        The MODE (precorded or anc) the server is currently running
+
+    Returns
+    -------
+    path : Path
+        The path of the plots directory of diminish
+
+    Raises
+    ------
+    None
+    """
     base_dir = os.getcwd()
     results_dir = os.path.join(base_dir, f'plots/{algorithm}/{mode}/')
     if not os.path.isdir(results_dir):
         os.makedirs(results_dir)
     return results_dir
 
-
-def plot_simultaneous(algorithm, mode, inputSignal, targetSignal, outputSignal):
-    algDirectory = get_dir(algorithm, mode)
-
-    plt.plot(inputSignal, '-b')
-    plt.savefig(algDirectory + f'{algorithm}_input.png')
-
-    plt.plot(targetSignal, '-g')
-    plt.savefig(algDirectory + f'{algorithm}_target.png')
-
-    plt.plot(outputSignal, '-r')
-    plt.savefig(algDirectory + f'{algorithm}_output.png')
-
-
 def plot_vertical(algorithm, mode, inputSignal, targetSignal, outputSignal, errorSignal):
+    """
+    Plots the necessary signals for prerecorded mode
+
+    Parameters
+    ----------
+    algorithm: String
+        The name of the current ANC algorithm running
+    mode: String
+        The MODE (precorded or anc) the server is currently running
+    inputSignal: np.array
+        The reference microphone signal
+    targetSignal: np.array
+        The desired target signal the user should hear
+    outputSignal: np.array
+        The actual speaker output the user hears
+    errorSignal: np.array
+        The difference between the output signal and the target signal
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    None
+    """
     algDirectory = get_dir(algorithm, mode)
 
     fig, axs = plt.subplots(4)
@@ -47,6 +82,27 @@ def plot_vertical(algorithm, mode, inputSignal, targetSignal, outputSignal, erro
     plt.savefig(algDirectory + f'{algorithm}- allsignals.png')
 
 def plot_vertical_buffers(algorithm, mode, buffers):
+    """
+    Plots the error, reference, output, target, and output error
+    signals for ANC mode
+
+    Parameters
+    ----------
+    algorithm: String
+        The name of the current ANC algorithm running
+    mode: String
+        The MODE (precorded or anc) the server is currently running
+    buffers: list
+        The list of buffers to plot
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    None
+    """
     logging.debug(f'Plotting colors')
 
     colors = ['-b', '-m', '-g', '-k', '-r']
