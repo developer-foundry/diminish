@@ -6,7 +6,7 @@ Due to the real time nature of ANC, performance is a signficant consideration fo
 
 ## Build
 
-There are build tasks available via [tasks.py](../tasks.py) and `invoke`. Additionally there are VSCode commands under the Build options to execute the `invoke` commands and ultimately the `gcc` compliation. This compliation step is required on both the client and server.
+There are build tasks available via `tasks.py` and `invoke`. Additionally there are VSCode commands under the Build options to execute the `invoke` commands and ultimately the `gcc` compliation. This compliation step is required on both the client and server.
 
 The compliation step builds shared objects (.so files) and Python through ctypes loads and executes the shared object code.
 

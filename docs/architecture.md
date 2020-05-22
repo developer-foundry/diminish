@@ -11,4 +11,4 @@ In order to support the [Active Noise Cancellation(ANC)](algorithms.md) algorith
 ## Hardware Architecture
 
 ![Hardware Architecture](./assets/hardware-architecture.png)   
-*Fig. 1: Diminish Hardware Architecture
+*Fig. 2: Diminish Hardware Architecture
